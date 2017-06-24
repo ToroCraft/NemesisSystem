@@ -1,0 +1,16 @@
+[
+{
+  "modid": "nemesissystem",
+  "name": "NemesisSystem",
+  "description": "Shadow of Mordor's Nemesis system adapted to Minecraft.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["ToroCraft"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
