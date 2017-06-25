@@ -8,6 +8,8 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
@@ -16,12 +18,56 @@ import net.minecraft.world.World;
 
 public class SpawnUtil {
 
-	public static void replace(Entity entity, Nemesis nemesis) {
-		Entity replacementEntity = getEntityForId(entity.world, nemesis.getMob());
+	/**
+	 * Convert the provided entity into the given nemesis
+	 *
+	 * @param entity the entity to be converted into a nemesis
+	 * @param nemesis the nemesis to create
+	 */
+	public static void convert(Entity entity, Nemesis nemesis) {
+
 		if (!(entity instanceof EntityLivingBase)) {
 			return;
 		}
-		spawnEntityLiving(entity.world, (EntityLiving) entity, entity.getPosition());
+
+		decorateEntity((EntityLivingBase) entity, nemesis);
+	}
+
+	private static void decorateEntity(EntityLivingBase entity, Nemesis nemesis) {
+
+		entity.setCustomNameTag(nemesis.getName());
+
+		/*
+		generic.maxHealth
+		generic.knockbackResistance
+		generic.movementSpeed
+		generic.armor
+		generic.armorToughness
+		generic.followRange
+		 */
+
+		for (IAttributeInstance attribute : entity.getAttributeMap().getAllAttributes()) {
+			if (attribute.getAttribute() == SharedMonsterAttributes.ATTACK_DAMAGE) {
+				System.out.println("Boosting ATTACK_DAMAGE");
+				attribute.setBaseValue(attribute.getAttributeValue() * 2);
+			}
+
+			if (attribute.getAttribute() == SharedMonsterAttributes.ATTACK_SPEED) {
+				System.out.println("Boosting ATTACK_SPEED");
+				attribute.setBaseValue(attribute.getAttributeValue() * 2);
+			}
+
+			if (attribute.getAttribute() == SharedMonsterAttributes.MOVEMENT_SPEED) {
+				System.out.println("Boosting MOVEMENT_SPEED");
+				attribute.setBaseValue(attribute.getAttributeValue() * 2);
+			}
+
+			if (attribute.getAttribute() == SharedMonsterAttributes.MAX_HEALTH) {
+				System.out.println("Boosting MAX_HEALTH");
+				attribute.setBaseValue(attribute.getAttributeValue() * 5);
+				entity.setHealth(entity.getMaxHealth());
+			}
+		}
 	}
 
 	public static void spawn(World world, Nemesis nemesis, BlockPos pos) {
@@ -112,6 +158,14 @@ public class SpawnUtil {
 		return true;
 	}
 
+	/**
+	 * TODO: WIP
+	 *
+	 * find the closest suitable spawn location to the given position within the provided radius.
+	 *
+	 * @return the suitable spawn position chosen
+	 */
+	@Deprecated
 	private static BlockPos findSuitableSpawnLocation(World world, BlockPos posIn, int spawnRadius) {
 		Random rand = world.rand;
 
@@ -136,6 +190,10 @@ public class SpawnUtil {
 		return pos;
 	}
 
+	/**
+	 * TODO: WIP
+	 */
+	@Deprecated
 	private static BlockPos findSurface(World world, BlockPos posIn, int x, int z) {
 		BlockPos pos = posIn.add(x, -3, z);
 		IBlockState blockState;
