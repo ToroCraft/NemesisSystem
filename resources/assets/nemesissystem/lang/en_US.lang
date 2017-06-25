@@ -1,0 +1,3 @@
+#PARSE_ESCAPES
+commands.nemesis_system.success.list=Registered Nemeses:\n%s
+commands.nemesis_system.success.create=Created: %s

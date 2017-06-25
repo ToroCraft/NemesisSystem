@@ -36,6 +36,15 @@ public class NemesisRegistry extends WorldSavedData {
 		return nemeses;
 	}
 
+	public Nemesis getByName(String name) {
+		for(Nemesis nemesis : nemeses){
+			if(name.equals(nemesis.getName())){
+				return nemesis;
+			}
+		}
+		return null;
+	}
+
 	public void remove(Nemesis nemesis) {
 		nemeses.remove(nemesis);
 		markDirty();
