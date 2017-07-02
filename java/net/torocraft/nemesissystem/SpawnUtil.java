@@ -8,10 +8,12 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -31,6 +33,7 @@ public class SpawnUtil {
 		}
 
 		decorateEntity((EntityLivingBase) entity, nemesis);
+
 	}
 
 	private static void decorateEntity(EntityLivingBase entity, Nemesis nemesis) {
@@ -38,7 +41,7 @@ public class SpawnUtil {
 		entity.setCustomNameTag(nemesis.getName());
 
 		/*
-		generic.maxHealth
+	generic.maxHealth
 		generic.knockbackResistance
 		generic.movementSpeed
 		generic.armor
@@ -67,7 +70,40 @@ public class SpawnUtil {
 				attribute.setBaseValue(attribute.getAttributeValue() * 5);
 				entity.setHealth(entity.getMaxHealth());
 			}
+
+			setSize(entity, 3f, 6f);
+
 		}
+	}
+
+	private static void setSize(Entity e, float width, float height) {
+
+		System.out.println("setting size!");
+
+		float f = e.width;
+		e.width = width;
+		e.height = height;
+
+
+
+		//if (e.width < f) {
+			double d0 = (double) width / 2.0D;
+			e.setEntityBoundingBox(
+					new AxisAlignedBB(e.posX - d0, e.posY, e.posZ - d0, e.posX + d0, e.posY + (double) e.height,
+							e.posZ + d0));
+		//	return;
+		//}
+
+		//AxisAlignedBB axisalignedbb = e.getEntityBoundingBox();
+
+		//e.setEntityBoundingBox(
+		//		new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.minX + (double) e.width,
+		//				axisalignedbb.minY + (double) e.height, axisalignedbb.minZ + (double) e.width));
+
+		//if (e.width > f && !e.firstUpdate && !e.world.isRemote) {
+		//	e.move(MoverType.SELF, (double) (f - e.width), 0.0D, (double) (f - this.width));
+		//}
+
 	}
 
 	public static void spawn(World world, Nemesis nemesis, BlockPos pos) {
