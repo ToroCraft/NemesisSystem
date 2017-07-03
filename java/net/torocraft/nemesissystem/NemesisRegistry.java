@@ -33,7 +33,13 @@ public class NemesisRegistry extends WorldSavedData {
 	}
 
 	public List<Nemesis> list() {
-		return nemeses;
+		return new ArrayList<>(nemeses);
+	}
+
+
+	public void clear() {
+		nemeses.clear();
+		markDirty();
 	}
 
 	public Nemesis getByName(String name) {
@@ -83,4 +89,5 @@ public class NemesisRegistry extends WorldSavedData {
 		c.setTag(NBT_NEMESES, nbtNemeses);
 		return c;
 	}
+
 }

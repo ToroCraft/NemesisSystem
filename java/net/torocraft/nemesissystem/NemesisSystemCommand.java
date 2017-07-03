@@ -54,9 +54,16 @@ public class NemesisSystemCommand extends CommandBase {
 		case "spawn":
 			spawn(server, sender, args);
 			return;
+		case "clear":
+			clear(server, sender, args);
+			return;
 		default:
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
+	}
+
+	private void clear(MinecraftServer server, ICommandSender sender, String[] args) {
+		NemesisRegistryProvider.get(server.getWorld(0)).clear();
 	}
 
 	private void spawn(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
@@ -92,7 +99,7 @@ public class NemesisSystemCommand extends CommandBase {
 	}
 
 	private void create(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (args.length != 4) {
+		if (args.length != 3) {
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
 
@@ -107,7 +114,7 @@ public class NemesisSystemCommand extends CommandBase {
 			z = 0;
 		}
 
-		Nemesis nemesis = NemesisBuilder.build(args[1], args[2], i(args[3]), x, z);
+		Nemesis nemesis = NemesisBuilder.build(args[1], i(args[2]), x, z);
 		nemesis.register(server.getWorld(senderDimId(sender)));
 		notifyCommandListener(sender, this, "commands.nemesis_system.success.create", nemesis.toString());
 	}
@@ -139,7 +146,7 @@ public class NemesisSystemCommand extends CommandBase {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
 		if (args.length == 1) {
-			return getListOfStringsMatchingLastWord(args, "create", "list", "spawn");
+			return getListOfStringsMatchingLastWord(args, "create", "list", "spawn", "clear");
 		}
 		String command = args[0];
 		switch (command) {
@@ -162,14 +169,10 @@ public class NemesisSystemCommand extends CommandBase {
 	private List<String> tabCompletionsForCreate(MinecraftServer server, String[] args) {
 
 		if (args.length == 2) {
-			return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());
-		}
-
-		if (args.length == 3) {
 			return getListOfStringsMatchingLastWord(args, EntityList.getEntityNameList());
 		}
 
-		if (args.length == 4) {
+		if (args.length == 3) {
 			String[] levels = new String[10];
 			for (int i = 0; i < 10; i++) {
 				levels[i] = Integer.toString(i, 10);

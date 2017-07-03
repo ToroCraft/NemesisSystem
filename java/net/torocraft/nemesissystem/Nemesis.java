@@ -1,24 +1,31 @@
 package net.torocraft.nemesissystem;
 
+import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class Nemesis {
 
 	private static final String NBT_NAME = "name";
-	private static final String NBT_NEMESIS_OF = "nemesisOf";
 	private static final String NBT_LEVEL = "level";
 	private static final String NBT_MOB = "mob";
 	private static final String NBT_X = "x";
 	private static final String NBT_Z = "z";
+	private static final String NBT_ARMOR = "armor";
+	private static final String NBT_HANDS = "hands";
 
 	private String name;
-	private String nemesisOf;
 	private int level;
 	private String mob;
 	private int x;
 	private int z;
+
+	private NonNullList<ItemStack> handInventory = NonNullList.<ItemStack>withSize(2, ItemStack.EMPTY);
+	private NonNullList<ItemStack> armorInventory = NonNullList.<ItemStack>withSize(4, ItemStack.EMPTY);
 
 	//TODO armor / attributes
 
@@ -32,26 +39,64 @@ public class Nemesis {
 
 	@Override
 	public String toString() {
-		return name + " nemesis of " + nemesisOf + " (level:" + level + " chunk:" + x + "," + z + ")";
+		return name + " (level:" + level + " chunk:" + x + "," + z + ")";
 	}
 
 	public void readFromNBT(NBTTagCompound c) {
+		handInventory = NonNullList.<ItemStack>withSize(2, ItemStack.EMPTY);
+		armorInventory = NonNullList.<ItemStack>withSize(4, ItemStack.EMPTY);
 		name = c.getString(NBT_NAME);
-		nemesisOf = c.getString(NBT_NEMESIS_OF);
 		level = c.getInteger(NBT_LEVEL);
 		mob = c.getString(NBT_MOB);
 		x = c.getInteger(NBT_X);
 		z = c.getInteger(NBT_Z);
+		loadAllItems(NBT_HANDS, c, handInventory);
+		loadAllItems(NBT_ARMOR, c, armorInventory);
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound c) {
 		c.setString(NBT_NAME, name);
-		c.setString(NBT_NEMESIS_OF, nemesisOf);
 		c.setInteger(NBT_LEVEL, level);
 		c.setString(NBT_MOB, mob);
 		c.setInteger(NBT_X, x);
 		c.setInteger(NBT_Z, z);
+		saveAllItems(NBT_HANDS, c, handInventory);
+		saveAllItems(NBT_ARMOR, c, armorInventory);
 		return c;
+	}
+
+	public static NBTTagCompound saveAllItems(String key, NBTTagCompound tag, NonNullList<ItemStack> list) {
+		NBTTagList nbttaglist = new NBTTagList();
+
+		for (int i = 0; i < list.size(); ++i) {
+			ItemStack itemstack = list.get(i);
+
+			if (!itemstack.isEmpty()) {
+				NBTTagCompound nbttagcompound = new NBTTagCompound();
+				nbttagcompound.setByte("Slot", (byte) i);
+				itemstack.writeToNBT(nbttagcompound);
+				nbttaglist.appendTag(nbttagcompound);
+			}
+		}
+
+		if (!nbttaglist.hasNoTags()) {
+			tag.setTag(key, nbttaglist);
+		}
+
+		return tag;
+	}
+
+	public static void loadAllItems(String key, NBTTagCompound tag, NonNullList<ItemStack> list) {
+		NBTTagList nbttaglist = tag.getTagList(key, 10);
+
+		for (int i = 0; i < nbttaglist.tagCount(); ++i) {
+			NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+			int j = nbttagcompound.getByte("Slot") & 255;
+
+			if (j >= 0 && j < list.size()) {
+				list.set(j, new ItemStack(nbttagcompound));
+			}
+		}
 	}
 
 	public String getName() {
@@ -60,14 +105,6 @@ public class Nemesis {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public String getNemesisOf() {
-		return nemesisOf;
-	}
-
-	public void setNemesisOf(String nemesisOf) {
-		this.nemesisOf = nemesisOf;
 	}
 
 	public int getLevel() {
@@ -100,5 +137,13 @@ public class Nemesis {
 
 	public void setZ(int z) {
 		this.z = z;
+	}
+
+	public NonNullList<ItemStack> getHandInventory() {
+		return handInventory;
+	}
+
+	public NonNullList<ItemStack> getArmorInventory() {
+		return armorInventory;
 	}
 }

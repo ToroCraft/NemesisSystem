@@ -12,6 +12,8 @@ import net.minecraft.entity.MoverType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.init.Blocks;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -19,6 +21,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class SpawnUtil {
+
+	public static final String NEMESIS_TAG = "torocraft_nemesis";
 
 	/**
 	 * Convert the provided entity into the given nemesis
@@ -38,7 +42,24 @@ public class SpawnUtil {
 
 	private static void decorateEntity(EntityLivingBase entity, Nemesis nemesis) {
 
+		entity.addTag(NEMESIS_TAG);
+
 		entity.setCustomNameTag(nemesis.getName());
+
+		// TODO add armor
+
+		ItemStack helmet = nemesis.getArmorInventory().get(EntityEquipmentSlot.HEAD.getIndex());
+
+		System.out.println("adding helmet: " + helmet);
+
+		entity.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
+		entity.setItemStackToSlot(EntityEquipmentSlot.CHEST, nemesis.getArmorInventory().get(EntityEquipmentSlot.CHEST.getIndex()));
+		entity.setItemStackToSlot(EntityEquipmentSlot.LEGS, nemesis.getArmorInventory().get(EntityEquipmentSlot.LEGS.getIndex()));
+		entity.setItemStackToSlot(EntityEquipmentSlot.FEET, nemesis.getArmorInventory().get(EntityEquipmentSlot.FEET.getIndex()));
+
+
+		entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, nemesis.getHandInventory().get(EntityEquipmentSlot.MAINHAND.getIndex()));
+		entity.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, nemesis.getHandInventory().get(EntityEquipmentSlot.OFFHAND.getIndex()));
 
 		/*
 	generic.maxHealth
@@ -70,40 +91,7 @@ public class SpawnUtil {
 				attribute.setBaseValue(attribute.getAttributeValue() * 5);
 				entity.setHealth(entity.getMaxHealth());
 			}
-
-			setSize(entity, 3f, 6f);
-
 		}
-	}
-
-	private static void setSize(Entity e, float width, float height) {
-
-		System.out.println("setting size!");
-
-		float f = e.width;
-		e.width = width;
-		e.height = height;
-
-
-
-		//if (e.width < f) {
-			double d0 = (double) width / 2.0D;
-			e.setEntityBoundingBox(
-					new AxisAlignedBB(e.posX - d0, e.posY, e.posZ - d0, e.posX + d0, e.posY + (double) e.height,
-							e.posZ + d0));
-		//	return;
-		//}
-
-		//AxisAlignedBB axisalignedbb = e.getEntityBoundingBox();
-
-		//e.setEntityBoundingBox(
-		//		new AxisAlignedBB(axisalignedbb.minX, axisalignedbb.minY, axisalignedbb.minZ, axisalignedbb.minX + (double) e.width,
-		//				axisalignedbb.minY + (double) e.height, axisalignedbb.minZ + (double) e.width));
-
-		//if (e.width > f && !e.firstUpdate && !e.world.isRemote) {
-		//	e.move(MoverType.SELF, (double) (f - e.width), 0.0D, (double) (f - this.width));
-		//}
-
 	}
 
 	public static void spawn(World world, Nemesis nemesis, BlockPos pos) {
