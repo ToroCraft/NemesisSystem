@@ -11,10 +11,11 @@ public class CommonProxy {
 	}
 
 	public void init(FMLInitializationEvent e) {
-
+		SpawnHandler.init();
+		UpdateHandler.init();
 	}
 
 	public void postInit(FMLPostInitializationEvent e) {
-		SpawnHandler.init();
+
 	}
 }

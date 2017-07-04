@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 public class SpawnUtil {
 
-	public static final String NEMESIS_TAG = "torocraft_nemesis";
+	public static final String NBT_ID = "torocraft_nemesis_id";
 
 	/**
 	 * Convert the provided entity into the given nemesis
@@ -31,64 +31,39 @@ public class SpawnUtil {
 	 * @param nemesis the nemesis to create
 	 */
 	public static void convert(Entity entity, Nemesis nemesis) {
-
 		if (!(entity instanceof EntityLivingBase)) {
 			return;
 		}
 
 		decorateEntity((EntityLivingBase) entity, nemesis);
-
 	}
 
 	private static void decorateEntity(EntityLivingBase entity, Nemesis nemesis) {
-
-		entity.addTag(NEMESIS_TAG);
+		entity.getEntityData().setUniqueId(NBT_ID, nemesis.getId());
 
 		entity.setCustomNameTag(nemesis.getName());
 
-		// TODO add armor
-
 		ItemStack helmet = nemesis.getArmorInventory().get(EntityEquipmentSlot.HEAD.getIndex());
-
-		System.out.println("adding helmet: " + helmet);
 
 		entity.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
 		entity.setItemStackToSlot(EntityEquipmentSlot.CHEST, nemesis.getArmorInventory().get(EntityEquipmentSlot.CHEST.getIndex()));
 		entity.setItemStackToSlot(EntityEquipmentSlot.LEGS, nemesis.getArmorInventory().get(EntityEquipmentSlot.LEGS.getIndex()));
 		entity.setItemStackToSlot(EntityEquipmentSlot.FEET, nemesis.getArmorInventory().get(EntityEquipmentSlot.FEET.getIndex()));
 
-
 		entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, nemesis.getHandInventory().get(EntityEquipmentSlot.MAINHAND.getIndex()));
 		entity.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, nemesis.getHandInventory().get(EntityEquipmentSlot.OFFHAND.getIndex()));
 
-		/*
-	generic.maxHealth
-		generic.knockbackResistance
-		generic.movementSpeed
-		generic.armor
-		generic.armorToughness
-		generic.followRange
-		 */
-
 		for (IAttributeInstance attribute : entity.getAttributeMap().getAllAttributes()) {
 			if (attribute.getAttribute() == SharedMonsterAttributes.ATTACK_DAMAGE) {
-				System.out.println("Boosting ATTACK_DAMAGE");
-				attribute.setBaseValue(attribute.getAttributeValue() * 2);
+				attribute.setBaseValue(attribute.getAttributeValue() * nemesis.getLevel());
 			}
 
 			if (attribute.getAttribute() == SharedMonsterAttributes.ATTACK_SPEED) {
-				System.out.println("Boosting ATTACK_SPEED");
-				attribute.setBaseValue(attribute.getAttributeValue() * 2);
-			}
-
-			if (attribute.getAttribute() == SharedMonsterAttributes.MOVEMENT_SPEED) {
-				System.out.println("Boosting MOVEMENT_SPEED");
-				attribute.setBaseValue(attribute.getAttributeValue() * 2);
+				attribute.setBaseValue(attribute.getAttributeValue() * (nemesis.getLevel() / 4));
 			}
 
 			if (attribute.getAttribute() == SharedMonsterAttributes.MAX_HEALTH) {
-				System.out.println("Boosting MAX_HEALTH");
-				attribute.setBaseValue(attribute.getAttributeValue() * 5);
+				attribute.setBaseValue(attribute.getAttributeValue() * nemesis.getLevel());
 				entity.setHealth(entity.getMaxHealth());
 			}
 		}
@@ -133,49 +108,6 @@ public class SpawnUtil {
 		entity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), (IEntityLivingData) null);
 
 		entity.enablePersistence();
-
-		/*
-
-		TODO
-
-		if (entityTags != null) {
-			for (String tag : entityTags) {
-				entity.addTag(tag);
-			}
-		}
-
-		if (helmet != null) {
-			try {
-				entity.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
-			} catch (Exception e) {
-				System.out.println("failed to add helment: " + e.getMessage());
-			}
-		}
-
-		if (boots != null) {
-			try {
-				entity.setItemStackToSlot(EntityEquipmentSlot.FEET, boots);
-			} catch (Exception e) {
-				System.out.println("failed to add boots: " + e.getMessage());
-			}
-		}
-
-		if (chestplate != null) {
-			try {
-				entity.setItemStackToSlot(EntityEquipmentSlot.CHEST, chestplate);
-			} catch (Exception e) {
-				System.out.println("failed to add chestplate: " + e.getMessage());
-			}
-		}
-
-		if (leggings != null) {
-			try {
-				entity.setItemStackToSlot(EntityEquipmentSlot.LEGS, leggings);
-			} catch (Exception e) {
-				System.out.println("failed to add leggings: " + e.getMessage());
-			}
-		}
-		*/
 
 		world.spawnEntity(entity);
 		entity.playLivingSound();

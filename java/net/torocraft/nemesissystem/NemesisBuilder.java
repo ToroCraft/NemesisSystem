@@ -1,21 +1,24 @@
 package net.torocraft.nemesissystem;
 
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.UUID;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.torocraft.nemesissystem.Nemesis.Trait;
 
 public class NemesisBuilder {
 
 	private static Random rand = new Random();
 
-	private static final Item[] WEAPONS = {
+	private static final Item[] MELEE_WEAPONS = {
 			Items.STONE_SHOVEL, Items.STONE_AXE, Items.STONE_HOE, Items.STONE_PICKAXE, Items.STONE_SWORD,
 			Items.GOLDEN_SHOVEL, Items.GOLDEN_AXE, Items.GOLDEN_HOE, Items.GOLDEN_PICKAXE, Items.GOLDEN_SWORD,
 			Items.IRON_SHOVEL, Items.IRON_AXE, Items.IRON_HOE, Items.IRON_PICKAXE, Items.IRON_SWORD,
 			Items.DIAMOND_SHOVEL, Items.DIAMOND_AXE, Items.DIAMOND_HOE, Items.DIAMOND_PICKAXE, Items.DIAMOND_SWORD,
-			Items.SHIELD, Items.BOW
 	};
 
 	private static final Item[] HELMETS = {
@@ -49,7 +52,7 @@ public class NemesisBuilder {
 	public static Nemesis build(String mob, int level, int x, int z) {
 		Nemesis nemesis = new Nemesis();
 
-		//TODO random name
+		nemesis.setId(UUID.randomUUID());
 		nemesis.setName(NameBuilder.build());
 
 		nemesis.setLevel(level);
@@ -57,20 +60,50 @@ public class NemesisBuilder {
 		nemesis.setX(x);
 		nemesis.setZ(z);
 
-		//TODO random stats
+		nemesis.setTraits(new ArrayList<>());
+		//TODO nemesis.getTraits().add(Trait.values()[rand.nextInt(Trait.values().length)]);
+		nemesis.getTraits().add(Trait.POTION);
 
-		//TODO random name
+		nemesis.getHandInventory().set(0, new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]));
+		setOffhandItem(nemesis);
+		setArmor(nemesis);
 
-		//TODO random armor/weapons
-		nemesis.getHandInventory().set(0, new ItemStack(WEAPONS[rand.nextInt(WEAPONS.length)]));
-		nemesis.getHandInventory().set(1, new ItemStack(WEAPONS[rand.nextInt(WEAPONS.length)]));
+		return nemesis;
+	}
 
+	private static void setArmor(Nemesis nemesis) {
+		// TODO enchant armor (one enchant per level)
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.HEAD.getIndex(), new ItemStack(HELMETS[rand.nextInt(HELMETS.length)]));
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.CHEST.getIndex(), new ItemStack(CHEST_PLATES[rand.nextInt(CHEST_PLATES.length)]));
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.LEGS.getIndex(), new ItemStack(LEGGINGS[rand.nextInt(LEGGINGS.length)]));
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.FEET.getIndex(), new ItemStack(BOOTS[rand.nextInt(BOOTS.length)]));
+	}
 
-		return nemesis;
+	private static void setOffhandItem(Nemesis nemesis) {
+		ItemStack offhand;
+		switch(nemesis.getTraits().get(0)){
+		case HEAT:
+			offhand = new ItemStack(Blocks.TORCH);
+			break;
+		case ARROW:
+			offhand = new ItemStack(Items.BOW);
+			break;
+		case POTION:
+			offhand = new ItemStack(Items.POTIONITEM);
+			break;
+		case SUMMON:
+			offhand = new ItemStack(Items.STICK);
+			break;
+		case REFLECT:
+			offhand = ItemStack.EMPTY;
+			break;
+		case DOUBLE_MELEE:
+			offhand = new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]);
+			break;
+		default:
+			offhand = ItemStack.EMPTY;
+		}
+		nemesis.getHandInventory().set(1, offhand);
 	}
 
 }

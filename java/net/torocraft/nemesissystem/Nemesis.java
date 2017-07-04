@@ -1,14 +1,20 @@
 package net.torocraft.nemesissystem;
 
-import net.minecraft.inventory.ItemStackHelper;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class Nemesis {
+
+	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION}
+	// TODO: FIREBALL, LASER, HEAL, TELEPORT
 
 	private static final String NBT_NAME = "name";
 	private static final String NBT_LEVEL = "level";
@@ -17,17 +23,21 @@ public class Nemesis {
 	private static final String NBT_Z = "z";
 	private static final String NBT_ARMOR = "armor";
 	private static final String NBT_HANDS = "hands";
+	private static final String NBT_ID = "id";
+	private static final String NBT_TRAITS = "traits";
 
 	private String name;
 	private int level;
 	private String mob;
 	private int x;
 	private int z;
+	private UUID id;
+	private List<Trait> traits;
 
-	private NonNullList<ItemStack> handInventory = NonNullList.<ItemStack>withSize(2, ItemStack.EMPTY);
-	private NonNullList<ItemStack> armorInventory = NonNullList.<ItemStack>withSize(4, ItemStack.EMPTY);
+	//TODO spawned check
 
-	//TODO armor / attributes
+	private NonNullList<ItemStack> handInventory = NonNullList.withSize(2, ItemStack.EMPTY);
+	private NonNullList<ItemStack> armorInventory = NonNullList.withSize(4, ItemStack.EMPTY);
 
 	public void spawn(World world, BlockPos pos) {
 		SpawnUtil.spawn(world, this, pos);
@@ -39,17 +49,19 @@ public class Nemesis {
 
 	@Override
 	public String toString() {
-		return name + " (level:" + level + " chunk:" + x + "," + z + ")";
+		return name + " (level:" + level + " loc:" + x + "," + z + ") " + mob + " " + traits.get(0);
 	}
 
 	public void readFromNBT(NBTTagCompound c) {
-		handInventory = NonNullList.<ItemStack>withSize(2, ItemStack.EMPTY);
-		armorInventory = NonNullList.<ItemStack>withSize(4, ItemStack.EMPTY);
+		handInventory = NonNullList.withSize(2, ItemStack.EMPTY);
+		armorInventory = NonNullList.withSize(4, ItemStack.EMPTY);
 		name = c.getString(NBT_NAME);
 		level = c.getInteger(NBT_LEVEL);
 		mob = c.getString(NBT_MOB);
 		x = c.getInteger(NBT_X);
 		z = c.getInteger(NBT_Z);
+		id = c.getUniqueId(NBT_ID);
+		readTraits(c);
 		loadAllItems(NBT_HANDS, c, handInventory);
 		loadAllItems(NBT_ARMOR, c, armorInventory);
 	}
@@ -60,12 +72,40 @@ public class Nemesis {
 		c.setString(NBT_MOB, mob);
 		c.setInteger(NBT_X, x);
 		c.setInteger(NBT_Z, z);
+		c.setUniqueId(NBT_ID, id);
+		writeTraits(c);
 		saveAllItems(NBT_HANDS, c, handInventory);
 		saveAllItems(NBT_ARMOR, c, armorInventory);
 		return c;
 	}
 
-	public static NBTTagCompound saveAllItems(String key, NBTTagCompound tag, NonNullList<ItemStack> list) {
+	private void readTraits(NBTTagCompound c) {
+		traits = new ArrayList<>();
+		NBTTagList l = null;
+		try {
+			l = (NBTTagList) c.getTag(NBT_TRAITS);
+		} catch (Exception ignored) {
+
+		}
+		if (l == null) {
+			l = new NBTTagList();
+		}
+
+		for (int i = 0; i < l.tagCount(); i++) {
+			Nemesis nemesis = new Nemesis();
+			traits.add(Trait.values()[l.getIntAt(i)]);
+		}
+	}
+
+	private void writeTraits(NBTTagCompound c) {
+		NBTTagList l = new NBTTagList();
+		for (Trait t : traits) {
+			l.appendTag(new NBTTagInt(t.ordinal()));
+		}
+		c.setTag(NBT_TRAITS, l);
+	}
+
+	public static void saveAllItems(String key, NBTTagCompound tag, NonNullList<ItemStack> list) {
 		NBTTagList nbttaglist = new NBTTagList();
 
 		for (int i = 0; i < list.size(); ++i) {
@@ -82,8 +122,6 @@ public class Nemesis {
 		if (!nbttaglist.hasNoTags()) {
 			tag.setTag(key, nbttaglist);
 		}
-
-		return tag;
 	}
 
 	public static void loadAllItems(String key, NBTTagCompound tag, NonNullList<ItemStack> list) {
@@ -145,5 +183,21 @@ public class Nemesis {
 
 	public NonNullList<ItemStack> getArmorInventory() {
 		return armorInventory;
+	}
+
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
+	public List<Trait> getTraits() {
+		return traits;
+	}
+
+	public void setTraits(List<Trait> traits) {
+		this.traits = traits;
 	}
 }

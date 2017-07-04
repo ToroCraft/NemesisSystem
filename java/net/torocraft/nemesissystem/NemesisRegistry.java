@@ -3,6 +3,7 @@ package net.torocraft.nemesissystem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.storage.WorldSavedData;
@@ -36,6 +37,17 @@ public class NemesisRegistry extends WorldSavedData {
 		return new ArrayList<>(nemeses);
 	}
 
+	public Nemesis getById(UUID id) {
+		if(id == null){
+			return null;
+		}
+		for (Nemesis nemesis : nemeses) {
+			if (id.equals(nemesis.getId())) {
+				return nemesis;
+			}
+		}
+		return null;
+	}
 
 	public void clear() {
 		nemeses.clear();
