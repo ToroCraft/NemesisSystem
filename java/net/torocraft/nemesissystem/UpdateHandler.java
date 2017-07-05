@@ -55,7 +55,7 @@ public class UpdateHandler {
 			return;
 		}
 
-		UUID id = event.getEntity().getEntityData().getUniqueId(SpawnUtil.NBT_ID);
+		UUID id = event.getEntity().getEntityData().getUniqueId(EntityDecorator.NBT_ID);
 
 		if (SpawnHandler.EMPTY_UUID.equals(id) || id == null) {
 			return;
@@ -114,6 +114,8 @@ public class UpdateHandler {
 		if (rand.nextInt(5) != 0) {
 			return;
 		}
+
+		// TODO check total number of near by mobs before spawning new ones
 
 		int roll = rand.nextInt(100);
 

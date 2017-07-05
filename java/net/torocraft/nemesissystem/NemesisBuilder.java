@@ -26,6 +26,7 @@ public class NemesisBuilder {
 			Items.GOLDEN_HELMET,
 			Items.IRON_HELMET,
 			Items.DIAMOND_HELMET,
+			Items.CHAINMAIL_HELMET
 	};
 
 	private static final Item[] CHEST_PLATES = {
@@ -33,6 +34,7 @@ public class NemesisBuilder {
 			Items.GOLDEN_CHESTPLATE,
 			Items.IRON_CHESTPLATE,
 			Items.DIAMOND_CHESTPLATE,
+			Items.CHAINMAIL_CHESTPLATE
 	};
 
 	private static final Item[] LEGGINGS = {
@@ -40,6 +42,7 @@ public class NemesisBuilder {
 			Items.GOLDEN_LEGGINGS,
 			Items.IRON_LEGGINGS,
 			Items.DIAMOND_LEGGINGS,
+			Items.CHAINMAIL_LEGGINGS
 	};
 
 	private static final Item[] BOOTS = {
@@ -47,6 +50,7 @@ public class NemesisBuilder {
 			Items.GOLDEN_BOOTS,
 			Items.IRON_BOOTS,
 			Items.DIAMOND_BOOTS,
+			Items.CHAINMAIL_BOOTS
 	};
 
 	public static Nemesis build(String mob, int level, int x, int z) {
@@ -73,6 +77,8 @@ public class NemesisBuilder {
 
 	private static void setArmor(Nemesis nemesis) {
 		// TODO enchant armor (one enchant per level)
+
+		// TODO design armor sets
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.HEAD.getIndex(), new ItemStack(HELMETS[rand.nextInt(HELMETS.length)]));
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.CHEST.getIndex(), new ItemStack(CHEST_PLATES[rand.nextInt(CHEST_PLATES.length)]));
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.LEGS.getIndex(), new ItemStack(LEGGINGS[rand.nextInt(LEGGINGS.length)]));
@@ -81,7 +87,7 @@ public class NemesisBuilder {
 
 	private static void setOffhandItem(Nemesis nemesis) {
 		ItemStack offhand;
-		switch(nemesis.getTraits().get(0)){
+		switch (nemesis.getTraits().get(0)) {
 		case HEAT:
 			offhand = new ItemStack(Blocks.TORCH);
 			break;

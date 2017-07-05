@@ -56,7 +56,7 @@ public class SpawnHandler {
 	}
 
 	private boolean modelShouldBeScaled(RenderLivingEvent event) {
-		if (event.getEntity().getEntityData().getUniqueId(SpawnUtil.NBT_ID) != null) {
+		if (event.getEntity().getEntityData().getUniqueId(EntityDecorator.NBT_ID) != null) {
 			return false;
 		}
 		if (!(event.getRenderer().getMainModel() instanceof ModelBiped)) {
@@ -67,7 +67,7 @@ public class SpawnHandler {
 
 	// TODO handle nemesis death
 
-	// TODO handel player death
+	// TODO handle player death
 
 	@SubscribeEvent
 	public void handleSpawn(EntityJoinWorldEvent event) {
@@ -85,17 +85,33 @@ public class SpawnHandler {
 			return;
 		}
 
+
+
 		// TODO sound horn
 
 		// TODO chat to near by players
 
-		SpawnUtil.convert(event.getEntity(), nemesis);
+		EntityDecorator.decorate((EntityLiving)event.getEntity(), nemesis);
+
+		spawnBodyGuard((EntityLiving)event.getEntity(), nemesis);
 
 		System.out.println("Spawning: " + event.getEntity().getName() + " at " + event.getEntity().getPosition());
 	}
 
+	private void spawnBodyGuard(EntityLiving entity, Nemesis nemesis) {
+		// TODO spawn 10 per level
+
+		// TODO add ai to keep close to nemesis
+
+		// TODO when nemesis is hit, closer body guards attack with a random factor
+
+		// TODO nemesis can heal body guards?
+
+
+	}
+
 	private boolean hasId(EntityJoinWorldEvent event) {
-		UUID id = event.getEntity().getEntityData().getUniqueId(SpawnUtil.NBT_ID);
+		UUID id = event.getEntity().getEntityData().getUniqueId(EntityDecorator.NBT_ID);
 		return id != null && !id.equals(EMPTY_UUID);
 	}
 
@@ -150,7 +166,7 @@ public class SpawnHandler {
 		int distance = 100;
 		List<EntityLiving> entities = world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));
 		for(EntityLiving e : entities){
-			if(e.getTags().contains(SpawnUtil.TAG)){
+			if(e.getTags().contains(EntityDecorator.TAG)){
 				return true;
 			}
 		}
