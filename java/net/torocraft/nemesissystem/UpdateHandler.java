@@ -6,6 +6,7 @@ import java.util.UUID;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityEnderPearl;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityWitch;
@@ -94,7 +95,55 @@ public class UpdateHandler {
 		case POTION:
 			handlePotionTraitUpdate(entity, nemesis, trait);
 			return;
+		case TELEPORT:
+			handleTeleportTraitUpdate(entity, nemesis, trait);
+			return;
 		}
+	}
+
+	private void handleTeleportTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
+		World world = entity.world;
+		Random rand = entity.getRNG();
+
+		if (world.getTotalWorldTime() % 40 != 0) {
+			return;
+		}
+
+		EntityLivingBase target = entity.getAttackTarget();
+
+		if (target == null) {
+			return;
+		}
+
+		if(!entity.getEntitySenses().canSee(target)) {
+			return;
+		}
+
+		int charge = 2 + rand.nextInt(5);
+
+		EntityEnderPearl pearl = new EntityEnderPearl(world, entity);
+
+		double dX = target.posX - entity.posX;
+		double dY = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - pearl.posY;
+		double dZ = target.posZ - entity.posZ;
+
+		double distanceSq = dX * dX + dY * dY + dZ * dZ;
+
+		if(distanceSq < 20){
+			return;
+		}
+
+		double levelDistance = MathHelper.sqrt(dX * dX + dZ * dZ);
+
+		pearl.setThrowableHeading(dX, dY + levelDistance * 0.20000000298023224D, dZ, 1.6F,
+				(float) (14 - world.getDifficulty().getDifficultyId() * 4));
+
+		int power = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.POWER, entity);
+		int punch = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.PUNCH, entity);
+
+		entity.playSound(SoundEvents.ENTITY_ENDERPEARL_THROW, 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.8F));
+
+		world.spawnEntity(pearl);
 	}
 
 	private void handleSummonTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {

@@ -66,7 +66,7 @@ public class NemesisBuilder {
 
 		nemesis.setTraits(new ArrayList<>());
 		//TODO nemesis.getTraits().add(Trait.values()[rand.nextInt(Trait.values().length)]);
-		nemesis.getTraits().add(Trait.SUMMON);
+		nemesis.getTraits().add(Trait.TELEPORT);
 
 		nemesis.getHandInventory().set(0, new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]));
 		setOffhandItem(nemesis);
@@ -102,6 +102,9 @@ public class NemesisBuilder {
 			break;
 		case REFLECT:
 			offhand = ItemStack.EMPTY;
+			break;
+		case TELEPORT:
+			offhand = new ItemStack(Items.ENDER_PEARL);
 			break;
 		case DOUBLE_MELEE:
 			offhand = new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]);

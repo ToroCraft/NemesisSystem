@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 public class Nemesis {
 
-	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, SHEILD}
+	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, SHIELD, TELEPORT}
 	// TODO: FIREBALL, LASER, HEAL, TELEPORT, POTION PROTECTION
 
 	private static final String NBT_NAME = "name";

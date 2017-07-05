@@ -65,7 +65,7 @@ public class SpawnHandler {
 		return true;
 	}
 
-	// TODO handle nemesis death
+	// TODO handle nemesis death (drop loot)
 
 	// TODO handle player death
 
@@ -82,6 +82,7 @@ public class SpawnHandler {
 		Nemesis nemesis = getNemesisForSpawn(event);
 
 		if (nemesis == null) {
+			event.setCanceled(true);
 			return;
 		}
 
