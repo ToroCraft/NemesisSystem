@@ -1,10 +1,16 @@
 package net.torocraft.nemesissystem;
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.monster.EntityWitch;
+import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.entity.projectile.EntityTippedArrow;
@@ -13,9 +19,11 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -76,14 +84,63 @@ public class UpdateHandler {
 			handleArrowTraitUpdate(entity, nemesis, trait);
 			return;
 		case SUMMON:
+			handleSummonTraitUpdate(entity, nemesis, trait);
 			return;
 		case REFLECT:
 			return;
 		case HEAT:
+			handleHeatTraitUpdate(entity, nemesis, trait);
 			return;
 		case POTION:
 			handlePotionTraitUpdate(entity, nemesis, trait);
 			return;
+		}
+	}
+
+	private void handleSummonTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
+		World world = entity.world;
+		Random rand = entity.getRNG();
+
+		EntityLivingBase target = entity.getAttackTarget();
+
+		if (target == null) {
+			return;
+		}
+
+		if(!entity.getEntitySenses().canSee(target)) {
+			return;
+		}
+
+		if (rand.nextInt(5) != 0) {
+			return;
+		}
+
+		int roll = rand.nextInt(100);
+
+		EntityMob mob;
+
+		if (roll < 45) {
+			mob = new EntitySkeleton(world);
+		} else if (roll < 90) {
+			mob = new EntityZombie(world);
+		} else {
+			mob = new EntityWitch(world);
+		}
+
+		mob.setPosition(entity.posX, entity.posY, entity.posZ);
+		world.spawnEntity(mob);
+	}
+
+	private void handleHeatTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
+		World world = entity.world;
+		Random rand = entity.getRNG();
+		int heatDistance = 8;
+
+		List<EntityPlayer> playersToCook = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(entity.getPosition()).grow(heatDistance, heatDistance, heatDistance));
+		for(EntityPlayer player : playersToCook){
+			if(entity.getEntitySenses().canSee(player)) {
+				player.setFire(10);
+			}
 		}
 	}
 
@@ -94,6 +151,10 @@ public class UpdateHandler {
 		EntityLivingBase target = entity.getAttackTarget();
 
 		if (target == null) {
+			return;
+		}
+
+		if(!entity.getEntitySenses().canSee(target)) {
 			return;
 		}
 
@@ -134,6 +195,10 @@ public class UpdateHandler {
 			return;
 		}
 
+		if(!entity.getEntitySenses().canSee(target)) {
+			return;
+		}
+
 		int charge = 2 + rand.nextInt(10);
 
 		EntityArrow arrow = new EntityTippedArrow(world, entity);
@@ -161,9 +226,7 @@ public class UpdateHandler {
 			arrow.setKnockbackStrength(punch);
 		}
 
-		if (rand.nextBoolean()) {
-			arrow.setFire(100);
-		}
+		// TODO bow enchants
 
 		entity.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.8F));
 

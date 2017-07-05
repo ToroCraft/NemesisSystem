@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 public class SpawnUtil {
 
 	public static final String NBT_ID = "torocraft_nemesis_id";
+	public static final String TAG = "torocraft_nemesis";
 
 	/**
 	 * Convert the provided entity into the given nemesis
@@ -39,6 +40,7 @@ public class SpawnUtil {
 	}
 
 	private static void decorateEntity(EntityLivingBase entity, Nemesis nemesis) {
+		entity.addTag(TAG);
 		entity.getEntityData().setUniqueId(NBT_ID, nemesis.getId());
 
 		entity.setCustomNameTag(nemesis.getName());

@@ -10,10 +10,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderLivingEvent;
@@ -69,7 +71,7 @@ public class SpawnHandler {
 
 	@SubscribeEvent
 	public void handleSpawn(EntityJoinWorldEvent event) {
-		if (!nemesisClassEntity(event.getEntity())) {
+		if (event.getEntity().world.isRemote || !nemesisClassEntity(event.getEntity())) {
 			return;
 		}
 
@@ -109,9 +111,23 @@ public class SpawnHandler {
 
 		// TODO check location for unspawned nemeses
 
-		// must be in line of sight
 
-		// must be not other nemeses in the area
+		if (!(event.getEntity() instanceof EntityLiving)) {
+			return null;
+		}
+
+		EntityLiving entity = (EntityLiving) event.getEntity();
+		World world = entity.world;
+		Random rand = entity.getRNG();
+
+		if(!playerInRange(entity, world)){
+			return null;
+		}
+
+		if(otherNemesisNearby(entity, world)){
+			System.out.println("found other nemesis nearby");
+			return null;
+		}
 
 		List<Nemesis> nemeses = NemesisRegistryProvider.get(event.getEntity().world).list();
 
@@ -121,15 +137,35 @@ public class SpawnHandler {
 
 		String entityType = getEntityType(event.getEntity());
 
-		System.out.println(entityType);
-
 		nemeses.removeIf(nemesis -> !nemesis.getMob().equals(entityType));
 
-		if (nemeses == null || nemeses.size() < 1) {
+		if (nemeses.size() < 1) {
 			return null;
 		}
 
 		return nemeses.get(event.getEntity().world.rand.nextInt(nemeses.size()));
+	}
+
+	private boolean otherNemesisNearby(EntityLiving entity, World world) {
+		int distance = 100;
+		List<EntityLiving> entities = world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));
+		for(EntityLiving e : entities){
+			if(e.getTags().contains(SpawnUtil.TAG)){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean playerInRange(EntityLiving entity, World world) {
+		int distance = 100;
+		List<EntityPlayer> players = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));
+		for(EntityPlayer player : players){
+			if(entity.getEntitySenses().canSee(player)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static String getEntityType(Entity entityIn) {
