@@ -39,6 +39,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -75,25 +76,59 @@ public class UpdateHandler {
 		}
 	}
 
-	private void handleBodyGuardUpdate(LivingUpdateEvent event) {
-		//Nemesis nemesis = loadNemesisFromEntity(event);
+
+	@SubscribeEvent
+	public void stopBodyGuardsFromAttackingNemeses(LivingSetAttackTargetEvent event) {
+		World world = event.getEntity().getEntityWorld();
+
+		if (world.isRemote) {
+			return;
+		}
+
+		if (event.getTarget() == null) {
+			return;
+		}
+
 		if (!(event.getEntity() instanceof EntityCreature)) {
 			return;
 		}
 
-		//TODO don't allow targeting of nemesis boss
+		if(!event.getEntity().getTags().contains(SpawnHandler.TAG_BODY_GUARD)){
+			return;
+		}
+
+		if (event.getTarget().getTags().contains(EntityDecorator.TAG)){
+			((EntityCreature)event.getEntityLiving()).setAttackTarget(null);
+		}
+	}
+
+	private void handleBodyGuardUpdate(LivingUpdateEvent event) {
+		if (!(event.getEntity() instanceof EntityCreature)) {
+			return;
+		}
 
 		EntityCreature bodyGuard = (EntityCreature) event.getEntity();
 		UUID id = bodyGuard.getEntityData().getUniqueId(EntityDecorator.NBT_ID);
 		EntityLiving nemesisEntity = findNemesisAround(event.getEntity().world, id, event.getEntity().getPosition());
 
 		if(nemesisEntity == null){
-			// TODO despawn?  Run then despawn?
-			bodyGuard.setHealth(0);
+			flee(bodyGuard);
 			return;
 		}
 
 		followNemesisBoss(bodyGuard, nemesisEntity);
+	}
+
+	private void flee(EntityCreature bodyGuard) {
+		bodyGuard.removeTag(SpawnHandler.TAG_BODY_GUARD);
+		SpawnHandler.setFollowSpeed(bodyGuard, 2);
+		int distance = 1000;
+		int degrees = bodyGuard.getRNG().nextInt(360);
+		int x = distance * (int) Math.round(Math.cos(Math.toRadians(degrees)));
+		int z = distance * (int) Math.round(Math.sin(Math.toRadians(degrees)));
+		BlockPos from = bodyGuard.getPosition();
+		BlockPos to = new BlockPos(from.getX() + x, from.getY(), from.getZ() + z);
+		bodyGuard.setHomePosAndDistance(to, 50);
 	}
 
 	private void followNemesisBoss(EntityCreature bodyGuard, EntityLiving nemesisEntity) {

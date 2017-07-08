@@ -133,7 +133,7 @@ public class SpawnHandler {
 
 	}
 
-	private void setFollowSpeed(EntityCreature bodyGuard, double followSpeed) {
+	public static void setFollowSpeed(EntityCreature bodyGuard, double followSpeed) {
 		EntityAIMoveTowardsRestriction ai = null;
 		for(EntityAITaskEntry entry : bodyGuard.tasks.taskEntries){
 			if(entry.action instanceof EntityAIMoveTowardsRestriction){
