@@ -39,10 +39,6 @@ public class Nemesis {
 	private NonNullList<ItemStack> handInventory = NonNullList.withSize(2, ItemStack.EMPTY);
 	private NonNullList<ItemStack> armorInventory = NonNullList.withSize(4, ItemStack.EMPTY);
 
-	public void spawn(World world, BlockPos pos) {
-		SpawnUtil.spawn(world, this, pos);
-	}
-
 	public void register(World world) {
 		NemesisRegistryProvider.get(world).register(this);
 	}

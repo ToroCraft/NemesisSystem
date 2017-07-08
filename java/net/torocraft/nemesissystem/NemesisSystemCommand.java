@@ -51,9 +51,6 @@ public class NemesisSystemCommand extends CommandBase {
 		case "list":
 			list(server, sender, args);
 			return;
-		case "spawn":
-			spawn(server, sender, args);
-			return;
 		case "clear":
 			clear(server, sender, args);
 			return;
@@ -65,28 +62,6 @@ public class NemesisSystemCommand extends CommandBase {
 	private void clear(MinecraftServer server, ICommandSender sender, String[] args) {
 		NemesisRegistryProvider.get(server.getWorld(0)).clear();
 	}
-
-	private void spawn(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (args.length < 2) {
-			throw new WrongUsageException("commands.nemesis_system.usage");
-		}
-
-		StringBuilder s = new StringBuilder();
-		for(int i = 1; i < args.length; i++){
-			s.append(" ").append(args[i]);
-		}
-		String name = s.toString().trim();
-		Nemesis nemesis = NemesisRegistryProvider.get(server.getWorld(senderDimId(sender))).getByName(name);
-		BlockPos pos = senderPos(sender);
-
-		if(nemesis != null){
-			SpawnUtil.spawn(server.getWorld(senderDimId(sender)), nemesis, pos);
-			notifyCommandListener(sender, this, "commands.nemesis_system.success.spawn", name, pos);
-		}else{
-			notifyCommandListener(sender, this, "commands.nemesis_system.not_found.spawn", name);
-		}
-	}
-
 
 	private void list(MinecraftServer server, ICommandSender sender, String[] args) {
 		// TODO dimID support
@@ -146,14 +121,12 @@ public class NemesisSystemCommand extends CommandBase {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
 		if (args.length == 1) {
-			return getListOfStringsMatchingLastWord(args, "create", "list", "spawn", "clear");
+			return getListOfStringsMatchingLastWord(args, "create", "list", "clear");
 		}
 		String command = args[0];
 		switch (command) {
 		case "create":
 			return tabCompletionsForCreate(server, args);
-		case "spawn":
-			return tabCompletionsForSpawn(server, sender, args);
 		default:
 			return Collections.emptyList();
 		}

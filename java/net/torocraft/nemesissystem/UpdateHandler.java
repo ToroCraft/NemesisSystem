@@ -1,11 +1,18 @@
 package net.torocraft.nemesissystem;
 
+import com.google.common.base.Predicate;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
+import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
+import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.item.EntityEnderPearl;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -21,16 +28,21 @@ import net.minecraft.init.MobEffects;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.torocraft.nemesissystem.Nemesis.Trait;
 
 @EventBusSubscriber
@@ -41,7 +53,7 @@ public class UpdateHandler {
 	}
 
 	@SubscribeEvent
-	public void nemesisUpdate(LivingUpdateEvent event) {
+	public void livingUpdate(LivingUpdateEvent event) {
 		World world = event.getEntity().getEntityWorld();
 
 		if (world.isRemote) {
@@ -56,13 +68,61 @@ public class UpdateHandler {
 			return;
 		}
 
-		UUID id = event.getEntity().getEntityData().getUniqueId(EntityDecorator.NBT_ID);
+		if(event.getEntity().getTags().contains(SpawnHandler.TAG_BODY_GUARD)){
+			handleBodyGuardUpdate(event);
+		}else if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
+			handleNemesisUpdate(event);
+		}
+	}
 
-		if (SpawnHandler.EMPTY_UUID.equals(id) || id == null) {
+	private void handleBodyGuardUpdate(LivingUpdateEvent event) {
+		//Nemesis nemesis = loadNemesisFromEntity(event);
+		if (!(event.getEntity() instanceof EntityCreature)) {
 			return;
 		}
 
-		Nemesis nemesis = NemesisRegistryProvider.get(event.getEntity().getEntityWorld()).getById(id);
+		//TODO don't allow targeting of nemesis boss
+
+		EntityCreature bodyGuard = (EntityCreature) event.getEntity();
+		UUID id = bodyGuard.getEntityData().getUniqueId(EntityDecorator.NBT_ID);
+		EntityLiving nemesisEntity = findNemesisAround(event.getEntity().world, id, event.getEntity().getPosition());
+
+		if(nemesisEntity == null){
+			// TODO despawn?  Run then despawn?
+			bodyGuard.setHealth(0);
+			return;
+		}
+
+		followNemesisBoss(bodyGuard, nemesisEntity);
+	}
+
+	private void followNemesisBoss(EntityCreature bodyGuard, EntityLiving nemesisEntity) {
+		bodyGuard.setHomePosAndDistance(nemesisEntity.getPosition(), 2);
+	}
+
+
+
+	private EntityLiving findNemesisAround(World world, UUID id, BlockPos position) {
+		int distance = 50;
+
+		List<EntityLiving> entities = world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(position).grow(distance, distance, distance),
+				(EntityLiving searchEntity) -> {
+					if(!searchEntity.getTags().contains(EntityDecorator.TAG)){
+						return false;
+					}
+					return id.equals(searchEntity.getEntityData().getUniqueId(EntityDecorator.NBT_ID));
+				}
+		);
+
+		if(entities.size() < 1){
+			return null;
+		}
+
+		return entities.get(0);
+	}
+
+	private void handleNemesisUpdate(LivingUpdateEvent event) {
+		Nemesis nemesis = loadNemesisFromEntity(event);
 
 		if (nemesis == null) {
 			return;
@@ -75,6 +135,11 @@ public class UpdateHandler {
 		for (Trait trait : nemesis.getTraits()) {
 			handleTraitUpdate(entity, nemesis, trait);
 		}
+	}
+
+	private Nemesis loadNemesisFromEntity(LivingUpdateEvent event) {
+		UUID id = event.getEntity().getEntityData().getUniqueId(EntityDecorator.NBT_ID);
+		return NemesisRegistryProvider.get(event.getEntity().getEntityWorld()).getById(id);
 	}
 
 	private void handleTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
@@ -104,6 +169,8 @@ public class UpdateHandler {
 	private void handleTeleportTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
 		World world = entity.world;
 		Random rand = entity.getRNG();
+
+		//TODO teleport away when hurt (back to body guard?)
 
 		if (world.getTotalWorldTime() % 40 != 0) {
 			return;

@@ -7,9 +7,13 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
+import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityTippedArrow;
@@ -25,6 +29,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -32,6 +37,9 @@ import net.torocraft.nemesissystem.Nemesis.Trait;
 
 public class SpawnHandler {
 	public static final UUID EMPTY_UUID = new UUID(0, 0);
+
+	public static final String TAG_BODY_GUARD = "nemesis_body_guard";
+
 
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(new SpawnHandler());
@@ -75,18 +83,19 @@ public class SpawnHandler {
 			return;
 		}
 
-		if (hasId(event)) {
+		if(event.getEntity().getTags().contains(EntityDecorator.TAG)){
+			return;
+		}
+
+		if(event.getEntity().getTags().contains(TAG_BODY_GUARD)){
 			return;
 		}
 
 		Nemesis nemesis = getNemesisForSpawn(event);
 
 		if (nemesis == null) {
-			event.setCanceled(true);
 			return;
 		}
-
-
 
 		// TODO sound horn
 
@@ -99,8 +108,21 @@ public class SpawnHandler {
 		System.out.println("Spawning: " + event.getEntity().getName() + " at " + event.getEntity().getPosition());
 	}
 
+
+
 	private void spawnBodyGuard(EntityLiving entity, Nemesis nemesis) {
-		// TODO spawn 10 per level
+
+		int count =  5 + nemesis.getLevel() * 5;
+
+		for(int i = 0; i < count; i++){
+			// TODO spawn different body guards based on nemesis mob type
+			EntityZombie bodyGuard = new EntityZombie(entity.getEntityWorld());
+			bodyGuard.addTag(TAG_BODY_GUARD);
+			bodyGuard.getEntityData().setUniqueId(EntityDecorator.NBT_ID, nemesis.getId());
+			//TODO armor based on title
+			SpawnUtil.spawnEntityLiving(entity.getEntityWorld(), bodyGuard, entity.getPosition(), 10);
+			setFollowSpeed(bodyGuard, 1.5);
+		}
 
 		// TODO add ai to keep close to nemesis
 
@@ -111,9 +133,19 @@ public class SpawnHandler {
 
 	}
 
-	private boolean hasId(EntityJoinWorldEvent event) {
-		UUID id = event.getEntity().getEntityData().getUniqueId(EntityDecorator.NBT_ID);
-		return id != null && !id.equals(EMPTY_UUID);
+	private void setFollowSpeed(EntityCreature bodyGuard, double followSpeed) {
+		EntityAIMoveTowardsRestriction ai = null;
+		for(EntityAITaskEntry entry : bodyGuard.tasks.taskEntries){
+			if(entry.action instanceof EntityAIMoveTowardsRestriction){
+				ai = (EntityAIMoveTowardsRestriction) entry.action;
+			}
+		}
+		if(ai == null){
+			System.out.println("guard ai not found");
+			return;
+		}
+		//not sure field_75433_e is the correct name for EntityAIMoveTowardsRestriction.movementSpeed
+		ObfuscationReflectionHelper.setPrivateValue(EntityAIMoveTowardsRestriction.class, ai, followSpeed, "field_75433_e", "movementSpeed");
 	}
 
 	private boolean nemesisClassEntity(Entity entity) {
@@ -128,7 +160,6 @@ public class SpawnHandler {
 
 		// TODO check location for unspawned nemeses
 
-
 		if (!(event.getEntity() instanceof EntityLiving)) {
 			return null;
 		}
@@ -142,7 +173,6 @@ public class SpawnHandler {
 		}
 
 		if(otherNemesisNearby(entity, world)){
-			System.out.println("found other nemesis nearby");
 			return null;
 		}
 
