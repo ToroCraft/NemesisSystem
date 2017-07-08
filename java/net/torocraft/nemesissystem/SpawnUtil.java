@@ -1,15 +1,12 @@
 package net.torocraft.nemesissystem;
 
 import java.util.Random;
-import net.minecraft.block.BlockBush;
-import net.minecraft.block.state.IBlockState;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.init.Blocks;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -50,6 +47,7 @@ public class SpawnUtil {
 		findAndSetSuitableSpawnLocation(entity, pos, spawnRadius);
 		world.spawnEntity(entity);
 		entity.playLivingSound();
+		world.addWeatherEffect(new EntityLightningBolt(world, x, y, z, false));
 		return true;
 	}
 
