@@ -16,6 +16,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -27,6 +28,7 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 public class SpawnHandler {
 	public static final UUID EMPTY_UUID = new UUID(0, 0);
+	public static final int NEMESIS_COUNT = 4;
 
 	public static final String TAG_BODY_GUARD = "nemesis_body_guard";
 
@@ -36,7 +38,7 @@ public class SpawnHandler {
 
 	@SubscribeEvent
 	public void handleSpawn(EntityJoinWorldEvent event) {
-		if (event.getEntity().world.isRemote || !(event.getEntity() instanceof EntityCreature) || !nemesisClassEntity(event.getEntity())) {
+		if (event.getEntity().world.isRemote || !(event.getEntity() instanceof EntityCreature) || !isNemesisClassEntity(event.getEntity())) {
 			return;
 		}
 
@@ -67,26 +69,35 @@ public class SpawnHandler {
 		System.out.println("Spawning: " + event.getEntity().getName() + " at " + event.getEntity().getPosition());
 	}
 
-	private final int NEMESIS_COUNT = 16;
+
 
 	private void handleRandomPromotions(World world, EntityCreature entity) {
 		NemesisRegistry registry = NemesisRegistryProvider.get(world);
 
 		List<Nemesis> nemeses = registry.list();
-		nemeses.removeIf((Nemesis n) -> n.isDead());
+		nemeses.removeIf(Nemesis::isDead);
 
 		if (nemeses.size() >= NEMESIS_COUNT / 2) {
 			return;
 		}
 
 		promoteRandomNemesis(entity, registry, nemeses);
-		createANewNemesis(entity, registry);
+		createAndRegisterNemesis(entity, getRandomLocationAround(entity));
 	}
 
-	private void createANewNemesis(EntityCreature entity, NemesisRegistry registry) {
-		Nemesis nemesis = NemesisBuilder.build(getEntityType(entity), 1, (int) entity.posX, (int) entity.posZ);
-		registry.register(nemesis);
-		System.out.println("New Nemesis created: " + nemesis.toString());
+	public static Nemesis createAndRegisterNemesis(EntityCreature entity, BlockPos nemesisLocation) {
+		Nemesis nemesis = NemesisBuilder.build(getEntityType(entity), 1, nemesisLocation.getX(), nemesisLocation.getZ());
+		NemesisRegistryProvider.get(entity.world).register(nemesis);
+		return nemesis;
+	}
+
+	private static BlockPos getRandomLocationAround(EntityCreature entity) {
+		int distance = 1000 + entity.getRNG().nextInt(4000);
+		int degrees = entity.getRNG().nextInt(360);
+		int x = distance * (int) Math.round(Math.cos(Math.toRadians(degrees)));
+		int z = distance * (int) Math.round(Math.sin(Math.toRadians(degrees)));
+		BlockPos here = entity.getPosition();
+		return new BlockPos(here.getX() + x, here.getY(), here.getZ() + z);
 	}
 
 	private void promoteRandomNemesis(EntityCreature entity, NemesisRegistry registry, List<Nemesis> nemeses) {
@@ -145,7 +156,7 @@ public class SpawnHandler {
 		ObfuscationReflectionHelper.setPrivateValue(EntityAIMoveTowardsRestriction.class, ai, followSpeed, "field_75433_e", "movementSpeed");
 	}
 
-	private boolean nemesisClassEntity(Entity entity) {
+	public static boolean isNemesisClassEntity(Entity entity) {
 		// TODO blacklist
 
 		// TODO whitelist
@@ -154,8 +165,6 @@ public class SpawnHandler {
 	}
 
 	private Nemesis getNemesisForSpawn(EntityEvent event) {
-
-		// TODO check location for unspawned nemeses
 
 		if (!(event.getEntity() instanceof EntityLiving)) {
 			return null;
@@ -175,13 +184,27 @@ public class SpawnHandler {
 
 		List<Nemesis> nemeses = NemesisRegistryProvider.get(event.getEntity().world).list();
 
+		nemeses.removeIf(Nemesis::isLoaded);
+		nemeses.removeIf(Nemesis::isDead);
+
 		if (nemeses == null || nemeses.size() < 1) {
 			return null;
 		}
 
 		String entityType = getEntityType(event.getEntity());
 
-		nemeses.removeIf(nemesis -> !nemesis.getMob().equals(entityType));
+		nemeses.removeIf(nemesis -> {
+
+			if(!nemesis.getMob().equals(entityType)){
+				return true;
+			}
+
+			if(entity.getDistanceSq(nemesis.getX(), entity.posY, nemesis.getZ()) > nemesis.getRangeSq()){
+				return true;
+			}
+
+			return false;
+		});
 
 		if (nemeses.size() < 1) {
 			return null;

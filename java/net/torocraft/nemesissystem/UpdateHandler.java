@@ -1,5 +1,7 @@
 package net.torocraft.nemesissystem;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -32,12 +34,14 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
+import net.minecraftforge.event.world.ChunkEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.Nemesis.Trait;
@@ -47,6 +51,35 @@ public class UpdateHandler {
 
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(new UpdateHandler());
+	}
+
+	@SubscribeEvent
+	public void cleanUp(ChunkEvent.Load event) {
+		findNemesesInChunk(event.getWorld(), event.getChunk()).forEach(UpdateHandler::unLoadNemesis);
+	}
+
+	@SubscribeEvent
+	public void cleanUp(ChunkEvent.Unload event) {
+		findNemesesInChunk(event.getWorld(), event.getChunk()).forEach(UpdateHandler::unLoadNemesis);
+	}
+
+	private static void unLoadNemesis(EntityCreature entity) {
+		Nemesis nemesis = loadNemesisFromEntity(entity);
+		if (nemesis == null) {
+			return;
+		}
+		entity.setDead();
+		NemesisRegistryProvider.get(entity.world).unload(nemesis.getId());
+
+		// TODO this doesn't seem to work well, maybe clean them up directly on load and/or unload
+		findNemesisBodyGuards(entity.world, nemesis.getId(), entity.getPosition()).forEach((EntityCreature e) -> e.setDead());
+	}
+
+	private static List<EntityCreature> findNemesesInChunk(World world, Chunk chunk) {
+		int x = chunk.x * 16;
+		int z = chunk.z * 16;
+		AxisAlignedBB chunkBox = new AxisAlignedBB(x, 0, z, x + 16, world.getActualHeight(), z + 16);
+		return world.getEntitiesWithinAABB(EntityCreature.class, chunkBox, (EntityLiving searchEntity) -> isNemesis(searchEntity));
 	}
 
 	@SubscribeEvent
@@ -114,13 +147,69 @@ public class UpdateHandler {
 
 		World world = event.getEntity().getEntityWorld();
 
-		if (world.isRemote || !(event.getEntity() instanceof EntityCreature)) {
+		if(world.isRemote){
+			return;
+		}
+
+		Entity slayer = event.getSource().getTrueSource();
+
+		if (event.getEntity() instanceof EntityPlayer && slayer instanceof  EntityCreature) {
+			System.out.println("player death event");
+			handlePlayerDeath((EntityPlayer) event.getEntity(), (EntityCreature) slayer);
+			return;
+		}
+
+		if (!(event.getEntity() instanceof EntityCreature)) {
 			return;
 		}
 
 		if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
-			handleNemesisDeath((EntityCreature) event.getEntity(), event.getSource().getTrueSource());
+			System.out.println("nemesis death event");
+			handleNemesisDeath((EntityCreature) event.getEntity(), slayer);
 		}
+	}
+
+	private void handlePlayerDeath(EntityPlayer player, EntityCreature slayer) {
+		if (slayer == null) {
+			return;
+		}
+		Nemesis nemesis = loadNemesisFromEntity(slayer);
+
+		if(nemesis == null){
+			if (SpawnHandler.isNemesisClassEntity(slayer)) {
+				Nemesis newNemesis = SpawnHandler.createAndRegisterNemesis(slayer, slayer.getPosition());
+				nemesisDuelIfCrowed(slayer.world, newNemesis);
+			}
+		}else{
+			NemesisRegistryProvider.get(slayer.world).promote(nemesis.getId());
+		}
+	}
+
+	private void nemesisDuelIfCrowed(World world, Nemesis exclude) {
+		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
+		nemeses.removeIf(Nemesis::isDead);
+
+
+		if(nemeses.size() < SpawnHandler.NEMESIS_COUNT){
+			return;
+		}
+
+		nemeses.removeIf(Nemesis::isLoaded);
+		if(exclude != null) {
+			nemeses.removeIf((Nemesis n) -> n.getId().equals(exclude.getId()));
+		}
+
+		if (nemeses.size() < 2) {
+			//not enough unloaded nemeses to duel, limit will be exceeded
+			return;
+		}
+
+		//TODO factor in distance, the closer the nemeses the more likely they should be to duel
+
+		// get the weaklings
+		Collections.shuffle(nemeses);
+		nemeses.sort(Comparator.comparingInt(Nemesis::getLevel));
+		NemesisRegistryProvider.get(world).duel(nemeses.get(0), nemeses.get(1));
 	}
 
 	@SubscribeEvent
@@ -143,7 +232,7 @@ public class UpdateHandler {
 		Nemesis nemesis = loadNemesisFromEntity(nemesisEntity);
 		Random rand = nemesisEntity.getRNG();
 
-		if(nemesis == null){
+		if (nemesis == null) {
 			return;
 		}
 
@@ -153,7 +242,7 @@ public class UpdateHandler {
 		specialDrop.setStackDisplayName("Property of " + nemesisEntity.getName());
 		drops.add(drop(nemesisEntity, specialDrop));
 
-		for(Trait trait : nemesis.getTraits()){
+		for (Trait trait : nemesis.getTraits()) {
 			switch (trait) {
 			case DOUBLE_MELEE:
 
@@ -192,18 +281,21 @@ public class UpdateHandler {
 		Nemesis nemesis = loadNemesisFromEntity(nemesisEntity);
 
 		if (nemesis == null) {
+			System.out.println("nemesis not found on death, can't deregister");
+			return;
+		}
+
+		if (attacker == null || !(attacker instanceof EntityLivingBase)) {
+			System.out.println("nemesis was not killed by entity");
 			return;
 		}
 
 		NemesisRegistryProvider.get(nemesisEntity.world).setDead(nemesis.getId());
 
-		findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition()).forEach((EntityCreature guard) -> {
-			guard.setAttackTarget(null);
-		});
+		findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
+				.forEach((EntityCreature guard) -> guard.setAttackTarget(null));
 
 		// TODO post message
-
-		// TODO handle nemesis death (drop loot) clear guards attack target
 
 		// TODO log death
 	}
@@ -220,7 +312,8 @@ public class UpdateHandler {
 		});
 	}
 
-	// TODO handle player death
+	// TODO drop extra XP
+
 
 	private void handleBodyGuardUpdate(LivingUpdateEvent event) {
 		if (!(event.getEntity() instanceof EntityCreature)) {
@@ -269,7 +362,7 @@ public class UpdateHandler {
 		return entities.get(0);
 	}
 
-	private List<EntityCreature> findNemesisBodyGuards(World world, UUID id, BlockPos position) {
+	private static List<EntityCreature> findNemesisBodyGuards(World world, UUID id, BlockPos position) {
 		int distance = 100;
 
 		return world.getEntitiesWithinAABB(EntityCreature.class, new AxisAlignedBB(position).grow(distance, distance, distance),
@@ -278,8 +371,11 @@ public class UpdateHandler {
 	}
 
 	public static boolean isNemesis(EntityLiving searchEntity, UUID id) {
-		return searchEntity.getTags().contains(EntityDecorator.TAG)
-				&& id.equals(searchEntity.getEntityData().getUniqueId(EntityDecorator.NBT_ID));
+		return isNemesis(searchEntity) && id.equals(searchEntity.getEntityData().getUniqueId(EntityDecorator.NBT_ID));
+	}
+
+	public static boolean isNemesis(EntityLiving searchEntity) {
+		return searchEntity.getTags().contains(EntityDecorator.TAG);
 	}
 
 	public static boolean isBodyGuard(EntityLiving searchEntity, UUID id) {
@@ -303,7 +399,7 @@ public class UpdateHandler {
 		}
 	}
 
-	private Nemesis loadNemesisFromEntity(Entity nemesisEntity) {
+	private static Nemesis loadNemesisFromEntity(Entity nemesisEntity) {
 		UUID id = nemesisEntity.getEntityData().getUniqueId(EntityDecorator.NBT_ID);
 		return NemesisRegistryProvider.get(nemesisEntity.getEntityWorld()).getById(id);
 	}

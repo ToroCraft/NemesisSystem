@@ -15,8 +15,10 @@ public class Nemesis {
 
 	public enum Title {}
 
+	private static final int RANGE_SQ = 100 * 100;
+
 	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, SHIELD, TELEPORT}
-	// TODO: FIREBALL, LASER, HEAL, TELEPORT, POTION PROTECTION
+	// TODO: FIREBALL, LASER, HEAL, POTION PROTECTION
 
 	private static final String NBT_NAME = "name";
 	private static final String NBT_LEVEL = "level";
@@ -28,6 +30,7 @@ public class Nemesis {
 	private static final String NBT_ID = "id";
 	private static final String NBT_TRAITS = "traits";
 	private static final String NBT_TITLE = "title";
+	private static final String NBT_LOADED = "loaded";
 
 	private String title;
 	private String name;
@@ -37,6 +40,7 @@ public class Nemesis {
 	private int z;
 	private UUID id;
 	private List<Trait> traits;
+	private boolean loaded;
 
 	/**
 	 * This field is not persisted
@@ -54,7 +58,7 @@ public class Nemesis {
 
 	@Override
 	public String toString() {
-		return name + " the " + title + " (level:" + level + " loc:" + x + "," + z + ") " + mob + " " + traits.get(0);
+		return name + " the " + title + " (" + (loaded ? "LOADED" : "UNLOADED" ) + " level:" + level + " loc:" + x + "," + z + ") " + mob + " " + traits.get(0);
 	}
 
 	public void readFromNBT(NBTTagCompound c) {
@@ -67,6 +71,7 @@ public class Nemesis {
 		z = c.getInteger(NBT_Z);
 		id = c.getUniqueId(NBT_ID);
 		title = c.getString(NBT_TITLE);
+		loaded = c.getBoolean(NBT_LOADED);
 		readTraits(c);
 		loadAllItems(NBT_HANDS, c, handInventory);
 		loadAllItems(NBT_ARMOR, c, armorInventory);
@@ -80,6 +85,7 @@ public class Nemesis {
 		c.setInteger(NBT_Z, z);
 		c.setUniqueId(NBT_ID, id);
 		c.setString(NBT_TITLE, title);
+		c.setBoolean(NBT_LOADED, loaded);
 		writeTraits(c);
 		saveAllItems(NBT_HANDS, c, handInventory);
 		saveAllItems(NBT_ARMOR, c, armorInventory);
@@ -146,6 +152,10 @@ public class Nemesis {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getNameAndTitle() {
+		return name + " the " + title;
 	}
 
 	public void setName(String name) {
@@ -222,5 +232,17 @@ public class Nemesis {
 
 	public void setDead(boolean dead) {
 		this.dead = dead;
+	}
+
+	public boolean isLoaded() {
+		return loaded;
+	}
+
+	public void setLoaded(boolean loaded) {
+		this.loaded = loaded;
+	}
+
+	public double getRangeSq() {
+		return RANGE_SQ;
 	}
 }

@@ -2,6 +2,7 @@ package net.torocraft.nemesissystem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -11,6 +12,8 @@ public class NemesisRegistry extends WorldSavedData {
 	public static final String NAME = NemesisSystem.MODID + ":NemesisSaveData";
 
 	private static final String NBT_NEMESES = "nemeses";
+
+	private Random rand = new Random();
 
 	//TODO add nemesis log (to the nemesis object)
 
@@ -28,9 +31,34 @@ public class NemesisRegistry extends WorldSavedData {
 		return null;
 	}
 
+	public void unload(UUID id) {
+		for (Nemesis nemesis : nemeses) {
+			if (id.equals(nemesis.getId())) {
+				nemesis.setLoaded(false);
+				System.out.println("Unloaded: " + nemesis);
+				break;
+			}
+		}
+		markDirty();
+	}
+
+
+	public void load(UUID id) {
+		for (Nemesis nemesis : nemeses) {
+			if (id.equals(nemesis.getId())) {
+				nemesis.setLoaded(true);
+				System.out.println("Loaded: " + nemesis);
+				break;
+			}
+		}
+		markDirty();
+	}
+
+
 	public void register(Nemesis nemesis) {
 		nemeses.add(nemesis);
 		markDirty();
+		System.out.println(nemesis.getNameAndTitle() + " has established rule of " + nemesis.getX() + "," + nemesis.getZ());
 		//TODO overwrite if already exists
 	}
 
@@ -44,12 +72,41 @@ public class NemesisRegistry extends WorldSavedData {
 		markDirty();
 	}
 
+	public void duel(Nemesis opponentOne, Nemesis opponentTwo) {
+		// TODO add some more rolls here, or do something else fun
+
+		Nemesis victor;
+		Nemesis loser;
+
+		if(rand.nextBoolean()){
+			victor = opponentOne;
+			loser = opponentTwo;
+		}else{
+			victor = opponentTwo;
+			loser = opponentOne;
+		}
+
+		setDead(loser.getId());
+		promote(victor.getId());
+
+		// TODO log
+
+		// TODO announce
+
+		System.out.println(victor.getNameAndTitle() + " defeated " + loser.getNameAndTitle() + " in a fight to the death!");
+
+	}
+
 	private void promote(Nemesis nemesis) {
 		nemesis.setLevel(nemesis.getLevel() + 1);
+
+		System.out.println(nemesis.getNameAndTitle() + " has been promoted to level " + nemesis.getLevel());
 
 		//TODO add enchants
 
 		//TODO low chance to add trait
+
+		//TODO announce
 	}
 
 	/**
@@ -62,6 +119,7 @@ public class NemesisRegistry extends WorldSavedData {
 		for (Nemesis nemesis : nemeses) {
 			if (id.equals(nemesis.getId())) {
 				nemesis.setDead(true);
+				System.out.println(nemesis.getNameAndTitle() + " has been slain");
 				break;
 			}
 		}
@@ -96,11 +154,6 @@ public class NemesisRegistry extends WorldSavedData {
 			}
 		}
 		return null;
-	}
-
-	public void remove(Nemesis nemesis) {
-		nemeses.remove(nemesis);
-		markDirty();
 	}
 
 	@Override
@@ -138,5 +191,6 @@ public class NemesisRegistry extends WorldSavedData {
 		c.setTag(NBT_NEMESES, nbtNemeses);
 		return c;
 	}
+
 
 }
