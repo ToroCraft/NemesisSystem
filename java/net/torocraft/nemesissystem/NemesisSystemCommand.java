@@ -66,6 +66,7 @@ public class NemesisSystemCommand extends CommandBase {
 	private void list(MinecraftServer server, ICommandSender sender, String[] args) {
 		// TODO dimID support
 		List<Nemesis> l = NemesisRegistryProvider.get(server.getWorld(0)).list();
+		l.removeIf((Nemesis n) -> n.isDead());
 		StringBuilder s = new StringBuilder();
 		for (Nemesis nemesis : l) {
 			s.append(" * ").append(nemesis).append("\n");

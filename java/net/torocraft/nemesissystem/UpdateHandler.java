@@ -1,6 +1,5 @@
 package net.torocraft.nemesissystem;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -10,6 +9,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityEnderPearl;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityWitch;
@@ -18,11 +18,13 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.entity.projectile.EntityTippedArrow;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
@@ -33,6 +35,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -100,12 +103,14 @@ public class UpdateHandler {
 		}
 
 		if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
-			orderGuardsToAttackAggressor((EntityCreature)event.getEntity(), event.getSource().getTrueSource());
+			orderGuardsToAttackAggressor((EntityCreature) event.getEntity(), event.getSource().getTrueSource());
 		}
 	}
 
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
+
+		System.out.println("death event");
 
 		World world = event.getEntity().getEntityWorld();
 
@@ -114,31 +119,106 @@ public class UpdateHandler {
 		}
 
 		if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
-			handleNemesisDeath((EntityCreature)event.getEntity(), event.getSource().getTrueSource());
+			handleNemesisDeath((EntityCreature) event.getEntity(), event.getSource().getTrueSource());
 		}
 	}
 
-	private void handleNemesisDeath(EntityCreature nemesis, Entity attacker) {
-		// delete entry
+	@SubscribeEvent
+	public void onDrops(LivingDropsEvent event) {
 
-		// post message
+		System.out.println("drops event");
+
+		World world = event.getEntity().getEntityWorld();
+
+		if (world.isRemote || !(event.getEntity() instanceof EntityCreature)) {
+			return;
+		}
+
+		if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
+			handleNemesisDrops(event.getDrops(), (EntityCreature) event.getEntity());
+		}
+	}
+
+	private void handleNemesisDrops(List<EntityItem> drops, EntityCreature nemesisEntity) {
+		Nemesis nemesis = loadNemesisFromEntity(nemesisEntity);
+		Random rand = nemesisEntity.getRNG();
+
+		if(nemesis == null){
+			return;
+		}
+
+		drops.add(drop(nemesisEntity, new ItemStack(Items.DIAMOND, rand.nextInt(nemesis.getLevel()))));
+
+		ItemStack specialDrop = nemesisEntity.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+		specialDrop.setStackDisplayName("Property of " + nemesisEntity.getName());
+		drops.add(drop(nemesisEntity, specialDrop));
+
+		for(Trait trait : nemesis.getTraits()){
+			switch (trait) {
+			case DOUBLE_MELEE:
+
+				break;
+			case ARROW:
+				drops.add(drop(nemesisEntity, new ItemStack(Items.ARROW, rand.nextInt(64))));
+				break;
+			case SUMMON:
+				break;
+			case REFLECT:
+				break;
+			case HEAT:
+				drops.add(drop(nemesisEntity, new ItemStack(Blocks.TORCH, rand.nextInt(64))));
+				if (rand.nextInt(5) == 0) {
+					drops.add(drop(nemesisEntity, new ItemStack(Items.LAVA_BUCKET)));
+				}
+				break;
+			case POTION:
+				// TODO drop random potions
+				break;
+			case SHIELD:
+				break;
+			case TELEPORT:
+				drops.add(drop(nemesisEntity, new ItemStack(Items.ENDER_PEARL, rand.nextInt(16))));
+				break;
+			}
+		}
+
+	}
+
+	private EntityItem drop(EntityCreature entity, ItemStack stack) {
+		return new EntityItem(entity.getEntityWorld(), entity.posX, entity.posY, entity.posZ, stack);
+	}
+
+	private void handleNemesisDeath(EntityCreature nemesisEntity, Entity attacker) {
+		Nemesis nemesis = loadNemesisFromEntity(nemesisEntity);
+
+		if (nemesis == null) {
+			return;
+		}
+
+		NemesisRegistryProvider.get(nemesisEntity.world).setDead(nemesis.getId());
+
+		findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition()).forEach((EntityCreature guard) -> {
+			guard.setAttackTarget(null);
+		});
+
+		// TODO post message
+
+		// TODO handle nemesis death (drop loot) clear guards attack target
 
 		// TODO log death
 	}
 
 	private void orderGuardsToAttackAggressor(EntityCreature boss, Entity attacker) {
-		if(attacker == null || !(attacker instanceof EntityLivingBase)){
+		if (attacker == null || !(attacker instanceof EntityLivingBase)) {
 			return;
 		}
 		UUID id = boss.getEntityData().getUniqueId(EntityDecorator.NBT_ID);
 		findNemesisBodyGuards(boss.world, id, boss.getPosition()).forEach((EntityCreature guard) -> {
-			if(boss.getRNG().nextInt(7) == 0){
-				guard.setAttackTarget((EntityLivingBase)attacker);
+			if (boss.getRNG().nextInt(7) == 0) {
+				guard.setAttackTarget((EntityLivingBase) attacker);
 			}
 		});
 	}
-
-	// TODO handle nemesis death (drop loot) clear guards attack target
 
 	// TODO handle player death
 
@@ -208,7 +288,7 @@ public class UpdateHandler {
 	}
 
 	private void handleNemesisUpdate(LivingUpdateEvent event) {
-		Nemesis nemesis = loadNemesisFromEntity(event);
+		Nemesis nemesis = loadNemesisFromEntity(event.getEntity());
 
 		if (nemesis == null) {
 			return;
@@ -223,9 +303,9 @@ public class UpdateHandler {
 		}
 	}
 
-	private Nemesis loadNemesisFromEntity(LivingUpdateEvent event) {
-		UUID id = event.getEntity().getEntityData().getUniqueId(EntityDecorator.NBT_ID);
-		return NemesisRegistryProvider.get(event.getEntity().getEntityWorld()).getById(id);
+	private Nemesis loadNemesisFromEntity(Entity nemesisEntity) {
+		UUID id = nemesisEntity.getEntityData().getUniqueId(EntityDecorator.NBT_ID);
+		return NemesisRegistryProvider.get(nemesisEntity.getEntityWorld()).getById(id);
 	}
 
 	private void handleTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {

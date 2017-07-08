@@ -38,6 +38,11 @@ public class Nemesis {
 	private UUID id;
 	private List<Trait> traits;
 
+	/**
+	 * This field is not persisted
+	 */
+	private boolean dead;
+
 	//TODO spawned check
 
 	private NonNullList<ItemStack> handInventory = NonNullList.withSize(2, ItemStack.EMPTY);
@@ -209,5 +214,13 @@ public class Nemesis {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public boolean isDead() {
+		return dead;
+	}
+
+	public void setDead(boolean dead) {
+		this.dead = dead;
 	}
 }

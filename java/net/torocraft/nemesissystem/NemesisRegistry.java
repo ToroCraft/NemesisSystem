@@ -2,6 +2,7 @@ package net.torocraft.nemesissystem;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,6 +13,10 @@ public class NemesisRegistry extends WorldSavedData {
 	public static final String NAME = NemesisSystem.MODID + ":NemesisSaveData";
 
 	private static final String NBT_NEMESES = "nemeses";
+
+	//TODO add nemesis log (to the nemesis object)
+
+	// TODO add server tick handler to perform random promotes when there is a vacancy 
 
 	private List<Nemesis> nemeses = new ArrayList<>();
 
@@ -31,6 +36,23 @@ public class NemesisRegistry extends WorldSavedData {
 		nemeses.add(nemesis);
 		markDirty();
 		//TODO overwrite if already exists
+	}
+
+	/**
+	 * Remove nemesis from registry
+	 * @param id
+	 */
+	public void setDead(UUID id) {
+		if(id == null){
+			return;
+		}
+		for(Nemesis nemesis : nemeses){
+			if (id.equals(nemesis.getId())) {
+				nemesis.setDead(true);
+				break;
+			}
+		}
+		markDirty();
 	}
 
 	public List<Nemesis> list() {
@@ -96,7 +118,9 @@ public class NemesisRegistry extends WorldSavedData {
 	public NBTTagCompound writeToNBT(NBTTagCompound c) {
 		NBTTagList nbtNemeses = new NBTTagList();
 		for (Nemesis nemesis : nemeses) {
-			nbtNemeses.appendTag(nemesis.writeToNBT(new NBTTagCompound()));
+			if(!nemesis.isDead()){
+				nbtNemeses.appendTag(nemesis.writeToNBT(new NBTTagCompound()));
+			}
 		}
 		c.setTag(NBT_NEMESES, nbtNemeses);
 		return c;
