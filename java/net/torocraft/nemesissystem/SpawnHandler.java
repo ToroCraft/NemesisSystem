@@ -11,6 +11,10 @@ import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -70,7 +74,7 @@ public class SpawnHandler {
 			EntityZombie bodyGuard = new EntityZombie(entity.getEntityWorld());
 			bodyGuard.addTag(TAG_BODY_GUARD);
 			bodyGuard.getEntityData().setUniqueId(EntityDecorator.NBT_ID, nemesis.getId());
-			//TODO armor based on title
+			equipBodyGuard(bodyGuard);
 			SpawnUtil.spawnEntityLiving(entity.getEntityWorld(), bodyGuard, entity.getPosition(), 10);
 			setFollowSpeed(bodyGuard, 1.5);
 		}
@@ -81,6 +85,22 @@ public class SpawnHandler {
 
 		// TODO nemesis can heal body guards?
 
+	}
+
+	private static void equipBodyGuard(EntityCreature bodyGuard) {
+		int color = 0xffffff;
+		// TODO change weapon base on rank, or nemesis boss title, or trait?
+		bodyGuard.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
+		bodyGuard.setItemStackToSlot(EntityEquipmentSlot.HEAD, colorArmor(new ItemStack(Items.LEATHER_HELMET, 1), color));
+		bodyGuard.setItemStackToSlot(EntityEquipmentSlot.CHEST, colorArmor(new ItemStack(Items.LEATHER_CHESTPLATE, 1), color));
+		bodyGuard.setItemStackToSlot(EntityEquipmentSlot.LEGS, colorArmor(new ItemStack(Items.LEATHER_LEGGINGS, 1), color));
+		bodyGuard.setItemStackToSlot(EntityEquipmentSlot.FEET, colorArmor(new ItemStack(Items.LEATHER_BOOTS, 1), color));
+	}
+
+	protected static ItemStack colorArmor(ItemStack stack, int color) {
+		ItemArmor armor = (ItemArmor) stack.getItem();
+		armor.setColor(stack, color);
+		return stack;
 	}
 
 	public static void setFollowSpeed(EntityCreature bodyGuard, double followSpeed) {

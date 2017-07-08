@@ -98,27 +98,24 @@ public class UpdateHandler {
 			return;
 		}
 
-		if (event.getEntity().getTags().contains(SpawnHandler.TAG_BODY_GUARD)) {
-			// TODO handle guard
-		} else if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
+		if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
 			orderGuardsToAttackAggressor((EntityCreature)event.getEntity(), event.getSource().getTrueSource());
 		}
-
 	}
 
-	private void orderGuardsToAttackAggressor(EntityCreature nemesis, Entity attacker) {
+	private void orderGuardsToAttackAggressor(EntityCreature boss, Entity attacker) {
 		if(attacker == null || !(attacker instanceof EntityLivingBase)){
 			return;
 		}
-		UUID id = nemesis.getEntityData().getUniqueId(EntityDecorator.NBT_ID);
-		findNemesisBodyGuards(nemesis.world, id, nemesis.getPosition()).forEach((EntityCreature guard) -> {
-			if(nemesis.getRNG().nextInt(7) == 0){
+		UUID id = boss.getEntityData().getUniqueId(EntityDecorator.NBT_ID);
+		findNemesisBodyGuards(boss.world, id, boss.getPosition()).forEach((EntityCreature guard) -> {
+			if(boss.getRNG().nextInt(7) == 0){
 				guard.setAttackTarget((EntityLivingBase)attacker);
 			}
 		});
 	}
 
-	// TODO handle nemesis death (drop loot)
+	// TODO handle nemesis death (drop loot) clear guards attack target
 
 	// TODO handle player death
 
