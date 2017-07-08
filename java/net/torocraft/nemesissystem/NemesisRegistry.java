@@ -28,6 +28,28 @@ public class NemesisRegistry extends WorldSavedData {
 		return null;
 	}
 
+	public void unload(UUID id) {
+		for (Nemesis nemesis : nemeses) {
+			if (id.equals(nemesis.getId())) {
+				nemesis.setLoaded(false);
+				break;
+			}
+		}
+		markDirty();
+	}
+
+
+	public void load(UUID id) {
+		for (Nemesis nemesis : nemeses) {
+			if (id.equals(nemesis.getId())) {
+				nemesis.setLoaded(true);
+				break;
+			}
+		}
+		markDirty();
+	}
+
+
 	public void register(Nemesis nemesis) {
 		nemeses.add(nemesis);
 		markDirty();
@@ -96,11 +118,6 @@ public class NemesisRegistry extends WorldSavedData {
 			}
 		}
 		return null;
-	}
-
-	public void remove(Nemesis nemesis) {
-		nemeses.remove(nemesis);
-		markDirty();
 	}
 
 	@Override
