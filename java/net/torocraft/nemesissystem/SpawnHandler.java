@@ -36,9 +36,11 @@ public class SpawnHandler {
 
 	@SubscribeEvent
 	public void handleSpawn(EntityJoinWorldEvent event) {
-		if (event.getEntity().world.isRemote || !nemesisClassEntity(event.getEntity())) {
+		if (event.getEntity().world.isRemote || !(event.getEntity() instanceof EntityCreature) || !nemesisClassEntity(event.getEntity())) {
 			return;
 		}
+
+		handleRandomPromotions(event.getWorld(), (EntityCreature) event.getEntity());
 
 		if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
 			return;
@@ -65,6 +67,35 @@ public class SpawnHandler {
 		System.out.println("Spawning: " + event.getEntity().getName() + " at " + event.getEntity().getPosition());
 	}
 
+	private final int NEMESIS_COUNT = 16;
+
+	private void handleRandomPromotions(World world, EntityCreature entity) {
+		NemesisRegistry registry = NemesisRegistryProvider.get(world);
+
+		List<Nemesis> nemeses = registry.list();
+		nemeses.removeIf((Nemesis n) -> n.isDead());
+
+		if (nemeses.size() >= NEMESIS_COUNT / 2) {
+			return;
+		}
+
+		promoteRandomNemesis(entity, registry, nemeses);
+		createANewNemesis(entity, registry);
+	}
+
+	private void createANewNemesis(EntityCreature entity, NemesisRegistry registry) {
+		Nemesis nemesis = NemesisBuilder.build(getEntityType(entity), 1, (int) entity.posX, (int) entity.posZ);
+		registry.register(nemesis);
+		System.out.println("New Nemesis created: " + nemesis.toString());
+	}
+
+	private void promoteRandomNemesis(EntityCreature entity, NemesisRegistry registry, List<Nemesis> nemeses) {
+		if (nemeses == null || nemeses.size() < 1) {
+			return;
+		}
+		registry.promote(nemeses.get(entity.getRNG().nextInt(nemeses.size())).getId());
+	}
+
 	private void spawnBodyGuard(EntityLiving entity, Nemesis nemesis) {
 
 		int count = 5 + nemesis.getLevel() * 5;
@@ -78,10 +109,6 @@ public class SpawnHandler {
 			SpawnUtil.spawnEntityLiving(entity.getEntityWorld(), bodyGuard, entity.getPosition(), 10);
 			setFollowSpeed(bodyGuard, 1.5);
 		}
-
-		// TODO add ai to keep close to nemesis
-
-		// TODO when nemesis is hit, closer body guards attack with a random factor
 
 		// TODO nemesis can heal body guards?
 

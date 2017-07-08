@@ -1,8 +1,6 @@
 package net.torocraft.nemesissystem;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,8 +13,6 @@ public class NemesisRegistry extends WorldSavedData {
 	private static final String NBT_NEMESES = "nemeses";
 
 	//TODO add nemesis log (to the nemesis object)
-
-	// TODO add server tick handler to perform random promotes when there is a vacancy 
 
 	private List<Nemesis> nemeses = new ArrayList<>();
 
@@ -38,15 +34,32 @@ public class NemesisRegistry extends WorldSavedData {
 		//TODO overwrite if already exists
 	}
 
+	public void promote(UUID id) {
+		for (Nemesis nemesis : nemeses) {
+			if (id.equals(nemesis.getId())) {
+				promote(nemesis);
+				break;
+			}
+		}
+		markDirty();
+	}
+
+	private void promote(Nemesis nemesis) {
+		nemesis.setLevel(nemesis.getLevel() + 1);
+
+		//TODO add enchants
+
+		//TODO low chance to add trait
+	}
+
 	/**
 	 * Remove nemesis from registry
-	 * @param id
 	 */
 	public void setDead(UUID id) {
-		if(id == null){
+		if (id == null) {
 			return;
 		}
-		for(Nemesis nemesis : nemeses){
+		for (Nemesis nemesis : nemeses) {
 			if (id.equals(nemesis.getId())) {
 				nemesis.setDead(true);
 				break;
@@ -60,7 +73,7 @@ public class NemesisRegistry extends WorldSavedData {
 	}
 
 	public Nemesis getById(UUID id) {
-		if(id == null){
+		if (id == null) {
 			return null;
 		}
 		for (Nemesis nemesis : nemeses) {
@@ -77,8 +90,8 @@ public class NemesisRegistry extends WorldSavedData {
 	}
 
 	public Nemesis getByName(String name) {
-		for(Nemesis nemesis : nemeses){
-			if(name.equals(nemesis.getName())){
+		for (Nemesis nemesis : nemeses) {
+			if (name.equals(nemesis.getName())) {
 				return nemesis;
 			}
 		}
@@ -118,7 +131,7 @@ public class NemesisRegistry extends WorldSavedData {
 	public NBTTagCompound writeToNBT(NBTTagCompound c) {
 		NBTTagList nbtNemeses = new NBTTagList();
 		for (Nemesis nemesis : nemeses) {
-			if(!nemesis.isDead()){
+			if (!nemesis.isDead()) {
 				nbtNemeses.appendTag(nemesis.writeToNBT(new NBTTagCompound()));
 			}
 		}
