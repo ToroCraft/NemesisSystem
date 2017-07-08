@@ -1,18 +1,14 @@
 package net.torocraft.nemesissystem;
 
-import com.google.common.base.Predicate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
-import javax.annotation.Nullable;
-import net.minecraft.block.Block;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
-import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.item.EntityEnderPearl;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -27,23 +23,19 @@ import net.minecraft.init.Items;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.torocraft.nemesissystem.Nemesis.Trait;
 
 @EventBusSubscriber
@@ -69,13 +61,12 @@ public class UpdateHandler {
 			return;
 		}
 
-		if(event.getEntity().getTags().contains(SpawnHandler.TAG_BODY_GUARD)){
+		if (event.getEntity().getTags().contains(SpawnHandler.TAG_BODY_GUARD)) {
 			handleBodyGuardUpdate(event);
-		}else if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
+		} else if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
 			handleNemesisUpdate(event);
 		}
 	}
-
 
 	@SubscribeEvent
 	public void stopBodyGuardsFromAttackingNemeses(LivingSetAttackTargetEvent event) {
@@ -85,22 +76,51 @@ public class UpdateHandler {
 			return;
 		}
 
-		if (event.getTarget() == null) {
+		if (event.getTarget() == null || !(event.getEntity() instanceof EntityCreature)) {
 			return;
 		}
 
-		if (!(event.getEntity() instanceof EntityCreature)) {
+		if (!event.getEntity().getTags().contains(SpawnHandler.TAG_BODY_GUARD)) {
 			return;
 		}
 
-		if(!event.getEntity().getTags().contains(SpawnHandler.TAG_BODY_GUARD)){
-			return;
-		}
-
-		if (event.getTarget().getTags().contains(EntityDecorator.TAG)){
-			((EntityCreature)event.getEntityLiving()).setAttackTarget(null);
+		if (event.getTarget().getTags().contains(EntityDecorator.TAG)) {
+			((EntityCreature) event.getEntityLiving()).setAttackTarget(null);
 		}
 	}
+
+	@SubscribeEvent
+	public void onAttacked(LivingAttackEvent event) {
+
+		World world = event.getEntity().getEntityWorld();
+
+		if (world.isRemote || !(event.getEntity() instanceof EntityCreature)) {
+			return;
+		}
+
+		if (event.getEntity().getTags().contains(SpawnHandler.TAG_BODY_GUARD)) {
+			// TODO handle guard
+		} else if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
+			orderGuardsToAttackAggressor((EntityCreature)event.getEntity(), event.getSource().getTrueSource());
+		}
+
+	}
+
+	private void orderGuardsToAttackAggressor(EntityCreature nemesis, Entity attacker) {
+		if(attacker == null || !(attacker instanceof EntityLivingBase)){
+			return;
+		}
+		UUID id = nemesis.getEntityData().getUniqueId(EntityDecorator.NBT_ID);
+		findNemesisBodyGuards(nemesis.world, id, nemesis.getPosition()).forEach((EntityCreature guard) -> {
+			if(nemesis.getRNG().nextInt(7) == 0){
+				guard.setAttackTarget((EntityLivingBase)attacker);
+			}
+		});
+	}
+
+	// TODO handle nemesis death (drop loot)
+
+	// TODO handle player death
 
 	private void handleBodyGuardUpdate(LivingUpdateEvent event) {
 		if (!(event.getEntity() instanceof EntityCreature)) {
@@ -111,7 +131,7 @@ public class UpdateHandler {
 		UUID id = bodyGuard.getEntityData().getUniqueId(EntityDecorator.NBT_ID);
 		EntityLiving nemesisEntity = findNemesisAround(event.getEntity().world, id, event.getEntity().getPosition());
 
-		if(nemesisEntity == null){
+		if (nemesisEntity == null) {
 			flee(bodyGuard);
 			return;
 		}
@@ -135,25 +155,36 @@ public class UpdateHandler {
 		bodyGuard.setHomePosAndDistance(nemesisEntity.getPosition(), 2);
 	}
 
-
-
 	private EntityLiving findNemesisAround(World world, UUID id, BlockPos position) {
 		int distance = 50;
 
 		List<EntityLiving> entities = world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(position).grow(distance, distance, distance),
-				(EntityLiving searchEntity) -> {
-					if(!searchEntity.getTags().contains(EntityDecorator.TAG)){
-						return false;
-					}
-					return id.equals(searchEntity.getEntityData().getUniqueId(EntityDecorator.NBT_ID));
-				}
+				(EntityLiving searchEntity) -> isNemesis(searchEntity, id)
 		);
 
-		if(entities.size() < 1){
+		if (entities.size() < 1) {
 			return null;
 		}
 
 		return entities.get(0);
+	}
+
+	private List<EntityCreature> findNemesisBodyGuards(World world, UUID id, BlockPos position) {
+		int distance = 100;
+
+		return world.getEntitiesWithinAABB(EntityCreature.class, new AxisAlignedBB(position).grow(distance, distance, distance),
+				(EntityCreature searchEntity) -> isBodyGuard(searchEntity, id)
+		);
+	}
+
+	public static boolean isNemesis(EntityLiving searchEntity, UUID id) {
+		return searchEntity.getTags().contains(EntityDecorator.TAG)
+				&& id.equals(searchEntity.getEntityData().getUniqueId(EntityDecorator.NBT_ID));
+	}
+
+	public static boolean isBodyGuard(EntityLiving searchEntity, UUID id) {
+		return searchEntity.getTags().contains(SpawnHandler.TAG_BODY_GUARD)
+				&& id.equals(searchEntity.getEntityData().getUniqueId(EntityDecorator.NBT_ID));
 	}
 
 	private void handleNemesisUpdate(LivingUpdateEvent event) {
@@ -197,7 +228,6 @@ public class UpdateHandler {
 			return;
 		case TELEPORT:
 			handleTeleportTraitUpdate(entity, nemesis, trait);
-			return;
 		}
 	}
 
@@ -217,7 +247,7 @@ public class UpdateHandler {
 			return;
 		}
 
-		if(!entity.getEntitySenses().canSee(target)) {
+		if (!entity.getEntitySenses().canSee(target)) {
 			return;
 		}
 
@@ -231,7 +261,7 @@ public class UpdateHandler {
 
 		double distanceSq = dX * dX + dY * dY + dZ * dZ;
 
-		if(distanceSq < 20){
+		if (distanceSq < 20) {
 			return;
 		}
 
@@ -258,7 +288,7 @@ public class UpdateHandler {
 			return;
 		}
 
-		if(!entity.getEntitySenses().canSee(target)) {
+		if (!entity.getEntitySenses().canSee(target)) {
 			return;
 		}
 
@@ -289,9 +319,10 @@ public class UpdateHandler {
 		Random rand = entity.getRNG();
 		int heatDistance = 8;
 
-		List<EntityPlayer> playersToCook = world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(entity.getPosition()).grow(heatDistance, heatDistance, heatDistance));
-		for(EntityPlayer player : playersToCook){
-			if(entity.getEntitySenses().canSee(player)) {
+		List<EntityPlayer> playersToCook = world
+				.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(entity.getPosition()).grow(heatDistance, heatDistance, heatDistance));
+		for (EntityPlayer player : playersToCook) {
+			if (entity.getEntitySenses().canSee(player)) {
 				player.setFire(10);
 			}
 		}
@@ -307,7 +338,7 @@ public class UpdateHandler {
 			return;
 		}
 
-		if(!entity.getEntitySenses().canSee(target)) {
+		if (!entity.getEntitySenses().canSee(target)) {
 			return;
 		}
 
@@ -348,7 +379,7 @@ public class UpdateHandler {
 			return;
 		}
 
-		if(!entity.getEntitySenses().canSee(target)) {
+		if (!entity.getEntitySenses().canSee(target)) {
 			return;
 		}
 
