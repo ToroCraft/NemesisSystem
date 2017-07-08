@@ -1,5 +1,7 @@
 package net.torocraft.nemesissystem;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -34,7 +36,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
@@ -69,6 +70,8 @@ public class UpdateHandler {
 		}
 		entity.setDead();
 		NemesisRegistryProvider.get(entity.world).unload(nemesis.getId());
+
+		// TODO this doesn't seem to work well, maybe clean them up directly on load and/or unload
 		findNemesisBodyGuards(entity.world, nemesis.getId(), entity.getPosition()).forEach((EntityCreature e) -> e.setDead());
 	}
 
@@ -144,13 +147,69 @@ public class UpdateHandler {
 
 		World world = event.getEntity().getEntityWorld();
 
-		if (world.isRemote || !(event.getEntity() instanceof EntityCreature)) {
+		if(world.isRemote){
+			return;
+		}
+
+		Entity slayer = event.getSource().getTrueSource();
+
+		if (event.getEntity() instanceof EntityPlayer && slayer instanceof  EntityCreature) {
+			System.out.println("player death event");
+			handlePlayerDeath((EntityPlayer) event.getEntity(), (EntityCreature) slayer);
+			return;
+		}
+
+		if (!(event.getEntity() instanceof EntityCreature)) {
 			return;
 		}
 
 		if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
-			handleNemesisDeath((EntityCreature) event.getEntity(), event.getSource().getTrueSource());
+			System.out.println("nemesis death event");
+			handleNemesisDeath((EntityCreature) event.getEntity(), slayer);
 		}
+	}
+
+	private void handlePlayerDeath(EntityPlayer player, EntityCreature slayer) {
+		if (slayer == null) {
+			return;
+		}
+		Nemesis nemesis = loadNemesisFromEntity(slayer);
+
+		if(nemesis == null){
+			if (SpawnHandler.isNemesisClassEntity(slayer)) {
+				Nemesis newNemesis = SpawnHandler.createAndRegisterNemesis(slayer, slayer.getPosition());
+				nemesisDuelIfCrowed(slayer.world, newNemesis);
+			}
+		}else{
+			NemesisRegistryProvider.get(slayer.world).promote(nemesis.getId());
+		}
+	}
+
+	private void nemesisDuelIfCrowed(World world, Nemesis exclude) {
+		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
+		nemeses.removeIf(Nemesis::isDead);
+
+
+		if(nemeses.size() < SpawnHandler.NEMESIS_COUNT){
+			return;
+		}
+
+		nemeses.removeIf(Nemesis::isLoaded);
+		if(exclude != null) {
+			nemeses.removeIf((Nemesis n) -> n.getId().equals(exclude.getId()));
+		}
+
+		if (nemeses.size() < 2) {
+			//not enough unloaded nemeses to duel, limit will be exceeded
+			return;
+		}
+
+		//TODO factor in distance, the closer the nemeses the more likely they should be to duel
+
+		// get the weaklings
+		Collections.shuffle(nemeses);
+		nemeses.sort(Comparator.comparingInt(Nemesis::getLevel));
+		NemesisRegistryProvider.get(world).duel(nemeses.get(0), nemeses.get(1));
 	}
 
 	@SubscribeEvent
@@ -173,7 +232,7 @@ public class UpdateHandler {
 		Nemesis nemesis = loadNemesisFromEntity(nemesisEntity);
 		Random rand = nemesisEntity.getRNG();
 
-		if(nemesis == null){
+		if (nemesis == null) {
 			return;
 		}
 
@@ -183,7 +242,7 @@ public class UpdateHandler {
 		specialDrop.setStackDisplayName("Property of " + nemesisEntity.getName());
 		drops.add(drop(nemesisEntity, specialDrop));
 
-		for(Trait trait : nemesis.getTraits()){
+		for (Trait trait : nemesis.getTraits()) {
 			switch (trait) {
 			case DOUBLE_MELEE:
 
@@ -222,18 +281,21 @@ public class UpdateHandler {
 		Nemesis nemesis = loadNemesisFromEntity(nemesisEntity);
 
 		if (nemesis == null) {
+			System.out.println("nemesis not found on death, can't deregister");
+			return;
+		}
+
+		if (attacker == null || !(attacker instanceof EntityLivingBase)) {
+			System.out.println("nemesis was not killed by entity");
 			return;
 		}
 
 		NemesisRegistryProvider.get(nemesisEntity.world).setDead(nemesis.getId());
 
-		findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition()).forEach((EntityCreature guard) -> {
-			guard.setAttackTarget(null);
-		});
+		findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
+				.forEach((EntityCreature guard) -> guard.setAttackTarget(null));
 
 		// TODO post message
-
-		// TODO handle nemesis death (drop loot) clear guards attack target
 
 		// TODO log death
 	}
@@ -250,7 +312,8 @@ public class UpdateHandler {
 		});
 	}
 
-	// TODO handle player death
+	// TODO drop extra XP
+
 
 	private void handleBodyGuardUpdate(LivingUpdateEvent event) {
 		if (!(event.getEntity() instanceof EntityCreature)) {

@@ -15,7 +15,7 @@ public class Nemesis {
 
 	public enum Title {}
 
-	private static final int RANGE_SQ = 50 * 50;
+	private static final int RANGE_SQ = 100 * 100;
 
 	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, SHIELD, TELEPORT}
 	// TODO: FIREBALL, LASER, HEAL, POTION PROTECTION
@@ -58,7 +58,7 @@ public class Nemesis {
 
 	@Override
 	public String toString() {
-		return name + " the " + title + " (level:" + level + " loc:" + x + "," + z + ") " + mob + " " + traits.get(0);
+		return name + " the " + title + " (" + (loaded ? "LOADED" : "UNLOADED" ) + " level:" + level + " loc:" + x + "," + z + ") " + mob + " " + traits.get(0);
 	}
 
 	public void readFromNBT(NBTTagCompound c) {
@@ -152,6 +152,10 @@ public class Nemesis {
 
 	public String getName() {
 		return name;
+	}
+
+	public String getNameAndTitle() {
+		return name + " the " + title;
 	}
 
 	public void setName(String name) {

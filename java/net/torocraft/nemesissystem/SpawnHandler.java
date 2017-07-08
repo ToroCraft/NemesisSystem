@@ -28,7 +28,7 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 public class SpawnHandler {
 	public static final UUID EMPTY_UUID = new UUID(0, 0);
-	private final int NEMESIS_COUNT = 16;
+	public static final int NEMESIS_COUNT = 4;
 
 	public static final String TAG_BODY_GUARD = "nemesis_body_guard";
 
@@ -38,7 +38,7 @@ public class SpawnHandler {
 
 	@SubscribeEvent
 	public void handleSpawn(EntityJoinWorldEvent event) {
-		if (event.getEntity().world.isRemote || !(event.getEntity() instanceof EntityCreature) || !nemesisClassEntity(event.getEntity())) {
+		if (event.getEntity().world.isRemote || !(event.getEntity() instanceof EntityCreature) || !isNemesisClassEntity(event.getEntity())) {
 			return;
 		}
 
@@ -82,18 +82,22 @@ public class SpawnHandler {
 		}
 
 		promoteRandomNemesis(entity, registry, nemeses);
-		createANewNemesis(entity, registry);
+		createAndRegisterNemesis(entity, getRandomLocationAround(entity));
 	}
 
-	private void createANewNemesis(EntityCreature entity, NemesisRegistry registry) {
+	public static Nemesis createAndRegisterNemesis(EntityCreature entity, BlockPos nemesisLocation) {
+		Nemesis nemesis = NemesisBuilder.build(getEntityType(entity), 1, nemesisLocation.getX(), nemesisLocation.getZ());
+		NemesisRegistryProvider.get(entity.world).register(nemesis);
+		return nemesis;
+	}
+
+	private static BlockPos getRandomLocationAround(EntityCreature entity) {
 		int distance = 1000 + entity.getRNG().nextInt(4000);
 		int degrees = entity.getRNG().nextInt(360);
 		int x = distance * (int) Math.round(Math.cos(Math.toRadians(degrees)));
 		int z = distance * (int) Math.round(Math.sin(Math.toRadians(degrees)));
 		BlockPos here = entity.getPosition();
-		BlockPos nemesisLocation = new BlockPos(here.getX() + x, here.getY(), here.getZ() + z);
-		Nemesis nemesis = NemesisBuilder.build(getEntityType(entity), 1, nemesisLocation.getX(), nemesisLocation.getZ());
-		registry.register(nemesis);
+		return new BlockPos(here.getX() + x, here.getY(), here.getZ() + z);
 	}
 
 	private void promoteRandomNemesis(EntityCreature entity, NemesisRegistry registry, List<Nemesis> nemeses) {
@@ -152,7 +156,7 @@ public class SpawnHandler {
 		ObfuscationReflectionHelper.setPrivateValue(EntityAIMoveTowardsRestriction.class, ai, followSpeed, "field_75433_e", "movementSpeed");
 	}
 
-	private boolean nemesisClassEntity(Entity entity) {
+	public static boolean isNemesisClassEntity(Entity entity) {
 		// TODO blacklist
 
 		// TODO whitelist
@@ -180,6 +184,9 @@ public class SpawnHandler {
 
 		List<Nemesis> nemeses = NemesisRegistryProvider.get(event.getEntity().world).list();
 
+		nemeses.removeIf(Nemesis::isLoaded);
+		nemeses.removeIf(Nemesis::isDead);
+
 		if (nemeses == null || nemeses.size() < 1) {
 			return null;
 		}
@@ -187,10 +194,6 @@ public class SpawnHandler {
 		String entityType = getEntityType(event.getEntity());
 
 		nemeses.removeIf(nemesis -> {
-
-			if (nemesis.isLoaded()) {
-				return true;
-			}
 
 			if(!nemesis.getMob().equals(entityType)){
 				return true;
