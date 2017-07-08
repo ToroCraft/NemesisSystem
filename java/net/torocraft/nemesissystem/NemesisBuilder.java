@@ -58,6 +58,7 @@ public class NemesisBuilder {
 
 		nemesis.setId(UUID.randomUUID());
 		nemesis.setName(NameBuilder.build());
+		nemesis.setTitle(NameBuilder.TITLES[rand.nextInt(NameBuilder.TITLES.length)]);
 
 		nemesis.setLevel(level);
 		nemesis.setMob(mob);
@@ -65,8 +66,7 @@ public class NemesisBuilder {
 		nemesis.setZ(z);
 
 		nemesis.setTraits(new ArrayList<>());
-		//TODO nemesis.getTraits().add(Trait.values()[rand.nextInt(Trait.values().length)]);
-		nemesis.getTraits().add(Trait.TELEPORT);
+		nemesis.getTraits().add(Trait.values()[rand.nextInt(Trait.values().length)]);
 
 		nemesis.getHandInventory().set(0, new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]));
 		setOffhandItem(nemesis);

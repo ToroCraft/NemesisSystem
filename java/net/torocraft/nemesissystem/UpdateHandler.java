@@ -32,6 +32,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -101,6 +102,28 @@ public class UpdateHandler {
 		if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
 			orderGuardsToAttackAggressor((EntityCreature)event.getEntity(), event.getSource().getTrueSource());
 		}
+	}
+
+	@SubscribeEvent
+	public void onDeath(LivingDeathEvent event) {
+
+		World world = event.getEntity().getEntityWorld();
+
+		if (world.isRemote || !(event.getEntity() instanceof EntityCreature)) {
+			return;
+		}
+
+		if (event.getEntity().getTags().contains(EntityDecorator.TAG)) {
+			handleNemesisDeath((EntityCreature)event.getEntity(), event.getSource().getTrueSource());
+		}
+	}
+
+	private void handleNemesisDeath(EntityCreature nemesis, Entity attacker) {
+		// delete entry
+
+		// post message
+
+		// TODO log death
 	}
 
 	private void orderGuardsToAttackAggressor(EntityCreature boss, Entity attacker) {

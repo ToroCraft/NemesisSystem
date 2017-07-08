@@ -13,6 +13,8 @@ import net.minecraft.world.World;
 
 public class Nemesis {
 
+	public enum Title {}
+
 	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, SHIELD, TELEPORT}
 	// TODO: FIREBALL, LASER, HEAL, TELEPORT, POTION PROTECTION
 
@@ -25,7 +27,9 @@ public class Nemesis {
 	private static final String NBT_HANDS = "hands";
 	private static final String NBT_ID = "id";
 	private static final String NBT_TRAITS = "traits";
+	private static final String NBT_TITLE = "title";
 
+	private String title;
 	private String name;
 	private int level;
 	private String mob;
@@ -45,7 +49,7 @@ public class Nemesis {
 
 	@Override
 	public String toString() {
-		return name + " (level:" + level + " loc:" + x + "," + z + ") " + mob + " " + traits.get(0);
+		return name + " the " + title + " (level:" + level + " loc:" + x + "," + z + ") " + mob + " " + traits.get(0);
 	}
 
 	public void readFromNBT(NBTTagCompound c) {
@@ -57,6 +61,7 @@ public class Nemesis {
 		x = c.getInteger(NBT_X);
 		z = c.getInteger(NBT_Z);
 		id = c.getUniqueId(NBT_ID);
+		title = c.getString(NBT_TITLE);
 		readTraits(c);
 		loadAllItems(NBT_HANDS, c, handInventory);
 		loadAllItems(NBT_ARMOR, c, armorInventory);
@@ -69,6 +74,7 @@ public class Nemesis {
 		c.setInteger(NBT_X, x);
 		c.setInteger(NBT_Z, z);
 		c.setUniqueId(NBT_ID, id);
+		c.setString(NBT_TITLE, title);
 		writeTraits(c);
 		saveAllItems(NBT_HANDS, c, handInventory);
 		saveAllItems(NBT_ARMOR, c, armorInventory);
@@ -195,5 +201,13 @@ public class Nemesis {
 
 	public void setTraits(List<Trait> traits) {
 		this.traits = traits;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 }

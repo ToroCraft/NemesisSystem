@@ -22,7 +22,7 @@ public class EntityDecorator {
 		entity.addTag(TAG);
 		entity.getEntityData().setUniqueId(NBT_ID, nemesis.getId());
 
-		entity.setCustomNameTag(nemesis.getName());
+		entity.setCustomNameTag(nemesis.getName() + " the " + nemesis.getTitle());
 
 		ItemStack helmet = nemesis.getArmorInventory().get(EntityEquipmentSlot.HEAD.getIndex());
 
