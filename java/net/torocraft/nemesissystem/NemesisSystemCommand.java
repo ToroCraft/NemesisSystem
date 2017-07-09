@@ -40,12 +40,6 @@ public class NemesisSystemCommand extends CommandBase {
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
 
-		/*
-		 * nemesis_system create frodare zombie 3
-		 * nemesis_system list
-		 * nemesis_system spawn name
-		 */
-
 		String command = args[0];
 
 		switch (command) {
@@ -68,9 +62,6 @@ public class NemesisSystemCommand extends CommandBase {
 
 	private void gui(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (sender instanceof EntityPlayer) {
-//			System.out.println("****** open gui");
-//			EntityPlayer player = getCommandSenderAsPlayer(sender);
-//			player.openGui(NemesisSystem.INSTANCE, 0, player.world, (int) player.posX, (int) player.posY, (int) player.posZ);
 			NemesisSystem.NETWORK.sendTo(new MessageOpenGui(0), getCommandSenderAsPlayer(sender));
 		}
 	}
