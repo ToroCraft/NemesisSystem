@@ -3,7 +3,7 @@ package net.torocraft.nemesissystem.proxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.torocraft.nemesissystem.gui.NemesisListGuiHandler;
+import net.torocraft.nemesissystem.gui.NemesisSystemGuiHandler;
 
 public class ClientProxy extends CommonProxy {
 
@@ -14,7 +14,7 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void init(FMLInitializationEvent e) {
-		NemesisListGuiHandler.init();
+		NemesisSystemGuiHandler.init();
 		super.init(e);
 	}
 

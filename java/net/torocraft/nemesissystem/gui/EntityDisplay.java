@@ -31,7 +31,7 @@ public class EntityDisplay implements GuiDisplay {
 	private float prevPrevYahHead;
 	private int scale = 1;
 
-	public EntityDisplay(Minecraft mc) {
+	public EntityDisplay() {
 	}
 
 	@Override
@@ -39,11 +39,13 @@ public class EntityDisplay implements GuiDisplay {
 		this.y = y;
 		glX = (float) x + WIDTH / 2;
 		updateScale();
+
+		// TODO rotote model on hover
 	}
 
-	@Override
 	public void setEntity(EntityLivingBase entity) {
 		this.entity = entity;
+		System.out.println("setting entity to " + entity);
 		updateScale();
 	}
 

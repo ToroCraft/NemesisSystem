@@ -9,7 +9,7 @@ import net.torocraft.nemesissystem.handlers.DeathHandler;
 import net.torocraft.nemesissystem.handlers.SetAttackTargetHandler;
 import net.torocraft.nemesissystem.handlers.SpawnHandler;
 import net.torocraft.nemesissystem.handlers.UpdateHandler;
-import net.torocraft.nemesissystem.network.MessageOpenGui;
+import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 
 public class CommonProxy {
 
@@ -29,7 +29,7 @@ public class CommonProxy {
 
 	private void initPackets() {
 		int packetId = 0;
-		MessageOpenGui.init(packetId++);
+		MessageOpenNemesisGui.init(packetId++);
 	}
 
 	public void postInit(FMLPostInitializationEvent e) {

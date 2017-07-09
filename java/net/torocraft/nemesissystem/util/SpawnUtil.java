@@ -15,14 +15,14 @@ import net.minecraft.world.World;
 public class SpawnUtil {
 
 	public static void spawn(World world, String mob, BlockPos pos, int spawnRadius) {
-		Entity entity = getEntityForId(world, mob);
+		Entity entity = getEntityFromString(world, mob);
 		if (!(entity instanceof EntityCreature)) {
 			return;
 		}
 		spawnEntityLiving(world, (EntityCreature) entity, pos, spawnRadius);
 	}
 
-	private static Entity getEntityForId(World world, String entityID) {
+	public static Entity getEntityFromString(World world, String entityID) {
 		String[] parts = entityID.split(":");
 		String domain, entityName;
 		if (parts.length == 2) {

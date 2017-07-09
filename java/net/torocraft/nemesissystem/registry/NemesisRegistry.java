@@ -7,7 +7,10 @@ import java.util.UUID;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.nemesissystem.NemesisSystem;
 
 public class NemesisRegistry extends WorldSavedData {
@@ -57,7 +60,6 @@ public class NemesisRegistry extends WorldSavedData {
 		}
 		System.out.println("Nemesis ID[" + id + "] was not found and could not be loaded!");
 	}
-
 
 	public void register(Nemesis nemesis) {
 		nemeses.add(nemesis);
@@ -165,16 +167,21 @@ public class NemesisRegistry extends WorldSavedData {
 
 	@Override
 	public void readFromNBT(NBTTagCompound c) {
+		nemeses = readNemesesFromNBT(c);
+	}
+
+	public static List<Nemesis> readNemesesFromNBT(NBTTagCompound c) {
 		NBTTagList nbtNemeses = loadNbtList(c);
-		nemeses = new ArrayList<>();
+		ArrayList<Nemesis> nemeses = new ArrayList<>();
 		for (int i = 0; i < nbtNemeses.tagCount(); i++) {
 			Nemesis nemesis = new Nemesis();
 			nemesis.readFromNBT(nbtNemeses.getCompoundTagAt(i));
 			nemeses.add(nemesis);
 		}
+		return nemeses;
 	}
 
-	private NBTTagList loadNbtList(NBTTagCompound c) {
+	private static NBTTagList loadNbtList(NBTTagCompound c) {
 		NBTTagList l = null;
 		try {
 			l = (NBTTagList) c.getTag(NBT_NEMESES);
@@ -189,6 +196,11 @@ public class NemesisRegistry extends WorldSavedData {
 
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound c) {
+		writeNemesesToNBT(c, nemeses);
+		return c;
+	}
+
+	public static void writeNemesesToNBT(NBTTagCompound c, List<Nemesis> nemeses) {
 		NBTTagList nbtNemeses = new NBTTagList();
 		for (Nemesis nemesis : nemeses) {
 			if (!nemesis.isDead()) {
@@ -196,8 +208,6 @@ public class NemesisRegistry extends WorldSavedData {
 			}
 		}
 		c.setTag(NBT_NEMESES, nbtNemeses);
-		return c;
 	}
-
 
 }

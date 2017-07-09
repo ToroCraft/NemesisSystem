@@ -11,7 +11,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.torocraft.nemesissystem.network.MessageOpenGui;
+import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.util.NemesisBuilder;
@@ -62,7 +62,9 @@ public class NemesisSystemCommand extends CommandBase {
 
 	private void gui(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (sender instanceof EntityPlayer) {
-			NemesisSystem.NETWORK.sendTo(new MessageOpenGui(0), getCommandSenderAsPlayer(sender));
+			List<Nemesis> nemeses = NemesisRegistryProvider.get(sender.getEntityWorld()).list();
+			nemeses.removeIf(Nemesis::isDead);
+			NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisGui(nemeses), getCommandSenderAsPlayer(sender));
 		}
 	}
 
