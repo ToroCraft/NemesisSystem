@@ -1,5 +1,6 @@
 package net.torocraft.nemesissystem;
 
+import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -27,6 +28,8 @@ public class NemesisSystem {
 	@Mod.Instance(MODID)
 	public static NemesisSystem INSTANCE;
 
+	public static MinecraftServer SERVER;
+
 	public static SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 
 	@SidedProxy(clientSide = "net.torocraft.nemesissystem.proxy.ClientProxy", serverSide = "net.torocraft.nemesissystem.proxy.ServerProxy")
@@ -49,6 +52,7 @@ public class NemesisSystem {
 
 	@EventHandler
 	public void serverLoad(FMLServerStartingEvent e) {
+		SERVER = e.getServer();
 		e.registerServerCommand(new NemesisSystemCommand());
 	}
 

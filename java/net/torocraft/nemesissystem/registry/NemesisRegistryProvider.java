@@ -9,7 +9,7 @@ public class NemesisRegistryProvider {
 		MapStorage storage = world.getPerWorldStorage();
 		NemesisRegistry instance = (NemesisRegistry) storage.getOrLoadData(NemesisRegistry.class, NemesisRegistry.NAME);
 		if (instance == null) {
-			instance = new NemesisRegistry(world);
+			instance = new NemesisRegistry();
 			storage.setData(NemesisRegistry.NAME, instance);
 		}
 		return instance;

@@ -1,4 +1,4 @@
-package net.torocraft.nemesissystem.gui;
+package net.torocraft.nemesissystem.gui.displays;
 
 public interface GuiDisplay {
 

@@ -6,10 +6,15 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.torocraft.nemesissystem.gui.displays.GuiDisplay;
+import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.Nemesis;
 
 public class GuiNemesis extends GuiScreen {
+
+	private static final int HEIGHT = 230;
+	private static final int WIDTH = 300;
 
 	private GuiButton buttonClose;
 
@@ -38,6 +43,7 @@ public class GuiNemesis extends GuiScreen {
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		drawRect(0, 0, width, height, 0xa0000000);
+		drawRect(0, 0, WIDTH, HEIGHT, 0xa0ffffff);
 		itemDisplays.forEach(GuiDisplay::draw);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 

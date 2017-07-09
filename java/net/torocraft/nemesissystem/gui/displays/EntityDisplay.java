@@ -1,4 +1,4 @@
-package net.torocraft.nemesissystem.gui;
+package net.torocraft.nemesissystem.gui.displays;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

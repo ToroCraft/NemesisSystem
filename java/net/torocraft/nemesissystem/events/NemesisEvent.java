@@ -6,21 +6,15 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 
 public class NemesisEvent extends Event {
 
-    protected final World world;
+    public NemesisEvent() {
 
-    public NemesisEvent(final World world) {
-        this.world = world;
-    }
-
-    public World getWorld() {
-        return world;
     }
 
     public static class Promotion extends NemesisEvent {
         protected final Nemesis nemesis;
 
-        public Promotion(final World world, final Nemesis nemesis) {
-            super(world);
+        public Promotion(final Nemesis nemesis) {
+           // super(world);
             this.nemesis = nemesis;
         }
 
@@ -33,8 +27,8 @@ public class NemesisEvent extends Event {
         protected final Nemesis winner;
         protected final Nemesis loser;
 
-        public Duel(final World world, final Nemesis winner, final Nemesis loser) {
-            super(world);
+        public Duel(final Nemesis winner, final Nemesis loser) {
+            //super(world);
             this.winner = winner;
             this.loser = loser;
         }
@@ -51,8 +45,8 @@ public class NemesisEvent extends Event {
     public static class Register extends NemesisEvent {
         protected final Nemesis nemesis;
 
-        public Register(final World world, final Nemesis nemesis) {
-            super(world);
+        public Register(final Nemesis nemesis) {
+            //super(world);
             this.nemesis = nemesis;
         }
 
@@ -65,8 +59,8 @@ public class NemesisEvent extends Event {
         protected final Nemesis nemesis;
         protected final String slayerName;
 
-        public Death(final World world, final Nemesis nemesis, final String slayerName) {
-            super(world);
+        public Death(final Nemesis nemesis, final String slayerName) {
+           // super(world);
             this.nemesis = nemesis;
             this.slayerName = slayerName;
         }

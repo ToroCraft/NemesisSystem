@@ -20,20 +20,16 @@ public class NemesisRegistry extends WorldSavedData {
 
 	private Random rand = new Random();
 
-	private final World world;
-
 	//TODO add nemesis log (to the nemesis object)
 
 	private List<Nemesis> nemeses = new ArrayList<>();
 
-	public NemesisRegistry(World world) {
+	public NemesisRegistry() {
 		super(NAME);
-		this.world = world;
 	}
 
-	public NemesisRegistry(World world, String s) {
+	public NemesisRegistry(String s) {
 		super(s);
-		this.world = world;
 	}
 
 	public Nemesis getSpawnableNemesis(String className, int chunkX, int chunkZ) {
@@ -41,6 +37,7 @@ public class NemesisRegistry extends WorldSavedData {
 	}
 
 	public void unload(UUID id) {
+		// TODO add a get() method use it instead of these duplicated loops
 		for (Nemesis nemesis : nemeses) {
 			if (id.equals(nemesis.getId())) {
 				nemesis.setLoaded(null);
@@ -67,7 +64,7 @@ public class NemesisRegistry extends WorldSavedData {
 	public void register(Nemesis nemesis) {
 		nemeses.add(nemesis);
 		markDirty();
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Register(world, nemesis));
+		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Register(nemesis));
 		System.out.println(nemesis.getNameAndTitle() + " has established rule of " + nemesis.getX() + "," + nemesis.getZ());
 	}
 
@@ -103,7 +100,7 @@ public class NemesisRegistry extends WorldSavedData {
 
 		// TODO log
 
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Duel(world, victor, loser));
+		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Duel(victor, loser));
 
 		System.out.println(victor.getNameAndTitle() + " defeated " + loser.getNameAndTitle() + " in a fight to the death!");
 
@@ -118,7 +115,7 @@ public class NemesisRegistry extends WorldSavedData {
 
 		//TODO low chance to add trait
 
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Promotion(world, nemesis));
+		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Promotion(nemesis));
 	}
 
 	/**
@@ -132,7 +129,7 @@ public class NemesisRegistry extends WorldSavedData {
 			if (id.equals(nemesis.getId())) {
 				nemesis.setDead(true);
 				System.out.println(nemesis.getNameAndTitle() + " has been slain");
-				MinecraftForge.EVENT_BUS.post(new NemesisEvent.Death(world, nemesis, slayerName));
+				MinecraftForge.EVENT_BUS.post(new NemesisEvent.Death(nemesis, slayerName));
 				markDirty();
 				return;
 			}
