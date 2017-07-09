@@ -40,7 +40,7 @@ public class Nemesis {
 	private int z;
 	private UUID id;
 	private List<Trait> traits;
-	private boolean loaded;
+	private Integer loaded;
 
 	/**
 	 * This field is not persisted
@@ -58,7 +58,7 @@ public class Nemesis {
 
 	@Override
 	public String toString() {
-		return name + " the " + title + " (" + (loaded ? "LOADED" : "UNLOADED" ) + " level:" + level + " loc:" + x + "," + z + ") " + mob + " " + traits.get(0);
+		return name + " the " + title + " (" + (loaded != null ? "LOADED" : "UNLOADED" ) + " level:" + level + " loc:" + x + "," + z + ") " + mob + " " + traits.get(0);
 	}
 
 	public void readFromNBT(NBTTagCompound c) {
@@ -71,7 +71,9 @@ public class Nemesis {
 		z = c.getInteger(NBT_Z);
 		id = c.getUniqueId(NBT_ID);
 		title = c.getString(NBT_TITLE);
-		loaded = c.getBoolean(NBT_LOADED);
+		if(c.hasKey(NBT_LOADED)){
+			loaded = c.getInteger(NBT_LOADED);
+		}
 		readTraits(c);
 		loadAllItems(NBT_HANDS, c, handInventory);
 		loadAllItems(NBT_ARMOR, c, armorInventory);
@@ -85,7 +87,9 @@ public class Nemesis {
 		c.setInteger(NBT_Z, z);
 		c.setUniqueId(NBT_ID, id);
 		c.setString(NBT_TITLE, title);
-		c.setBoolean(NBT_LOADED, loaded);
+		if(loaded != null){
+			c.setInteger(NBT_LOADED, loaded);
+		}
 		writeTraits(c);
 		saveAllItems(NBT_HANDS, c, handInventory);
 		saveAllItems(NBT_ARMOR, c, armorInventory);
@@ -235,10 +239,14 @@ public class Nemesis {
 	}
 
 	public boolean isLoaded() {
+		return loaded != null;
+	}
+
+	public Integer getLoaded() {
 		return loaded;
 	}
 
-	public void setLoaded(boolean loaded) {
+	public void setLoaded(Integer loaded) {
 		this.loaded = loaded;
 	}
 

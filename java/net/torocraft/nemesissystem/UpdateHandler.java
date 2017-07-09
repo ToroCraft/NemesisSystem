@@ -214,9 +214,6 @@ public class UpdateHandler {
 
 	@SubscribeEvent
 	public void onDrops(LivingDropsEvent event) {
-
-		System.out.println("drops event");
-
 		World world = event.getEntity().getEntityWorld();
 
 		if (world.isRemote || !(event.getEntity() instanceof EntityCreature)) {
@@ -285,12 +282,15 @@ public class UpdateHandler {
 			return;
 		}
 
+		NemesisRegistryProvider.get(nemesisEntity.world).unload(nemesis.getId());
+
 		if (attacker == null || !(attacker instanceof EntityLivingBase)) {
 			System.out.println("nemesis was not killed by entity");
 			return;
 		}
 
 		NemesisRegistryProvider.get(nemesisEntity.world).setDead(nemesis.getId());
+
 
 		findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
 				.forEach((EntityCreature guard) -> guard.setAttackTarget(null));

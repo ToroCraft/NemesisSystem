@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.storage.WorldSavedData;
@@ -34,24 +35,26 @@ public class NemesisRegistry extends WorldSavedData {
 	public void unload(UUID id) {
 		for (Nemesis nemesis : nemeses) {
 			if (id.equals(nemesis.getId())) {
-				nemesis.setLoaded(false);
+				nemesis.setLoaded(null);
 				System.out.println("Unloaded: " + nemesis);
-				break;
+				markDirty();
+				return;
 			}
 		}
-		markDirty();
+		System.out.println("Nemesis ID[" + id + "] was not found and could not be unloaded!");
 	}
 
 
-	public void load(UUID id) {
+	public void load(EntityCreature entity, UUID id) {
 		for (Nemesis nemesis : nemeses) {
 			if (id.equals(nemesis.getId())) {
-				nemesis.setLoaded(true);
+				nemesis.setLoaded(entity.getEntityId());
 				System.out.println("Loaded: " + nemesis);
-				break;
+				markDirty();
+				return;
 			}
 		}
-		markDirty();
+		System.out.println("Nemesis ID[" + id + "] was not found and could not be loaded!");
 	}
 
 
@@ -59,17 +62,17 @@ public class NemesisRegistry extends WorldSavedData {
 		nemeses.add(nemesis);
 		markDirty();
 		System.out.println(nemesis.getNameAndTitle() + " has established rule of " + nemesis.getX() + "," + nemesis.getZ());
-		//TODO overwrite if already exists
 	}
 
 	public void promote(UUID id) {
 		for (Nemesis nemesis : nemeses) {
 			if (id.equals(nemesis.getId())) {
 				promote(nemesis);
-				break;
+				markDirty();
+				return;
 			}
 		}
-		markDirty();
+		System.out.println("Nemesis ID[" + id + "] was not found and could not be promoted!");
 	}
 
 	public void duel(Nemesis opponentOne, Nemesis opponentTwo) {
@@ -120,10 +123,11 @@ public class NemesisRegistry extends WorldSavedData {
 			if (id.equals(nemesis.getId())) {
 				nemesis.setDead(true);
 				System.out.println(nemesis.getNameAndTitle() + " has been slain");
-				break;
+				markDirty();
+				return;
 			}
 		}
-		markDirty();
+		System.out.println("Nemesis ID[" + id + "] was not found and could not be marked as dead!");
 	}
 
 	public List<Nemesis> list() {

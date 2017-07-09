@@ -29,7 +29,7 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 
 public class SpawnHandler {
 	public static final UUID EMPTY_UUID = new UUID(0, 0);
-	public static final int NEMESIS_COUNT = 4;
+	public static final int NEMESIS_COUNT = 16;
 
 	public static final String TAG_BODY_GUARD = "nemesis_body_guard";
 
@@ -63,7 +63,7 @@ public class SpawnHandler {
 		EntityCreature nemesisEntity = (EntityCreature) event.getEntity();
 
 		EntityDecorator.decorate(nemesisEntity, nemesis);
-		NemesisRegistryProvider.get(world).load(nemesis.getId());
+		NemesisRegistryProvider.get(world).load(nemesisEntity, nemesis.getId());
 		spawnBodyGuard(nemesisEntity, nemesis);
 		nemesisAnnounceEffects(nemesisEntity);
 	}
@@ -90,7 +90,7 @@ public class SpawnHandler {
 		List<Nemesis> nemeses = registry.list();
 		nemeses.removeIf(Nemesis::isDead);
 
-		if (nemeses.size() >= NEMESIS_COUNT / 2) {
+		if (nemeses.size() >= (NEMESIS_COUNT / 2)) {
 			return;
 		}
 
