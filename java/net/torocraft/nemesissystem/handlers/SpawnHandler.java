@@ -71,7 +71,7 @@ public class SpawnHandler {
 			world.addWeatherEffect(new EntityLightningBolt(nemesisEntity.world, nemesisEntity.posX, nemesisEntity.posY, nemesisEntity.posZ, true));
 		}
 
-		// TODO sound horn
+		// TODO sound horn (this would force a clients to have the mod)
 
 		// TODO chat to near by players
 	}
@@ -81,6 +81,10 @@ public class SpawnHandler {
 	}
 
 	private void spawnBodyGuard(EntityLiving entity, Nemesis nemesis) {
+
+		// TODO high level nemeses spawn other nemesis in their body guard
+
+		// TODO add body guard ranks? (different armor, ai, weapons)
 
 		int count = 5 + nemesis.getLevel() * 5;
 

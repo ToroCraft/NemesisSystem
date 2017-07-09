@@ -86,6 +86,7 @@ public class UpdateHandler {
 
 		// TODO look for closer target
 
+		// TODO high level nemeses probably should attack faster than lower level ones
 		HandleNemesisTraits.handleTraits(nemesis, entity);
 	}
 

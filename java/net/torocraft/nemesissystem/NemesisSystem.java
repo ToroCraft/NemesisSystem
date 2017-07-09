@@ -7,6 +7,8 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.torocraft.nemesissystem.proxy.CommonProxy;
 
 @Mod(modid = NemesisSystem.MODID, version = NemesisSystem.VERSION, name = NemesisSystem.MODNAME)
@@ -24,6 +26,8 @@ public class NemesisSystem {
 
 	@Mod.Instance(MODID)
 	public static NemesisSystem INSTANCE;
+
+	public static SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 
 	@SidedProxy(clientSide = "net.torocraft.nemesissystem.proxy.ClientProxy", serverSide = "net.torocraft.nemesissystem.proxy.ServerProxy")
 	public static CommonProxy proxy;

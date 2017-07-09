@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.torocraft.nemesissystem.network.MessageOpenGui;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.util.NemesisBuilder;
@@ -57,8 +58,20 @@ public class NemesisSystemCommand extends CommandBase {
 		case "clear":
 			clear(server, sender, args);
 			return;
+		case "gui":
+			gui(server, sender, args);
+			return;
 		default:
 			throw new WrongUsageException("commands.nemesis_system.usage");
+		}
+	}
+
+	private void gui(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+		if (sender instanceof EntityPlayer) {
+//			System.out.println("****** open gui");
+//			EntityPlayer player = getCommandSenderAsPlayer(sender);
+//			player.openGui(NemesisSystem.INSTANCE, 0, player.world, (int) player.posX, (int) player.posY, (int) player.posZ);
+			NemesisSystem.NETWORK.sendTo(new MessageOpenGui(0), getCommandSenderAsPlayer(sender));
 		}
 	}
 
@@ -69,7 +82,7 @@ public class NemesisSystemCommand extends CommandBase {
 	private void list(MinecraftServer server, ICommandSender sender, String[] args) {
 		// TODO dimID support
 		List<Nemesis> l = NemesisRegistryProvider.get(server.getWorld(0)).list();
-		l.removeIf((Nemesis n) -> n.isDead());
+		l.removeIf(Nemesis::isDead);
 		StringBuilder s = new StringBuilder();
 		for (Nemesis nemesis : l) {
 			s.append(" * ").append(nemesis).append("\n");
@@ -125,7 +138,7 @@ public class NemesisSystemCommand extends CommandBase {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
 		if (args.length == 1) {
-			return getListOfStringsMatchingLastWord(args, "create", "list", "clear");
+			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui");
 		}
 		String command = args[0];
 		switch (command) {

@@ -32,6 +32,7 @@ public class HandleNemesisTraits {
 
 	public static void handleTraits(Nemesis nemesis, EntityLiving nemesisEntity) {
 		for (Trait trait : nemesis.getTraits()) {
+			//TODO secondary traits should be used less frequently
 			handleTraitUpdate(nemesisEntity, nemesis, trait);
 		}
 	}
