@@ -1,5 +1,6 @@
 package net.torocraft.nemesissystem.gui;
 
+import net.minecraft.client.gui.Gui;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
@@ -13,9 +14,9 @@ public class NemesisListGuiHandler implements IGuiHandler {
 	public static final int TUTORIAL_GUI = 0;
 
 	public static void init() {
-		// FIXME: WTF? NemesisSystem.NETWORK.registerGuiHandler(NemesisSystem.INSTANCE, new NemesisListGuiHandler());
+		NetworkRegistry.INSTANCE.registerGuiHandler(NemesisSystem.INSTANCE, new NemesisListGuiHandler());
 	}
-	
+
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
 		return null;

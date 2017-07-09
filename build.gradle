@@ -9,7 +9,7 @@ buildscript {
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.12-1.1"
+version = "1.12-1.0"
 group = "net.torocraft.nemesissystem"
 archivesBaseName = "nemesissystem"
 
@@ -19,9 +19,9 @@ compileJava {
 }
 
 minecraft {
-    version = "1.12-14.21.0.2344"
+    version = "1.12-14.21.1.2405"
     runDir = "run"
-    mappings = "snapshot_20170617"
+    mappings = "snapshot_20170624"
 }
 
 dependencies {
@@ -31,10 +31,12 @@ dependencies {
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
+
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+        expand 'version': project.version, 'mcversion': project.minecraft.version
     }
+
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
