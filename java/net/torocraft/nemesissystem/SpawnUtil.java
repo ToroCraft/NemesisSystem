@@ -47,7 +47,6 @@ public class SpawnUtil {
 		findAndSetSuitableSpawnLocation(entity, pos, spawnRadius);
 		world.spawnEntity(entity);
 		entity.playLivingSound();
-		world.addWeatherEffect(new EntityLightningBolt(world, x, y, z, false));
 		return true;
 	}
 

@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
+import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
@@ -58,18 +59,30 @@ public class SpawnHandler {
 			return;
 		}
 
+		World world = event.getWorld();
+		EntityCreature nemesisEntity = (EntityCreature) event.getEntity();
+
+		EntityDecorator.decorate(nemesisEntity, nemesis);
+		NemesisRegistryProvider.get(world).load(nemesis.getId());
+		spawnBodyGuard(nemesisEntity, nemesis);
+		nemesisAnnounceEffects(nemesisEntity);
+	}
+
+	private void nemesisAnnounceEffects(EntityCreature nemesisEntity) {
+		World world = nemesisEntity.world;
+
+		if (canSeeSky(nemesisEntity)) {
+			world.addWeatherEffect(new EntityLightningBolt(nemesisEntity.world, nemesisEntity.posX, nemesisEntity.posY, nemesisEntity.posZ, false));
+		}
+
 		// TODO sound horn
 
 		// TODO chat to near by players
-
-		EntityDecorator.decorate((EntityLiving) event.getEntity(), nemesis);
-
-		spawnBodyGuard((EntityLiving) event.getEntity(), nemesis);
-
-		System.out.println("Spawning: " + event.getEntity().getName() + " at " + event.getEntity().getPosition());
 	}
 
-
+	private static boolean canSeeSky(Entity e) {
+		return e.world.canSeeSky(new BlockPos(e.posX, e.posY + (double) e.getEyeHeight(), e.posZ));
+	}
 
 	private void handleRandomPromotions(World world, EntityCreature entity) {
 		NemesisRegistry registry = NemesisRegistryProvider.get(world);
@@ -195,11 +208,11 @@ public class SpawnHandler {
 
 		nemeses.removeIf(nemesis -> {
 
-			if(!nemesis.getMob().equals(entityType)){
+			if (!nemesis.getMob().equals(entityType)) {
 				return true;
 			}
 
-			if(entity.getDistanceSq(nemesis.getX(), entity.posY, nemesis.getZ()) > nemesis.getRangeSq()){
+			if (entity.getDistanceSq(nemesis.getX(), entity.posY, nemesis.getZ()) > nemesis.getRangeSq()) {
 				return true;
 			}
 
