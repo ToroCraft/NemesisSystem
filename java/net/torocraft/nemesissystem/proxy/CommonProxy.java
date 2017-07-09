@@ -1,8 +1,10 @@
 package net.torocraft.nemesissystem.proxy;
 
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.torocraft.nemesissystem.events.NotificationHandlers;
 import net.torocraft.nemesissystem.handlers.AttackHandler;
 import net.torocraft.nemesissystem.handlers.ChunkLoadHandler;
 import net.torocraft.nemesissystem.handlers.DeathHandler;
@@ -14,7 +16,7 @@ import net.torocraft.nemesissystem.network.MessageOpenGui;
 public class CommonProxy {
 
 	public void preInit(FMLPreInitializationEvent e) {
-
+		MinecraftForge.EVENT_BUS.register(new NotificationHandlers());
 	}
 
 	public void init(FMLInitializationEvent e) {

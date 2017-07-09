@@ -194,12 +194,10 @@ public class DeathHandler {
 			return;
 		}
 
-		NemesisRegistryProvider.get(nemesisEntity.world).setDead(nemesis.getId());
+		NemesisRegistryProvider.get(nemesisEntity.world).setDead(nemesis.getId(), attacker.getDisplayName().getFormattedText());
 
 		NemesisUtil.findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
 				.forEach((EntityCreature guard) -> guard.setAttackTarget(null));
-
-		// TODO post message
 
 		// TODO log death
 
