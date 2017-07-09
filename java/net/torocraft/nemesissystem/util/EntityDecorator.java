@@ -1,16 +1,14 @@
-package net.torocraft.nemesissystem;
+package net.torocraft.nemesissystem.util;
 
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.registry.Nemesis;
 
 public class EntityDecorator {
-
-	public static final String NBT_ID = "torocraft_nemesis_id";
-	public static final String TAG = "torocraft_nemesis";
 
 	/**
 	 * Convert the provided entity into the given nemesis
@@ -19,8 +17,8 @@ public class EntityDecorator {
 	 * @param nemesis the nemesis to create
 	 */
 	public static void decorate(EntityLiving entity, Nemesis nemesis) {
-		entity.addTag(TAG);
-		entity.getEntityData().setUniqueId(NBT_ID, nemesis.getId());
+		entity.addTag(NemesisSystem.TAG_NEMESIS);
+		entity.getEntityData().setUniqueId(NemesisSystem.NBT_NEMESIS_ID, nemesis.getId());
 
 		entity.setCustomNameTag(nemesis.getName() + " the " + nemesis.getTitle());
 

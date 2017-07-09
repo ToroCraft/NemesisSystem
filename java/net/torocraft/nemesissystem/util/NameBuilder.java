@@ -1,4 +1,4 @@
-package net.torocraft.nemesissystem;
+package net.torocraft.nemesissystem.util;
 
 import java.util.Random;
 

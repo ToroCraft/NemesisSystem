@@ -1,4 +1,4 @@
-package net.torocraft.nemesissystem;
+package net.torocraft.nemesissystem.proxy;
 
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;

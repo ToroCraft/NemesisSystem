@@ -1,4 +1,4 @@
-package net.torocraft.nemesissystem;
+package net.torocraft.nemesissystem.registry;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.storage.WorldSavedData;
+import net.torocraft.nemesissystem.NemesisSystem;
 
 public class NemesisRegistry extends WorldSavedData {
 	public static final String NAME = NemesisSystem.MODID + ":NemesisSaveData";

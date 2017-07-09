@@ -1,4 +1,4 @@
-package net.torocraft.nemesissystem;
+package net.torocraft.nemesissystem.registry;
 
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
