@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -17,6 +18,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.Nemesis;
@@ -70,6 +72,17 @@ public class DeathHandler {
 			System.out.println("nemesis death event");
 			handleNemesisDeath((EntityCreature) event.getEntity(), slayer);
 		}
+	}
+
+	@SubscribeEvent
+	public void dropExperience(LivingExperienceDropEvent event) {
+		if (!event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
+			return;
+		}
+
+		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity((EntityCreature) event.getEntity());
+		//TODO determine some kind of formula for scaling the amount of experience received
+		event.setDroppedExperience(event.getOriginalExperience() * (nemesis.getLevel() + 1));
 	}
 
 	private void handlePlayerDeath(EntityPlayer player, EntityCreature slayer) {
@@ -186,9 +199,6 @@ public class DeathHandler {
 		// TODO post message
 
 		// TODO log death
-
-
-		// TODO drop extra XP
 
 	}
 }
