@@ -59,6 +59,7 @@ public class NemesisBuilder {
 
 		nemesis.setId(UUID.randomUUID());
 		nemesis.setName(NameBuilder.build());
+		// TODO pick a title that is not currently in use
 		nemesis.setTitle(NameBuilder.TITLES[rand.nextInt(NameBuilder.TITLES.length)]);
 
 		nemesis.setLevel(level);
