@@ -82,6 +82,8 @@ public class NemesisRegistry extends WorldSavedData {
 		Nemesis victor;
 		Nemesis loser;
 
+		// TODO there should be some weight here so that higher leveled nemeses have more chance to win a duel
+
 		if(rand.nextBoolean()){
 			victor = opponentOne;
 			loser = opponentTwo;
