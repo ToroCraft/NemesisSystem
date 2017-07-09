@@ -1,3 +1,8 @@
 #PARSE_ESCAPES
 commands.nemesis_system.success.list=Registered Nemeses:\n%s
 commands.nemesis_system.success.create=Created: %s
+
+notifications.nemesis_system.promotion=%s has been promoted to level %s
+notifications.nemesis_system.duel=%s defeated %s in a fight to the death!
+notifications.nemesis_system.register=%s has established rule of %s, %s
+notifications.nemesis_system.death=%s has been slain by %s

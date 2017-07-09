@@ -9,9 +9,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.common.MinecraftForge;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.events.NemesisEvent;
 
 public class NemesisRegistry extends WorldSavedData {
 	public static final String NAME = NemesisSystem.MODID + ":NemesisSaveData";
@@ -20,16 +20,20 @@ public class NemesisRegistry extends WorldSavedData {
 
 	private Random rand = new Random();
 
+	private final World world;
+
 	//TODO add nemesis log (to the nemesis object)
 
 	private List<Nemesis> nemeses = new ArrayList<>();
 
-	public NemesisRegistry() {
+	public NemesisRegistry(World world) {
 		super(NAME);
+		this.world = world;
 	}
 
-	public NemesisRegistry(String s) {
+	public NemesisRegistry(World world, String s) {
 		super(s);
+		this.world = world;
 	}
 
 	public Nemesis getSpawnableNemesis(String className, int chunkX, int chunkZ) {
@@ -48,7 +52,6 @@ public class NemesisRegistry extends WorldSavedData {
 		System.out.println("Nemesis ID[" + id + "] was not found and could not be unloaded!");
 	}
 
-
 	public void load(EntityCreature entity, UUID id) {
 		for (Nemesis nemesis : nemeses) {
 			if (id.equals(nemesis.getId())) {
@@ -64,6 +67,7 @@ public class NemesisRegistry extends WorldSavedData {
 	public void register(Nemesis nemesis) {
 		nemeses.add(nemesis);
 		markDirty();
+		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Register(world, nemesis));
 		System.out.println(nemesis.getNameAndTitle() + " has established rule of " + nemesis.getX() + "," + nemesis.getZ());
 	}
 
@@ -86,20 +90,20 @@ public class NemesisRegistry extends WorldSavedData {
 
 		// TODO there should be some weight here so that higher leveled nemeses have more chance to win a duel
 
-		if(rand.nextBoolean()){
+		if (rand.nextBoolean()) {
 			victor = opponentOne;
 			loser = opponentTwo;
-		}else{
+		} else {
 			victor = opponentTwo;
 			loser = opponentOne;
 		}
 
-		setDead(loser.getId());
+		setDead(loser.getId(), victor.getNameAndTitle());
 		promote(victor.getId());
 
 		// TODO log
 
-		// TODO announce
+		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Duel(world, victor, loser));
 
 		System.out.println(victor.getNameAndTitle() + " defeated " + loser.getNameAndTitle() + " in a fight to the death!");
 
@@ -114,13 +118,13 @@ public class NemesisRegistry extends WorldSavedData {
 
 		//TODO low chance to add trait
 
-		//TODO announce
+		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Promotion(world, nemesis));
 	}
 
 	/**
 	 * Remove nemesis from registry
 	 */
-	public void setDead(UUID id) {
+	public void setDead(UUID id, String slayerName) {
 		if (id == null) {
 			return;
 		}
@@ -128,6 +132,7 @@ public class NemesisRegistry extends WorldSavedData {
 			if (id.equals(nemesis.getId())) {
 				nemesis.setDead(true);
 				System.out.println(nemesis.getNameAndTitle() + " has been slain");
+				MinecraftForge.EVENT_BUS.post(new NemesisEvent.Death(world, nemesis, slayerName));
 				markDirty();
 				return;
 			}
