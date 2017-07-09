@@ -31,11 +31,14 @@ public class NemesisDisplay implements GuiDisplay {
 	}
 
 	public void setNemesis(Nemesis nemesis) {
-		System.out.println("set nemesis to " + nemesis);
 		this.nemesis = nemesis;
+		if(nemesis == null){
+			entityDisplay.setEntity(null);
+			return;
+		}
+
 		EntityCreature entity = createEntity(nemesis);
 		if (entity == null) {
-			System.out.println("failed to create entity from nemesis");
 			return;
 		}
 		EntityDecorator.decorate(entity, nemesis);
@@ -68,7 +71,7 @@ public class NemesisDisplay implements GuiDisplay {
 	}
 
 	private void drawWork() {
-		GuiScreen.drawRect(0, 0, 280, 46, 0x60000000);
+		GuiScreen.drawRect(0, 0, 290, 46, 0x60000000);
 		if(nemesis != null){
 			drawNemesisInfo();
 		}

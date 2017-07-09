@@ -2,6 +2,10 @@
 commands.nemesis_system.success.list=Registered Nemeses:\n%s
 commands.nemesis_system.success.create=Created: %s
 
+gui.next=Next
+gui.previous=Previous
+gui.close=Close
+
 notifications.nemesis_system.promotion=%s has been promoted to level %s
 notifications.nemesis_system.duel=%s defeated %s in a fight to the death!
 notifications.nemesis_system.register=%s has established rule of %s, %s

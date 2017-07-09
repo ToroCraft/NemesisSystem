@@ -41,11 +41,12 @@ public class EntityDisplay implements GuiDisplay {
 		updateScale();
 
 		// TODO rotote model on hover
+
+		// TODO animate model
 	}
 
 	public void setEntity(EntityLivingBase entity) {
 		this.entity = entity;
-		System.out.println("setting entity to " + entity);
 		updateScale();
 	}
 
