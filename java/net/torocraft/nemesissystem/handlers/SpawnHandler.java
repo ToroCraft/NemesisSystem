@@ -68,7 +68,7 @@ public class SpawnHandler {
 		World world = nemesisEntity.world;
 
 		if (canSeeSky(nemesisEntity)) {
-			world.addWeatherEffect(new EntityLightningBolt(nemesisEntity.world, nemesisEntity.posX, nemesisEntity.posY, nemesisEntity.posZ, false));
+			world.addWeatherEffect(new EntityLightningBolt(nemesisEntity.world, nemesisEntity.posX, nemesisEntity.posY, nemesisEntity.posZ, true));
 		}
 
 		// TODO sound horn
