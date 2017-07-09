@@ -8,7 +8,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import javax.annotation.processing.SupportedSourceVersion;
 import java.util.List;
 
 public class NotificationHandlers {
