@@ -81,14 +81,18 @@ public class NemesisRegistry extends WorldSavedData {
 	}
 
 	public void duel(Nemesis opponentOne, Nemesis opponentTwo) {
-		// TODO add some more rolls here, or do something else fun
-
 		Nemesis victor;
 		Nemesis loser;
 
-		// TODO there should be some weight here so that higher leveled nemeses have more chance to win a duel
+		int attack1 = 0;
+		int attack2 = 0;
 
-		if (rand.nextBoolean()) {
+		while (attack1 != attack2) {
+			attack1 = rand.nextInt(opponentOne.getLevel()) + rand.nextInt(3);
+			attack2 = rand.nextInt(opponentOne.getLevel()) + rand.nextInt(3);
+		}
+
+		if (attack1 > attack2) {
 			victor = opponentOne;
 			loser = opponentTwo;
 		} else {

@@ -1,7 +1,5 @@
 package net.torocraft.nemesissystem.handlers;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.entity.Entity;
@@ -21,7 +19,6 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.Nemesis.Trait;
@@ -104,29 +101,7 @@ public class DeathHandler {
 	}
 
 	private void nemesisDuelIfCrowed(World world, Nemesis exclude) {
-		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
-		nemeses.removeIf(Nemesis::isDead);
-
-		if (nemeses.size() < NemesisConfig.NEMESIS_LIMIT) {
-			return;
-		}
-
-		nemeses.removeIf(Nemesis::isLoaded);
-		if (exclude != null) {
-			nemeses.removeIf((Nemesis n) -> n.getId().equals(exclude.getId()));
-		}
-
-		if (nemeses.size() < 2) {
-			//not enough unloaded nemeses to duel, limit will be exceeded
-			return;
-		}
-
-		//TODO factor in distance, the closer the nemeses the more likely they should be to duel
-
-		// get the weaklings
-		Collections.shuffle(nemeses);
-		nemeses.sort(Comparator.comparingInt(Nemesis::getLevel));
-		NemesisRegistryProvider.get(world).duel(nemeses.get(0), nemeses.get(1));
+		NemesisUtil.duel(world, exclude, true);
 	}
 
 	private void handleNemesisDrops(List<EntityItem> drops, EntityCreature nemesisEntity) {

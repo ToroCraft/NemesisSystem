@@ -15,6 +15,7 @@ import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.util.NemesisBuilder;
+import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class NemesisSystemCommand extends CommandBase {
 
@@ -52,11 +53,20 @@ public class NemesisSystemCommand extends CommandBase {
 		case "clear":
 			clear(server, sender, args);
 			return;
+		case "duel":
+			duel(server, sender, args);
+			return;
 		case "gui":
 			gui(server, sender, args);
 			return;
 		default:
 			throw new WrongUsageException("commands.nemesis_system.usage");
+		}
+	}
+
+	private void duel(MinecraftServer server, ICommandSender sender, String[] args) {
+		if (sender instanceof EntityPlayer) {
+			NemesisUtil.duel(sender.getEntityWorld(), null, false);
 		}
 	}
 
@@ -131,7 +141,7 @@ public class NemesisSystemCommand extends CommandBase {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
 		if (args.length == 1) {
-			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui");
+			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui", "duel");
 		}
 		String command = args[0];
 		switch (command) {

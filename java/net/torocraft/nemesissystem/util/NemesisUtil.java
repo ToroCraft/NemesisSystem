@@ -1,5 +1,7 @@
 package net.torocraft.nemesissystem.util;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -178,5 +180,30 @@ public class NemesisUtil {
 		}
 
 		return entities.get(0);
+	}
+
+	public static void duel(World world, Nemesis exclude, boolean onlyIfCrowded) {
+		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
+		nemeses.removeIf(Nemesis::isDead);
+
+		if (onlyIfCrowded && nemeses.size() < NemesisConfig.NEMESIS_LIMIT) {
+			return;
+		}
+
+		nemeses.removeIf(Nemesis::isLoaded);
+		if (exclude != null) {
+			nemeses.removeIf((Nemesis n) -> n.getId().equals(exclude.getId()));
+		}
+
+		if (nemeses.size() < 2) {
+			return;
+		}
+
+		//TODO factor in distance, the closer the nemeses the more likely they should be to duel
+
+		// get the weaklings
+		Collections.shuffle(nemeses);
+		nemeses.sort(Comparator.comparingInt(Nemesis::getLevel));
+		NemesisRegistryProvider.get(world).duel(nemeses.get(0), nemeses.get(1));
 	}
 }

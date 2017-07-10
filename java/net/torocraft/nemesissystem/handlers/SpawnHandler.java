@@ -137,6 +137,14 @@ public class SpawnHandler {
 		nemeses.removeIf(Nemesis::isLoaded);
 		nemeses.removeIf(Nemesis::isDead);
 
+		// TODO only spawn once a day?
+
+		// TODO add a spawn chance, unless nemesis has not been spawned in a long time
+
+		// TODO figure out how to handle nemeses that cannot spawn in their location (Husk not in the desert)
+
+		// TODO increase Nemesis level every time they spawn but are not killed
+		
 		if (nemeses == null || nemeses.size() < 1) {
 			return null;
 		}
