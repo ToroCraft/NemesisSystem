@@ -1,6 +1,5 @@
 package net.torocraft.nemesissystem.gui;
 
-import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +23,7 @@ public class GuiNemesis extends GuiScreen {
 	private int buttonY;
 
 	private GuiButton buttonNext;
-	private GuiButton buttonPreviuos;
+	private GuiButton buttonPrevious;
 	private GuiButton buttonClose;
 	private String currentPage = "";
 	private int page = 0;
@@ -36,7 +35,7 @@ public class GuiNemesis extends GuiScreen {
 
 	public GuiNemesis() {
 		for (int i = 0; i < 4; i++) {
-			NemesisDisplay display = new NemesisDisplay();
+			NemesisDisplay display = new NemesisDisplay(this);
 			display.setPosition(5, 5 + (48 * i));
 			itemDisplays.add(display);
 		}
@@ -96,18 +95,18 @@ public class GuiNemesis extends GuiScreen {
 
 		buttonClose = new GuiButton(0, 5 + offsetX, buttonY, 60, 20, I18n.format("gui.close"));
 		buttonNext = new GuiButton(0, (WIDTH - 65) + offsetX, buttonY, 60, 20, I18n.format("gui.next"));
-		buttonPreviuos = new GuiButton(0, (WIDTH - 150) + offsetX, buttonY, 60, 20, I18n.format("gui.previous"));
+		buttonPrevious = new GuiButton(0, (WIDTH - 150) + offsetX, buttonY, 60, 20, I18n.format("gui.previous"));
 
 
 		buttonList.add(buttonClose);
 		buttonList.add(buttonNext);
-		buttonList.add(buttonPreviuos);
+		buttonList.add(buttonPrevious);
 		setPage(page);
 	}
 
 	private void updatePager() {
 		currentPage = (page + 1) + "/" + (lastPage + 1);
-		buttonPreviuos.enabled = page != 0;
+		buttonPrevious.enabled = page != 0;
 		buttonNext.enabled = page < lastPage;
 	}
 
@@ -118,7 +117,7 @@ public class GuiNemesis extends GuiScreen {
 			closeGui();
 		} else if (button == buttonNext) {
 			setPage(++page);
-		} else if (button == buttonPreviuos) {
+		} else if (button == buttonPrevious) {
 			setPage(--page);
 		}
 	}

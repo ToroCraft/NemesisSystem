@@ -24,8 +24,10 @@ public class NemesisDisplay implements GuiDisplay {
 	private float y;
 	private Nemesis nemesis;
 	private final FontRenderer fontRenderer = mc.fontRenderer;
+	private final GuiScreen gui;
 
-	public NemesisDisplay() {
+	public NemesisDisplay(GuiScreen gui) {
+		this.gui = gui;
 		EntityZombie entity = new EntityZombie(mc.world);
 		entityDisplay.setPosition(0, 4);
 	}
@@ -78,11 +80,33 @@ public class NemesisDisplay implements GuiDisplay {
 		drawNemesisModel();
 	}
 
+	private void drawLevelIcons(int x, int y) {
+		if(nemesis == null){
+			return;
+		}
+		mc.renderEngine.bindTexture(Gui.ICONS);
+		for(int i = 0; i < 10; i++){
+			heartContainer(x + (i * 9), y);
+		}
+		for(int i = 0; i < nemesis.getLevel(); i++){
+			heartFull(x + (i * 9), y);
+		}
+
+	}
+
+	private void heartContainer(int x, int y) {
+		gui.drawTexturedModalRect(x, y, 16, 0, 9, 9);
+	}
+
+	private void heartFull(int x, int y) {
+		gui.drawTexturedModalRect(x, y, 16 + 36, 0, 9, 9);
+	}
+
 	private void drawNemesisInfo() {
 		GlStateManager.translate(51, 4, 0);
 
 		fontRenderer.drawString(nemesis.getNameAndTitle(), 0, 0, 0xffffffff);
-		fontRenderer.drawString(nemesis.getNameAndTitle(), 0, 11, 0xffb0b0b0);
+		drawLevelIcons(0, 10);
 
 		// TODO level
 
@@ -91,6 +115,8 @@ public class NemesisDisplay implements GuiDisplay {
 		// TODO traits
 
 		// TODO journal
+
+		// TODO distance
 
 		GlStateManager.translate(-51, -4, 0);
 	}
