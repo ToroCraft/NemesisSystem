@@ -1,17 +1,9 @@
 package net.torocraft.nemesissystem.events;
 
-
-import com.google.common.base.Predicates;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import java.util.List;
 import net.torocraft.nemesissystem.NemesisSystem;
 
 public class NotificationHandlers {

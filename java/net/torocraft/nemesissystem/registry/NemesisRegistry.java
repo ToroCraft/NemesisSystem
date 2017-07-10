@@ -12,6 +12,7 @@ import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.events.NemesisEvent;
+import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class NemesisRegistry extends WorldSavedData {
 	public static final String NAME = NemesisSystem.MODID + ":NemesisSaveData";
@@ -111,7 +112,7 @@ public class NemesisRegistry extends WorldSavedData {
 
 		System.out.println(nemesis.getNameAndTitle() + " has been promoted to level " + nemesis.getLevel());
 
-		//TODO add enchants
+		NemesisUtil.enchantArmor(nemesis);
 
 		//TODO low chance to add trait
 
