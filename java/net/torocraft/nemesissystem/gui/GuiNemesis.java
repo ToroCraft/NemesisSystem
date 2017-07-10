@@ -1,5 +1,7 @@
 package net.torocraft.nemesissystem.gui;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +12,8 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.torocraft.nemesissystem.gui.displays.GuiDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
+import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
-import net.torocraft.nemesissystem.registry.Nemesis;
 
 public class GuiNemesis extends GuiScreen {
 
@@ -29,6 +31,8 @@ public class GuiNemesis extends GuiScreen {
 	private int page = 0;
 	private int lastPage = 3;
 
+	private List<NemesisDisplayData> nemeses;
+
 	private final Minecraft mc = Minecraft.getMinecraft();
 
 	private final List<NemesisDisplay> itemDisplays = new ArrayList<>(6);
@@ -41,16 +45,25 @@ public class GuiNemesis extends GuiScreen {
 		}
 	}
 
+	@Override
+	public void onGuiClosed() {
+		super.onGuiClosed();
+
+	}
+
 	private void setPage(int page) {
+
+		if(nemeses == null){
+			nemeses = MessageOpenNemesisGui.NEMESES.stream().map(NemesisDisplayData::new).collect(toList());
+		}
+
 		this.page = page;
-		System.out.println("set page " + page);
-		List<Nemesis> nemeses = MessageOpenNemesisGui.NEMESES;
 
 		for (int i = (page * 4); i < ((page + 1) * 4); i++) {
 			if (nemeses.size() > i) {
-				itemDisplays.get(i % 4).setNemesis(nemeses.get(i));
+				itemDisplays.get(i % 4).setData(nemeses.get(i));
 			}else{
-				itemDisplays.get(i % 4).setNemesis(null);
+				itemDisplays.get(i % 4).setData(null);
 			}
 		}
 

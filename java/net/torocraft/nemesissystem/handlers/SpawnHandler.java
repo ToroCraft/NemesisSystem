@@ -57,7 +57,7 @@ public class SpawnHandler {
 
 		World world = event.getWorld();
 		EntityCreature nemesisEntity = (EntityCreature) event.getEntity();
-
+		// TODO check age
 		EntityDecorator.decorate(nemesisEntity, nemesis);
 		NemesisRegistryProvider.get(world).load(nemesisEntity, nemesis.getId());
 		spawnBodyGuard(nemesisEntity, nemesis);

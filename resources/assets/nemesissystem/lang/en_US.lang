@@ -5,6 +5,16 @@ commands.nemesis_system.success.create=Created: %s
 gui.next=Next
 gui.previous=Previous
 gui.close=Close
+gui.location=Location: %d,%d (%dm)
+
+trait.DOUBLE_MELEE=Double Melee
+trait.ARROW=Arrow
+trait.SUMMON=Summon
+trait.REFLECT=Reflection
+trait.HEAT=Heat
+trait.POTION=Potion
+trait.SHIELD=Shield
+trait.TELEPORT=Teleportation
 
 notifications.nemesis_system.promotion=%s has been promoted to level %s
 notifications.nemesis_system.duel=%s defeated %s in a fight to the death!
