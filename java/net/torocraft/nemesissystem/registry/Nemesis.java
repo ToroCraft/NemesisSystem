@@ -40,6 +40,7 @@ public class Nemesis {
 	private UUID id;
 	private List<Trait> traits;
 	private Integer loaded;
+	// TODO add DIM_ID
 
 	/**
 	 * This field is not persisted

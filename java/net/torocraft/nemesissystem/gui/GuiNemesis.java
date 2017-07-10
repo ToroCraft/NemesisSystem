@@ -6,6 +6,8 @@ import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.resources.I18n;
 import net.torocraft.nemesissystem.gui.displays.GuiDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
@@ -16,7 +18,16 @@ public class GuiNemesis extends GuiScreen {
 	private static final int HEIGHT = 230;
 	private static final int WIDTH = 300;
 
+	private int offsetX;
+	private int offsetY;
+	private int buttonY;
+
+	private GuiButton buttonNext;
+	private GuiButton buttonPrevious;
 	private GuiButton buttonClose;
+	private String currentPage = "";
+	private int page = 0;
+	private int lastPage = 3;
 
 	private final Minecraft mc = Minecraft.getMinecraft();
 
@@ -24,28 +35,40 @@ public class GuiNemesis extends GuiScreen {
 
 	public GuiNemesis() {
 		for (int i = 0; i < 4; i++) {
-			NemesisDisplay display = new NemesisDisplay();
-			display.setPosition(5, 5 + (47 * i));
+			NemesisDisplay display = new NemesisDisplay(this);
+			display.setPosition(5, 5 + (48 * i));
 			itemDisplays.add(display);
 		}
 	}
 
 	private void setPage(int page) {
+		this.page = page;
+		System.out.println("set page " + page);
 		List<Nemesis> nemeses = MessageOpenNemesisGui.NEMESES;
-		// TODO wire in page logic
-		for (int i = 0; i < 4; i++) {
+
+		for (int i = (page * 4); i < ((page + 1) * 4); i++) {
 			if (nemeses.size() > i) {
-				itemDisplays.get(i).setNemesis(nemeses.get(i));
+				itemDisplays.get(i % 4).setNemesis(nemeses.get(i));
+			}else{
+				itemDisplays.get(i % 4).setNemesis(null);
 			}
 		}
+
+		updatePager();
 	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		drawRect(0, 0, width, height, 0xa0000000);
-		drawRect(0, 0, WIDTH, HEIGHT, 0xa0ffffff);
+
+		drawRect(0, 0, width, height, 0xd0000000);
+		GlStateManager.translate(offsetX, offsetY, 0);
+		drawRect(0, 0, WIDTH, HEIGHT, 0xd0ffffff);
 		itemDisplays.forEach(GuiDisplay::draw);
+		GlStateManager.translate(-offsetX, -offsetY, 0);
 		super.drawScreen(mouseX, mouseY, partialTicks);
+
+		drawCenteredString(fontRenderer, currentPage, (WIDTH - 78) + offsetX, buttonY + 5, 0x00FFFFFF);
+
 
 		// TODO sort
 
@@ -57,6 +80,7 @@ public class GuiNemesis extends GuiScreen {
 
 	}
 
+
 	@Override
 	public boolean doesGuiPauseGame() {
 		return true;
@@ -64,12 +88,26 @@ public class GuiNemesis extends GuiScreen {
 
 	@Override
 	public void initGui() {
-		buttonClose = new GuiButton(0, 50, 210, 60, 20, "Close");
+		System.out.println("INIT GUI");
+		offsetX = (width - WIDTH) / 2;
+		offsetY = (height - HEIGHT) / 2;
+		buttonY = offsetY + HEIGHT - 25;
+
+		buttonClose = new GuiButton(0, 5 + offsetX, buttonY, 60, 20, I18n.format("gui.close"));
+		buttonNext = new GuiButton(0, (WIDTH - 65) + offsetX, buttonY, 60, 20, I18n.format("gui.next"));
+		buttonPrevious = new GuiButton(0, (WIDTH - 150) + offsetX, buttonY, 60, 20, I18n.format("gui.previous"));
+
+
 		buttonList.add(buttonClose);
+		buttonList.add(buttonNext);
+		buttonList.add(buttonPrevious);
+		setPage(page);
+	}
 
-		System.out.println("**** INIT GUI ****");
-
-		setPage(0);
+	private void updatePager() {
+		currentPage = (page + 1) + "/" + (lastPage + 1);
+		buttonPrevious.enabled = page != 0;
+		buttonNext.enabled = page < lastPage;
 	}
 
 	@Override
@@ -77,6 +115,10 @@ public class GuiNemesis extends GuiScreen {
 		if (button == buttonClose) {
 			//Main.packetHandler.sendToServer(...);
 			closeGui();
+		} else if (button == buttonNext) {
+			setPage(++page);
+		} else if (button == buttonPrevious) {
+			setPage(--page);
 		}
 	}
 
@@ -85,10 +127,6 @@ public class GuiNemesis extends GuiScreen {
 		if (mc.currentScreen == null) {
 			mc.setIngameFocus();
 		}
-	}
-
-	private void drawNemesis() {
-		// move to a GUI class?
 	}
 
 }
