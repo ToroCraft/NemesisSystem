@@ -13,7 +13,6 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
@@ -21,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistry;
@@ -86,7 +86,7 @@ public class NemesisUtil {
 		List<Nemesis> nemeses = registry.list();
 		nemeses.removeIf(Nemesis::isDead);
 
-		if (nemeses.size() >= (NemesisSystem.NEMESIS_LIMIT / 2)) {
+		if (nemeses.size() >= (NemesisConfig.NEMESIS_LIMIT / 2)) {
 			return;
 		}
 

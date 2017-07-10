@@ -10,6 +10,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.math.MathHelper;
+import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.gui.displays.GuiDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
@@ -29,7 +31,7 @@ public class GuiNemesis extends GuiScreen {
 	private GuiButton buttonClose;
 	private String currentPage = "";
 	private int page = 0;
-	private int lastPage = 3;
+	private int lastPage;
 
 	private List<NemesisDisplayData> nemeses;
 
@@ -53,8 +55,10 @@ public class GuiNemesis extends GuiScreen {
 
 	private void setPage(int page) {
 
-		if(nemeses == null){
+		if (nemeses == null) {
 			nemeses = MessageOpenNemesisGui.NEMESES.stream().map(NemesisDisplayData::new).collect(toList());
+			computeLastPage();
+
 		}
 
 		this.page = page;
@@ -62,12 +66,20 @@ public class GuiNemesis extends GuiScreen {
 		for (int i = (page * 4); i < ((page + 1) * 4); i++) {
 			if (nemeses.size() > i) {
 				itemDisplays.get(i % 4).setData(nemeses.get(i));
-			}else{
+			} else {
 				itemDisplays.get(i % 4).setData(null);
 			}
 		}
 
 		updatePager();
+	}
+
+	private void computeLastPage() {
+		int maxCount = Math.max(NemesisConfig.NEMESIS_LIMIT, nemeses.size());
+		lastPage = MathHelper.floor(maxCount / 4d) - 1;
+		if (maxCount % 4 != 0) {
+			lastPage++;
+		}
 	}
 
 	@Override
@@ -80,15 +92,14 @@ public class GuiNemesis extends GuiScreen {
 		GlStateManager.translate(-offsetX, -offsetY, 0);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 
+		// TODO move page string to the left of the buttons
 		drawCenteredString(fontRenderer, currentPage, (WIDTH - 78) + offsetX, buttonY + 5, 0x00FFFFFF);
-
 
 		// TODO sort
 
 		// TODO summary info
 
 	}
-
 
 	@Override
 	public boolean doesGuiPauseGame() {
@@ -106,7 +117,6 @@ public class GuiNemesis extends GuiScreen {
 		buttonNext = new GuiButton(0, (WIDTH - 65) + offsetX, buttonY, 60, 20, I18n.format("gui.next"));
 		buttonPrevious = new GuiButton(0, (WIDTH - 150) + offsetX, buttonY, 60, 20, I18n.format("gui.previous"));
 
-
 		buttonList.add(buttonClose);
 		buttonList.add(buttonNext);
 		buttonList.add(buttonPrevious);
@@ -122,7 +132,6 @@ public class GuiNemesis extends GuiScreen {
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException {
 		if (button == buttonClose) {
-			//Main.packetHandler.sendToServer(...);
 			closeGui();
 		} else if (button == buttonNext) {
 			setPage(++page);

@@ -37,7 +37,11 @@ public class NotificationHandlers {
     }
 
     private void sendGlobalMessage(ITextComponent message) {
-        NemesisSystem.SERVER.getPlayerList().getPlayers().forEach(player -> player.sendMessage(message));
+        try {
+            NemesisSystem.SERVER.getPlayerList().getPlayers().forEach(player -> player.sendMessage(message));
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private ITextComponent buildMessage(String translationKey, Object... args) {

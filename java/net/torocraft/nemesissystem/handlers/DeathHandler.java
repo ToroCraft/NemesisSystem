@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
@@ -23,6 +21,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.Nemesis.Trait;
@@ -108,7 +107,7 @@ public class DeathHandler {
 		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
 		nemeses.removeIf(Nemesis::isDead);
 
-		if (nemeses.size() < NemesisSystem.NEMESIS_LIMIT) {
+		if (nemeses.size() < NemesisConfig.NEMESIS_LIMIT) {
 			return;
 		}
 
