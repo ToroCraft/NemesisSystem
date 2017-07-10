@@ -121,12 +121,8 @@ public class NemesisDisplay implements GuiDisplay {
 		// TODO journal
 
 		// TODO gui textures
-		
-		GlStateManager.translate(-51, -4, 0);
-	}
 
-	private String computeDistance() {
-		return "TODO";
+		GlStateManager.translate(-51, -4, 0);
 	}
 
 	private void drawNemesisModel() {

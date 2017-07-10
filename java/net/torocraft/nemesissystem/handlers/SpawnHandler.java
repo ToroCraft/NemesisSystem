@@ -73,7 +73,6 @@ public class SpawnHandler {
 
 		// TODO sound horn (this would force a clients to have the mod)
 
-		// TODO chat to near by players
 	}
 
 	private static boolean canSeeSky(Entity e) {
@@ -97,9 +96,6 @@ public class SpawnHandler {
 			SpawnUtil.spawnEntityLiving(entity.getEntityWorld(), bodyGuard, entity.getPosition(), 10);
 			NemesisUtil.setFollowSpeed(bodyGuard, 1.5);
 		}
-
-		// TODO nemesis can heal body guards?
-
 	}
 
 	private static void equipBodyGuard(EntityCreature bodyGuard) {

@@ -141,6 +141,7 @@ public class DeathHandler {
 		drops.add(drop(nemesisEntity, new ItemStack(Items.DIAMOND, rand.nextInt(nemesis.getLevel()))));
 
 		ItemStack specialDrop = nemesisEntity.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+		// TODO drop all of the nemesis's items
 		specialDrop.setStackDisplayName("Property of " + nemesisEntity.getName());
 		drops.add(drop(nemesisEntity, specialDrop));
 

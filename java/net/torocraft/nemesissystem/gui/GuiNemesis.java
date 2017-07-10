@@ -87,10 +87,6 @@ public class GuiNemesis extends GuiScreen {
 
 		// TODO summary info
 
-		// TODO pager buttons
-
-		// TODO center on page (figure out the size of gui)
-
 	}
 
 
