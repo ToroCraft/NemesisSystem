@@ -1,9 +1,10 @@
 package net.torocraft.nemesissystem.util;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -72,13 +73,12 @@ public class NemesisBuilder {
 		nemesis.getHandInventory().set(0, new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]));
 		setOffhandItem(nemesis);
 		setArmor(nemesis);
+		NemesisUtil.enchantArmor(nemesis);
 
 		return nemesis;
 	}
 
 	private static void setArmor(Nemesis nemesis) {
-		// TODO enchant armor (one enchant per level)
-
 		// TODO design armor sets
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.HEAD.getIndex(), new ItemStack(HELMETS[rand.nextInt(HELMETS.length)]));
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.CHEST.getIndex(), new ItemStack(CHEST_PLATES[rand.nextInt(CHEST_PLATES.length)]));

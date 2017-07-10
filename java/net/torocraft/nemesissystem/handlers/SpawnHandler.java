@@ -90,7 +90,7 @@ public class SpawnHandler {
 
 		for (int i = 0; i < count; i++) {
 			// TODO spawn different body guards based on nemesis mob type
-			EntityZombie bodyGuard = new EntityZombie(entity.getEntityWorld());
+			EntityCreature bodyGuard = new EntityZombie(entity.getEntityWorld());
 			bodyGuard.addTag(NemesisSystem.TAG_BODY_GUARD);
 			bodyGuard.getEntityData().setUniqueId(NemesisSystem.NBT_NEMESIS_ID, nemesis.getId());
 			equipBodyGuard(bodyGuard);

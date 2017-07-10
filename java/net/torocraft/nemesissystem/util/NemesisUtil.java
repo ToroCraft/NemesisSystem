@@ -1,13 +1,20 @@
 package net.torocraft.nemesissystem.util;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
+
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -85,6 +92,40 @@ public class NemesisUtil {
 
 		promoteRandomNemesis(entity, registry, nemeses);
 		createAndRegisterNemesis(entity, getRandomLocationAround(entity));
+	}
+
+	public static void enchantArmor(Nemesis nemesis) {
+		if (nemesis == null) {
+			return;
+		}
+
+		Random rand = new Random();
+		boolean hasEnchanted = false;
+		levels: for (int i = 0; i < nemesis.getLevel(); i++) {
+			for (int j = 0; j < 4; j++) {
+				if (rand.nextInt(10) == 7) {
+					enchantPieceOfArmor(nemesis.getArmorInventory().get(j), rand);
+					hasEnchanted = true;
+					break levels;
+				}
+			}
+			if (!hasEnchanted) {
+				enchantPieceOfArmor(nemesis.getArmorInventory().get(rand.nextInt(4)), rand);
+			}
+			hasEnchanted = false;
+		}
+	}
+
+	private static void enchantPieceOfArmor(ItemStack armor, Random rand) {
+		Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(armor);
+		if (enchantments.isEmpty()) {
+			EnchantmentHelper.addRandomEnchantment(rand, armor, 1, true);
+		} else {
+			enchantments.forEach((enchantment, level) -> {
+				enchantments.put(enchantment, level + 1);
+			});
+			EnchantmentHelper.setEnchantments(enchantments, armor);
+		}
 	}
 
 	public static void unLoadNemesis(EntityCreature entity) {
