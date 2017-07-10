@@ -11,6 +11,22 @@ public class NameBuilder {
 	}
 
 	public static final String[] TITLES = {
+			"Block Breaker",
+			"Sheep Shearer",
+			"Bed Breaker",
+			"Sleepy",
+			"Square",
+			"Late",
+			"Slow",
+			"Laggy",
+			"Happy",
+			"Grain Thief",
+			"Tree Puncher",
+			"Cobble-Head",
+			"Slime-Encrusted",
+			"Inflammable",
+			"Door Buster",
+			"Chicken Kicker",
 			"Archer",
 			"Ash-Skin",
 			"Bag-Head",
