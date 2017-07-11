@@ -118,11 +118,11 @@ public class ExampleJourneymapPlugin implements IClientPlugin
 
 		// Create a waypoint for the player's bed location.  The ForgeEventListener
 		// will keep it updated if the player sleeps elsewhere.
-		if (jmAPI.playerAccepts(NemesisSystem.MODID, DisplayType.Waypoint))
-		{
-			BlockPos pos = Minecraft.getMinecraft().player.getBedLocation();
-			SampleModWaypointFactory.createBedWaypoint(jmAPI, pos, event.dimension);
-		}
+//		if (jmAPI.playerAccepts(NemesisSystem.MODID, DisplayType.Waypoint))
+//		{
+//			BlockPos pos = Minecraft.getMinecraft().player.getBedLocation();
+//			SampleModWaypointFactory.createBedWaypoint(jmAPI, pos, event.dimension);
+//		}
 
 		// Slime chunk Polygon Overlays are created by the ForgeEventListener
 		// as chunks load, so no need to do anything here.
@@ -136,7 +136,11 @@ public class ExampleJourneymapPlugin implements IClientPlugin
 	void onMappingStopped(ClientEvent event)
 	{
 		// Clear everything
-		jmAPI.removeAll(NemesisSystem.MODID);
+		try {
+			jmAPI.removeAll(NemesisSystem.MODID);
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	/**
