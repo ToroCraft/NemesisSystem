@@ -11,6 +11,7 @@ public class NameBuilder {
 	}
 
 	public static final String[] TITLES = {
+			"Cookie Hoarder",
 			"Block Breaker",
 			"Sheep Shearer",
 			"Bed Breaker",
