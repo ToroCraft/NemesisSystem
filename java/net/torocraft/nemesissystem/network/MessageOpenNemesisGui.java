@@ -13,6 +13,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistry;
+import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class MessageOpenNemesisGui implements IMessage {
 
@@ -29,6 +30,12 @@ public class MessageOpenNemesisGui implements IMessage {
 	}
 
 	public MessageOpenNemesisGui(List<Nemesis> nemeses) {
+		setNemeses(nemeses);
+	}
+
+	public MessageOpenNemesisGui(EntityPlayer player) {
+		List<Nemesis> nemeses = NemesisRegistryProvider.get(player.getEntityWorld()).list();
+		nemeses.removeIf(Nemesis::isDead);
 		setNemeses(nemeses);
 	}
 

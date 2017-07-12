@@ -10,6 +10,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -107,9 +108,8 @@ public class NemesisSystemCommand extends CommandBase {
 
 	private void gui(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (sender instanceof EntityPlayer) {
-			List<Nemesis> nemeses = NemesisRegistryProvider.get(sender.getEntityWorld()).list();
-			nemeses.removeIf(Nemesis::isDead);
-			NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisGui(nemeses), getCommandSenderAsPlayer(sender));
+			EntityPlayerMP player = getCommandSenderAsPlayer(sender);
+			NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisGui(player), player);
 		}
 	}
 

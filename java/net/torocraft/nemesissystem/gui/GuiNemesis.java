@@ -56,9 +56,11 @@ public class GuiNemesis extends GuiScreen {
 	private void setPage(int page) {
 
 		if (nemeses == null) {
+			if(MessageOpenNemesisGui.NEMESES == null){
+				return;
+			}
 			nemeses = MessageOpenNemesisGui.NEMESES.stream().map(NemesisDisplayData::new).collect(toList());
 			computeLastPage();
-
 		}
 
 		this.page = page;
