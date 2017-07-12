@@ -15,7 +15,7 @@ public class ClientProxy extends CommonProxy {
 	public void preInit(FMLPreInitializationEvent e) {
 		super.preInit(e);
 		keyBindings = new KeyBinding[1];
-		keyBindings[0] = new KeyBinding("key.show_distance", 37, "key.categories.misc");
+		keyBindings[0] = new KeyBinding("key.open_gui", 37, "key.categories.misc");
 		ClientRegistry.registerKeyBinding(keyBindings[0]);
 	}
 

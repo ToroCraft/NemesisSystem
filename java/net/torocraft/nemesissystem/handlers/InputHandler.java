@@ -23,6 +23,7 @@ public class InputHandler {
 	public void onEvent(KeyInputEvent event) {
 		KeyBinding[] keyBindings = ClientProxy.keyBindings;
 		if (keyBindings[0].isPressed()) {
+			// TODO convert this to a toggle so that it opens and closes the gui
 			NemesisSystem.NETWORK.sendToServer(new MessageOpenNemesisGuiRequest());
 		}
 	}
