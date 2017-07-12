@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
@@ -29,6 +30,9 @@ import net.torocraft.nemesissystem.registry.NemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class NemesisUtil {
+
+	private static final Random rand = new Random();
+
 	public static String getEntityType(Entity entityIn) {
 		EntityEntry entry = EntityRegistry.getEntry(entityIn.getClass());
 		if (entry == null) {
@@ -96,38 +100,61 @@ public class NemesisUtil {
 		createAndRegisterNemesis(entity, getRandomLocationAround(entity));
 	}
 
-	public static void enchantArmor(Nemesis nemesis) {
+	public static void enchantEquipment(Nemesis nemesis) {
 		if (nemesis == null) {
 			return;
 		}
+		enchantItems(nemesis.getArmorInventory());
+		enchantItems(nemesis.getHandInventory());
+	}
 
-		Random rand = new Random();
-		boolean hasEnchanted = false;
-		levels: for (int i = 0; i < nemesis.getLevel(); i++) {
-			for (int j = 0; j < 4; j++) {
-				if (rand.nextInt(10) == 7) {
-					enchantPieceOfArmor(nemesis.getArmorInventory().get(j), rand);
-					hasEnchanted = true;
-					break levels;
-				}
+	public static void enchantItems(List<ItemStack> items) {
+		for (ItemStack item : items) {
+			if (rand.nextBoolean()) {
+				enchantItem(item);
 			}
-			if (!hasEnchanted) {
-				enchantPieceOfArmor(nemesis.getArmorInventory().get(rand.nextInt(4)), rand);
-			}
-			hasEnchanted = false;
 		}
 	}
 
-	private static void enchantPieceOfArmor(ItemStack armor, Random rand) {
-		Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(armor);
-		if (enchantments.isEmpty()) {
-			EnchantmentHelper.addRandomEnchantment(rand, armor, 1, true);
-		} else {
-			enchantments.forEach((enchantment, level) -> {
-				enchantments.put(enchantment, level + 1);
-			});
-			EnchantmentHelper.setEnchantments(enchantments, armor);
+	public static void enchantItem(ItemStack item) {
+		if(!improveEnchants(item)){
+			addNewEnchantment(item);
 		}
+	}
+
+	private static boolean improveEnchants(ItemStack item) {
+		boolean improved = false;
+		Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(item);
+
+		if(enchantments.isEmpty()){
+			return false;
+		}
+
+		for (Entry<Enchantment, Integer> enchant : enchantments.entrySet()) {
+			if(shouldImproveEnchantment(rand, enchant.getKey(), enchant.getValue())){
+				enchantments.put(enchant.getKey(), enchant.getValue() + 1);
+				improved = true;
+			}
+		}
+
+		if(improved){
+			EnchantmentHelper.setEnchantments(enchantments, item);
+		}
+
+		return improved;
+	}
+
+	private static boolean shouldImproveEnchantment(Random rand, Enchantment enchantment, Integer level) {
+		return level < enchantment.getMaxLevel() && rand.nextBoolean();
+	}
+
+	private static void addNewEnchantment(ItemStack item) {
+		EnchantmentHelper.addRandomEnchantment(rand, item, 1, true);
+		removeDuplicateEnchantments(item);
+	}
+
+	private static void removeDuplicateEnchantments(ItemStack item) {
+		EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(item), item);
 	}
 
 	public static void unLoadNemesis(EntityCreature entity) {

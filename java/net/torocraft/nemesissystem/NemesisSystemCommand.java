@@ -1,5 +1,6 @@
 package net.torocraft.nemesissystem;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -9,6 +10,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
@@ -59,9 +62,41 @@ public class NemesisSystemCommand extends CommandBase {
 		case "gui":
 			gui(server, sender, args);
 			return;
+		case "enchant":
+			enchant(server, sender, args);
+			return;
 		default:
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
+	}
+
+	private void enchant(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+		if (sender instanceof EntityPlayer) {
+			NemesisUtil.enchantItems(getHotBarItems(getCommandSenderAsPlayer(sender)));
+			logHotBarItems(getCommandSenderAsPlayer(sender));
+		}
+	}
+
+	private void logHotBarItems(EntityPlayer player) {
+		InventoryPlayer inv = player.inventory;
+		for (int i = 0; i < inv.getSizeInventory(); i++) {
+			if (inv.getStackInSlot(i) != null && InventoryPlayer.isHotbar(i)) {
+				ItemStack stack = inv.getStackInSlot(i);
+				System.out.println(stack.getTagCompound());
+			}
+		}
+
+	}
+
+	private List<ItemStack> getHotBarItems(EntityPlayer player) {
+		InventoryPlayer inv = player.inventory;
+		List<ItemStack> items = new ArrayList<>();
+		for (int i = 0; i < inv.getSizeInventory(); i++) {
+			if (InventoryPlayer.isHotbar(i)) {
+				items.add(inv.getStackInSlot(i));
+			}
+		}
+		return items;
 	}
 
 	private void duel(MinecraftServer server, ICommandSender sender, String[] args) {

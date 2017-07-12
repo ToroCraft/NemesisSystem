@@ -7,7 +7,6 @@ import java.util.UUID;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
 import net.torocraft.nemesissystem.NemesisSystem;
@@ -116,7 +115,7 @@ public class NemesisRegistry extends WorldSavedData {
 
 		System.out.println(nemesis.getNameAndTitle() + " has been promoted to level " + nemesis.getLevel());
 
-		NemesisUtil.enchantArmor(nemesis);
+		NemesisUtil.enchantEquipment(nemesis);
 
 		//TODO low chance to add trait
 

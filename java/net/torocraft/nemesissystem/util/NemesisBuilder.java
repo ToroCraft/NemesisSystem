@@ -2,9 +2,7 @@ package net.torocraft.nemesissystem.util;
 
 import java.util.*;
 
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -74,7 +72,7 @@ public class NemesisBuilder {
 		nemesis.getHandInventory().set(0, new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]));
 		setOffhandItem(nemesis);
 		setArmor(nemesis);
-		NemesisUtil.enchantArmor(nemesis);
+		NemesisUtil.enchantEquipment(nemesis);
 
 		return nemesis;
 	}
