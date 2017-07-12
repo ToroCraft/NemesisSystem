@@ -86,7 +86,7 @@ public class NemesisRegistry extends WorldSavedData {
 		int attack1 = 0;
 		int attack2 = 0;
 
-		while (attack1 != attack2) {
+		while (attack1 == attack2) {
 			attack1 = rand.nextInt(opponentOne.getLevel()) + rand.nextInt(3);
 			attack2 = rand.nextInt(opponentOne.getLevel()) + rand.nextInt(3);
 		}
