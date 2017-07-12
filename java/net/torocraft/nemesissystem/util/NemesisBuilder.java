@@ -89,6 +89,9 @@ public class NemesisBuilder {
 		ItemStack offhand;
 		switch (nemesis.getTraits().get(0)) {
 		case HEAT:
+			offhand = new ItemStack(Items.LAVA_BUCKET);
+			break;
+		case FIREBALL:
 			offhand = new ItemStack(Blocks.TORCH);
 			break;
 		case ARROW:

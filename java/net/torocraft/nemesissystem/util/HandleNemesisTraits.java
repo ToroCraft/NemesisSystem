@@ -12,6 +12,7 @@ import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Enchantments;
@@ -23,7 +24,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.Nemesis.Trait;
@@ -40,6 +43,10 @@ public class HandleNemesisTraits {
 	private static void handleTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
 		switch (trait) {
 		case DOUBLE_MELEE:
+			// TODO make the nemesis hit twice when attacking
+			return;
+		case FIREBALL:
+			handleFireballTraitUpdate(entity, nemesis, trait);
 			return;
 		case ARROW:
 			handleArrowTraitUpdate(entity, nemesis, trait);
@@ -58,6 +65,44 @@ public class HandleNemesisTraits {
 		case TELEPORT:
 			handleTeleportTraitUpdate(entity, nemesis, trait);
 		}
+	}
+
+	private static void handleFireballTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
+		World world = entity.world;
+		Random rand = entity.getRNG();
+
+		if (world.getTotalWorldTime() % 40 != 0) {
+			return;
+		}
+
+		EntityLivingBase target = entity.getAttackTarget();
+
+		if (target == null) {
+			return;
+		}
+
+		if (!entity.getEntitySenses().canSee(target)) {
+			return;
+		}
+
+		// TODO what is this?
+		world.playEvent((EntityPlayer)null, 1015, new BlockPos(entity), 0);
+
+		double d1 = 4.0D;
+		Vec3d vec3d = entity.getLook(1.0F);
+		double d2 = target.posX - (entity.posX + vec3d.x * 4.0D);
+		double d3 = target.getEntityBoundingBox().minY + (double)(target.height / 2.0F) - (0.5D + entity.posY + (double)(entity.height / 2.0F));
+		double d4 = target.posZ - (entity.posZ + vec3d.z * 4.0D);
+
+		// TODO and this?
+		world.playEvent(null, 1016, new BlockPos(entity), 0);
+
+		EntityLargeFireball entitylargefireball = new EntityLargeFireball(world, entity, d2, d3, d4);
+		entitylargefireball.explosionPower = 1;
+		entitylargefireball.posX = entity.posX + vec3d.x * 4.0D;
+		entitylargefireball.posY = entity.posY + (double)(entity.height / 2.0F) + 0.5D;
+		entitylargefireball.posZ = entity.posZ + vec3d.z * 4.0D;
+		world.spawnEntity(entitylargefireball);
 	}
 
 	private static void handleTeleportTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {

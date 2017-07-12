@@ -137,6 +137,9 @@ public class DeathHandler {
 					drops.add(drop(nemesisEntity, new ItemStack(Items.LAVA_BUCKET)));
 				}
 				break;
+			case FIREBALL:
+				drops.add(drop(nemesisEntity, new ItemStack(Items.LAVA_BUCKET)));
+				break;
 			case POTION:
 				drops.add(drop(nemesisEntity, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionType.REGISTRY.getRandomObject(rand))));
 				break;
