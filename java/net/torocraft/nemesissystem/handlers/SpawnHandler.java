@@ -2,7 +2,6 @@ package net.torocraft.nemesissystem.handlers;
 
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
@@ -21,9 +20,11 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.EntityDecorator;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 import net.torocraft.nemesissystem.util.SpawnUtil;
 
@@ -39,7 +40,7 @@ public class SpawnHandler {
 			return;
 		}
 
-		NemesisUtil.handleRandomPromotions(event.getWorld(), (EntityCreature) event.getEntity());
+		NemesisActions.handleRandomPromotions(event.getWorld(), (EntityCreature) event.getEntity());
 
 		if (event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
 			return;
@@ -59,11 +60,11 @@ public class SpawnHandler {
 		EntityCreature nemesisEntity = (EntityCreature) event.getEntity();
 		// TODO check age
 		EntityDecorator.decorate(nemesisEntity, nemesis);
-		NemesisRegistryProvider.get(world).load(nemesisEntity, nemesis.getId());
+		nemesis.setSpawned(nemesisEntity.getEntityId());
+		nemesis.setLoaded(true);
+		NemesisRegistryProvider.get(world).update(nemesis);
 		spawnBodyGuard(nemesisEntity, nemesis);
 		nemesisAnnounceEffects(nemesisEntity);
-
-
 	}
 
 	private void nemesisAnnounceEffects(EntityCreature nemesisEntity) {
@@ -95,7 +96,7 @@ public class SpawnHandler {
 			bodyGuard.getEntityData().setUniqueId(NemesisSystem.NBT_NEMESIS_ID, nemesis.getId());
 			equipBodyGuard(bodyGuard);
 			SpawnUtil.spawnEntityLiving(entity.getEntityWorld(), bodyGuard, entity.getPosition(), 10);
-			NemesisUtil.setFollowSpeed(bodyGuard, 1.5);
+			BehaviorUtil.setFollowSpeed(bodyGuard, 1.5);
 		}
 	}
 

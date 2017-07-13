@@ -20,8 +20,8 @@ import net.minecraft.world.World;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
-import net.torocraft.nemesissystem.registry.NemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisBuilder;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
@@ -61,7 +61,7 @@ public class NemesisSystemCommand extends CommandBase {
 		case "clear":
 			clear(server, sender, args);
 			return;
-		case "duel":
+		case "duelIfCrowded":
 			duel(server, sender, args);
 			return;
 		case "gui":
@@ -82,12 +82,13 @@ public class NemesisSystemCommand extends CommandBase {
 		if (args.length != 2) {
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
-		INemesisRegistry registry = NemesisRegistryProvider.get(server.getWorld(senderDimId(sender)));
+		World world = server.getWorld(senderDimId(sender));
+		INemesisRegistry registry = NemesisRegistryProvider.get(world);
 		Nemesis nemesis = registry.getByName(args[1]);
 		if(nemesis == null){
 			return;
 		}
-		NemesisUtil.promote(nemesis);
+		NemesisActions.promote(world, nemesis);
 		registry.markDirty();
 	}
 
@@ -121,7 +122,7 @@ public class NemesisSystemCommand extends CommandBase {
 
 	private void duel(MinecraftServer server, ICommandSender sender, String[] args) {
 		if (sender instanceof EntityPlayer) {
-			NemesisUtil.duel(sender.getEntityWorld(), null, false);
+			NemesisActions.duelIfCrowded(sender.getEntityWorld(), null, false);
 		}
 	}
 
@@ -196,7 +197,7 @@ public class NemesisSystemCommand extends CommandBase {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
 		if (args.length == 1) {
-			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui", "duel", "promote");
+			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui", "duelIfCrowded", "promote");
 		}
 		String command = args[0];
 		switch (command) {

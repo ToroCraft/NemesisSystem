@@ -20,9 +20,12 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.Nemesis.Trait;
+import net.torocraft.nemesissystem.registry.NemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class DeathHandler {
@@ -92,16 +95,16 @@ public class DeathHandler {
 
 		if (nemesis == null) {
 			if (NemesisUtil.isNemesisClassEntity(slayer)) {
-				Nemesis newNemesis = NemesisUtil.createAndRegisterNemesis(slayer, slayer.getPosition());
+				Nemesis newNemesis = NemesisActions.createAndRegisterNemesis(slayer, slayer.getPosition());
 				nemesisDuelIfCrowed(slayer.world, newNemesis);
 			}
 		} else {
-			NemesisRegistryProvider.get(slayer.world).promote(nemesis.getId());
+			NemesisActions.promote(player.world, nemesis);
 		}
 	}
 
 	private void nemesisDuelIfCrowed(World world, Nemesis exclude) {
-		NemesisUtil.duel(world, exclude, true);
+		NemesisActions.duelIfCrowded(world, exclude, true);
 	}
 
 	private void handleNemesisDrops(List<EntityItem> drops, EntityCreature nemesisEntity) {
@@ -165,15 +168,21 @@ public class DeathHandler {
 			return;
 		}
 
-		NemesisRegistryProvider.get(nemesisEntity.world).unload(nemesis.getId());
+		INemesisRegistry registry = NemesisRegistryProvider.get(nemesisEntity.world);
+
+		nemesis.setSpawned(0);
+		nemesis.setLoaded(false);
+
+		registry.update(nemesis);
+
 
 		if (attacker == null || !(attacker instanceof EntityLivingBase)) {
 			System.out.println("nemesis was not killed by entity");
 			return;
 		}
 
-		NemesisRegistryProvider.get(nemesisEntity.world).setDead(nemesis.getId(), attacker.getDisplayName().getFormattedText());
-
+		NemesisActions.kill(nemesisEntity.world, nemesis, attacker.getName());
+		
 		NemesisUtil.findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
 				.forEach((EntityCreature guard) -> guard.setAttackTarget(null));
 

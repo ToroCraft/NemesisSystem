@@ -34,7 +34,18 @@ public class Nemesis {
 	private static final String NBT_TITLE = "title";
 	private static final String NBT_LOADED = "loaded";
 	private static final String NBT_DIMENSION = "dimension";
-	private static final String NBT_ENTITY_ID = "entityId";
+	private static final String NBT_SPAWNED = "spawned";
+
+	/**
+	 * the chunk the entity is in is loaded
+	 */
+	private boolean loaded;
+
+	/**
+	 * the entity ID when this nemesis is spawned
+	 */
+	private int spawned;
+
 
 	private String title;
 	private String name;
@@ -44,8 +55,6 @@ public class Nemesis {
 	private int z;
 	private UUID id;
 	private List<Trait> traits;
-	private boolean loaded;
-	private int entityId;
 	private List<LogEntry> history;
 	private int dimension;
 
@@ -78,7 +87,7 @@ public class Nemesis {
 		title = c.getString(NBT_TITLE);
 		dimension = c.getInteger(NBT_DIMENSION);
 		loaded = c.getBoolean(NBT_LOADED);
-		entityId = c.getInteger(NBT_ENTITY_ID);
+		spawned = c.getInteger(NBT_SPAWNED);
 		readTraits(c);
 		loadAllItems(NBT_HANDS, c, handInventory);
 		loadAllItems(NBT_ARMOR, c, armorInventory);
@@ -94,7 +103,7 @@ public class Nemesis {
 		c.setString(NBT_TITLE, title);
 		c.setInteger(NBT_DIMENSION, dimension);
 		c.setBoolean(NBT_LOADED, loaded);
-		c.setInteger(NBT_ENTITY_ID, entityId);
+		c.setInteger(NBT_SPAWNED, spawned);
 		writeTraits(c);
 		saveAllItems(NBT_HANDS, c, handInventory);
 		saveAllItems(NBT_ARMOR, c, armorInventory);
@@ -323,7 +332,7 @@ public class Nemesis {
 	}
 
 	public boolean isSpawned() {
-		return entityId == 0;
+		return spawned == 0;
 	}
 
 	public boolean isLoaded() {
@@ -346,15 +355,15 @@ public class Nemesis {
 		this.dimension = dimension;
 	}
 
-	public Integer getEntityId() {
-		return entityId;
+	public Integer getSpawned() {
+		return spawned;
 	}
 
-	public void setEntityId(Integer entityId) {
-		if (entityId == null) {
-			this.entityId = 0;
+	public void setSpawned(Integer spawned) {
+		if (spawned == null) {
+			this.spawned = 0;
 		} else {
-			this.entityId = entityId;
+			this.spawned = spawned;
 		}
 	}
 

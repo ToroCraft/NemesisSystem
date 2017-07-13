@@ -41,7 +41,7 @@ public class NemesisReaper {
 		if (nemesis == null) {
 			return;
 		}
-		NemesisRegistryProvider.get(entity.world).unload(nemesis.getId());
+		//NemesisRegistryProvider.get(entity.world).unload(nemesis.getId());
 	}
 
 	private static void setLoaded(EntityCreature entity) {
@@ -49,7 +49,7 @@ public class NemesisReaper {
 		if (nemesis == null) {
 			return;
 		}
-		NemesisRegistryProvider.get(entity.world).load(entity, nemesis.getId());
+		//NemesisRegistryProvider.get(entity.world).load(entity, nemesis.getId());
 	}
 
 	private static void removeEntityFromWorld(EntityCreature entity, Nemesis nemesis) {

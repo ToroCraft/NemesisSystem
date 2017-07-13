@@ -1,16 +1,11 @@
 package net.torocraft.nemesissystem.registry;
 
-import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.common.MinecraftForge;
-import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.events.NemesisEvent;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
@@ -24,16 +19,6 @@ public class NemesisRegistry extends NemesisWorldSaveData implements INemesisReg
 
 	public NemesisRegistry(String s) {
 		super(s);
-	}
-
-	@Override
-	public void unload(UUID id) {
-		Nemesis nemesis = getById(id);
-		if(nemesis == null){
-			return;
-		}
-		nemesis.setLoaded(false);
-		markDirty();
 	}
 
 	@Override
@@ -61,13 +46,22 @@ public class NemesisRegistry extends NemesisWorldSaveData implements INemesisReg
 	}
 
 	@Override
-	public void load(EntityCreature entity, UUID id) {
-		Nemesis nemesis = getById(id);
-		if(nemesis == null){
+	public void update(Nemesis nemesis) {
+		if (nemesis == null) {
 			return;
 		}
-		nemesis.setLoaded(true);
-		nemesis.setEntityId(entity.getEntityId());
+
+		Nemesis oldNemesis = getById(nemesis.getId());
+
+		if(oldNemesis == null){
+			return;
+		}
+
+		if(oldNemesis != nemesis){
+			nemeses.remove(oldNemesis);
+			nemeses.add(nemesis);
+		}
+
 		markDirty();
 	}
 
@@ -77,55 +71,6 @@ public class NemesisRegistry extends NemesisWorldSaveData implements INemesisReg
 		markDirty();
 		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Register(nemesis));
 		System.out.println(nemesis.getNameAndTitle() + " has established rule of " + nemesis.getX() + "," + nemesis.getZ());
-	}
-
-	@Override
-	public void promote(UUID id) {
-		Nemesis nemesis = getById(id);
-		if(nemesis == null){
-			return;
-		}
-		NemesisUtil.promote(nemesis);
-		markDirty();
-	}
-
-	@Override
-	public void duel(Nemesis opponentOne, Nemesis opponentTwo) {
-		Nemesis victor;
-		Nemesis loser;
-
-		int attack1 = 0;
-		int attack2 = 0;
-
-		while (attack1 == attack2) {
-			attack1 = rand.nextInt(opponentOne.getLevel()) + rand.nextInt(3);
-			attack2 = rand.nextInt(opponentOne.getLevel()) + rand.nextInt(3);
-		}
-
-		if (attack1 > attack2) {
-			victor = opponentOne;
-			loser = opponentTwo;
-		} else {
-			victor = opponentTwo;
-			loser = opponentOne;
-		}
-
-		setDead(loser.getId(), victor.getNameAndTitle());
-		promote(victor.getId());
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Duel(victor, loser));
-	}
-
-	@Override
-	public void setDead(UUID id, String slayerName) {
-		Nemesis nemesis = getById(id);
-		if(nemesis == null){
-			return;
-		}
-		nemesis.setLoaded(false);
-		nemesis.setEntityId(null);
-		nemesis.setDead(true);
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Death(nemesis, slayerName));
-		markDirty();
 	}
 
 	@Override

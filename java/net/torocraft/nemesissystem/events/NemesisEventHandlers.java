@@ -20,7 +20,7 @@ public class NemesisEventHandlers {
 
     @SubscribeEvent
     public void duel(NemesisEvent.Duel event) {
-        ITextComponent message = buildMessage("notifications.nemesis_system.duel",
+        ITextComponent message = buildMessage("notifications.nemesis_system.duelIfCrowded",
                 event.getWinner().getNameAndTitle(), event.getLoser().getNameAndTitle());
         sendGlobalMessage(message);
 
