@@ -13,6 +13,7 @@ import net.torocraft.nemesissystem.handlers.DeathHandler;
 import net.torocraft.nemesissystem.handlers.SetAttackTargetHandler;
 import net.torocraft.nemesissystem.handlers.SpawnHandler;
 import net.torocraft.nemesissystem.handlers.UpdateHandler;
+import net.torocraft.nemesissystem.network.MessageHealAnimation;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGuiRequest;
 
@@ -46,6 +47,7 @@ public class CommonProxy {
 		int packetId = 0;
 		MessageOpenNemesisGui.init(packetId++);
 		MessageOpenNemesisGuiRequest.init(packetId++);
+		MessageHealAnimation.init(packetId++);
 	}
 
 }

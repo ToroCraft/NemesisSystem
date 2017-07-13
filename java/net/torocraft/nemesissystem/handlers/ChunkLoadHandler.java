@@ -17,12 +17,12 @@ public class ChunkLoadHandler {
 		MinecraftForge.EVENT_BUS.register(new ChunkLoadHandler());
 	}
 
-	@SubscribeEvent
+	//@SubscribeEvent TODO https://github.com/ToroCraft/NemesisSystem/issues/18
 	public void cleanUp(ChunkEvent.Load event) {
 		findNemesesInChunk(event.getWorld(), event.getChunk()).forEach(NemesisUtil::unLoadNemesis);
 	}
 
-	@SubscribeEvent
+	//@SubscribeEvent TODO https://github.com/ToroCraft/NemesisSystem/issues/18
 	public void cleanUp(ChunkEvent.Unload event) {
 		findNemesesInChunk(event.getWorld(), event.getChunk()).forEach(NemesisUtil::unLoadNemesis);
 	}

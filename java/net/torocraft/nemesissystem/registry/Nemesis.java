@@ -16,8 +16,8 @@ public class Nemesis {
 
 	private static final int RANGE_SQ = 100 * 100;
 
-	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, SHIELD, TELEPORT, FIREBALL}
-	// TODO: LASER, HEAL, POTION PROTECTION
+	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, SHIELD, TELEPORT, FIREBALL, HEAL}
+	// TODO: LASER
 
 	private static final String NBT_NAME = "name";
 	private static final String NBT_LEVEL = "level";

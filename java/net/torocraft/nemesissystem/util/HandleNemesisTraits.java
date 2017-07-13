@@ -3,6 +3,7 @@ package net.torocraft.nemesissystem.util;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityEnderPearl;
@@ -28,6 +29,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
+import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.network.MessageHealAnimation;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.Nemesis.Trait;
 
@@ -64,7 +68,42 @@ public class HandleNemesisTraits {
 			return;
 		case TELEPORT:
 			handleTeleportTraitUpdate(entity, nemesis, trait);
+			return;
+		case HEAL:
+			handleHealTraitUpdate(entity, nemesis, trait);
 		}
+	}
+
+	private static void handleHealTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
+		World world = entity.world;
+		Random rand = entity.getRNG();
+
+		if (world.getTotalWorldTime() % 40 != 0) {
+			return;
+		}
+
+		List<EntityCreature> guards = NemesisUtil.findNemesisBodyGuards(entity.world, nemesis.getId(), entity.getPosition());
+		guards.forEach(HandleNemesisTraits::possiblyHealCreature);
+	}
+
+	private static void possiblyHealCreature(EntityCreature entity) {
+		if (entity.getRNG().nextInt(1) == 0) {
+			healCreature(entity);
+		}
+	}
+
+	private static void healCreature(EntityCreature entity) {
+		if (canBeHealed(entity)) {
+			float healTo = Math.min(entity.getHealth() + 1 + entity.getRNG().nextInt(5), entity.getMaxHealth());
+			entity.setHealth(healTo);
+			TargetPoint point = new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 100);
+			NemesisSystem.NETWORK.sendToAllAround(new MessageHealAnimation(entity.getEntityId()), point);
+			entity.playSound(SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, 3.0F, 1.0F / (entity.getRNG().nextFloat() * 0.4F + 0.8F));
+		}
+	}
+
+	private static boolean canBeHealed(EntityCreature entity) {
+		return entity.getHealth() < entity.getMaxHealth() && entity.getHealth() > 0 && !entity.isDead;
 	}
 
 	private static void handleFireballTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
@@ -86,12 +125,12 @@ public class HandleNemesisTraits {
 		}
 
 		// TODO what is this?
-		world.playEvent((EntityPlayer)null, 1015, new BlockPos(entity), 0);
+		world.playEvent(null, 1015, new BlockPos(entity), 0);
 
 		double d1 = 4.0D;
 		Vec3d vec3d = entity.getLook(1.0F);
 		double d2 = target.posX - (entity.posX + vec3d.x * 4.0D);
-		double d3 = target.getEntityBoundingBox().minY + (double)(target.height / 2.0F) - (0.5D + entity.posY + (double)(entity.height / 2.0F));
+		double d3 = target.getEntityBoundingBox().minY + (double) (target.height / 2.0F) - (0.5D + entity.posY + (double) (entity.height / 2.0F));
 		double d4 = target.posZ - (entity.posZ + vec3d.z * 4.0D);
 
 		// TODO and this?
@@ -100,7 +139,7 @@ public class HandleNemesisTraits {
 		EntityLargeFireball entitylargefireball = new EntityLargeFireball(world, entity, d2, d3, d4);
 		entitylargefireball.explosionPower = 1;
 		entitylargefireball.posX = entity.posX + vec3d.x * 4.0D;
-		entitylargefireball.posY = entity.posY + (double)(entity.height / 2.0F) + 0.5D;
+		entitylargefireball.posY = entity.posY + (double) (entity.height / 2.0F) + 0.5D;
 		entitylargefireball.posZ = entity.posZ + vec3d.z * 4.0D;
 		world.spawnEntity(entitylargefireball);
 	}
