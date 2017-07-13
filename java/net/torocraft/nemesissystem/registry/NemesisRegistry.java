@@ -1,5 +1,6 @@
 package net.torocraft.nemesissystem.registry;
 
+import java.rmi.server.UID;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -37,28 +38,43 @@ public class NemesisRegistry extends WorldSavedData {
 	}
 
 	public void unload(UUID id) {
-		// TODO add a get() method use it instead of these duplicated loops
+		Nemesis nemesis = getById(id);
+		if(nemesis == null){
+			return;
+		}
+		nemesis.setLoaded(null);
+		markDirty();
+	}
+
+	public Nemesis getById(UUID id) {
+		if (id == null) {
+			return null;
+		}
 		for (Nemesis nemesis : nemeses) {
 			if (id.equals(nemesis.getId())) {
-				nemesis.setLoaded(null);
-				System.out.println("Unloaded: " + nemesis);
-				markDirty();
-				return;
+				return nemesis;
 			}
 		}
-		System.out.println("Nemesis ID[" + id + "] was not found and could not be unloaded!");
+		return null;
+	}
+
+	public Nemesis getByName(String name) {
+		name = name.trim().toLowerCase();
+		for (Nemesis nemesis : nemeses) {
+			if (name.equals(nemesis.getName().trim().toLowerCase())) {
+				return nemesis;
+			}
+		}
+		return null;
 	}
 
 	public void load(EntityCreature entity, UUID id) {
-		for (Nemesis nemesis : nemeses) {
-			if (id.equals(nemesis.getId())) {
-				nemesis.setLoaded(entity.getEntityId());
-				System.out.println("Loaded: " + nemesis);
-				markDirty();
-				return;
-			}
+		Nemesis nemesis = getById(id);
+		if(nemesis == null){
+			return;
 		}
-		System.out.println("Nemesis ID[" + id + "] was not found and could not be loaded!");
+		nemesis.setLoaded(entity.getEntityId());
+		markDirty();
 	}
 
 	public void register(Nemesis nemesis) {
@@ -69,14 +85,12 @@ public class NemesisRegistry extends WorldSavedData {
 	}
 
 	public void promote(UUID id) {
-		for (Nemesis nemesis : nemeses) {
-			if (id.equals(nemesis.getId())) {
-				promote(nemesis);
-				markDirty();
-				return;
-			}
+		Nemesis nemesis = getById(id);
+		if(nemesis == null){
+			return;
 		}
-		System.out.println("Nemesis ID[" + id + "] was not found and could not be promoted!");
+		NemesisUtil.promote(nemesis);
+		markDirty();
 	}
 
 	public void duel(Nemesis opponentOne, Nemesis opponentTwo) {
@@ -110,18 +124,6 @@ public class NemesisRegistry extends WorldSavedData {
 
 	}
 
-	private void promote(Nemesis nemesis) {
-		nemesis.setLevel(nemesis.getLevel() + 1);
-
-		System.out.println(nemesis.getNameAndTitle() + " has been promoted to level " + nemesis.getLevel());
-
-		NemesisUtil.enchantEquipment(nemesis);
-
-		//TODO low chance to add trait
-
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Promotion(nemesis));
-	}
-
 	/**
 	 * Remove nemesis from registry
 	 */
@@ -145,30 +147,9 @@ public class NemesisRegistry extends WorldSavedData {
 		return new ArrayList<>(nemeses);
 	}
 
-	public Nemesis getById(UUID id) {
-		if (id == null) {
-			return null;
-		}
-		for (Nemesis nemesis : nemeses) {
-			if (id.equals(nemesis.getId())) {
-				return nemesis;
-			}
-		}
-		return null;
-	}
-
 	public void clear() {
 		nemeses.clear();
 		markDirty();
-	}
-
-	public Nemesis getByName(String name) {
-		for (Nemesis nemesis : nemeses) {
-			if (name.equals(nemesis.getName())) {
-				return nemesis;
-			}
-		}
-		return null;
 	}
 
 	@Override

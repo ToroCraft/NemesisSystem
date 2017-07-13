@@ -3,6 +3,7 @@ package net.torocraft.nemesissystem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -15,8 +16,10 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.util.NemesisBuilder;
 import net.torocraft.nemesissystem.util.NemesisUtil;
@@ -66,9 +69,25 @@ public class NemesisSystemCommand extends CommandBase {
 		case "enchant":
 			enchant(server, sender, args);
 			return;
+		case "promote":
+			promote(server, sender, args);
+			return;
 		default:
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
+	}
+
+	private void promote(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+		if (args.length != 2) {
+			throw new WrongUsageException("commands.nemesis_system.usage");
+		}
+		NemesisRegistry registry = NemesisRegistryProvider.get(server.getWorld(senderDimId(sender)));
+		Nemesis nemesis = registry.getByName(args[1]);
+		if(nemesis == null){
+			return;
+		}
+		NemesisUtil.promote(nemesis);
+		registry.markDirty();
 	}
 
 	private void enchant(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
@@ -81,12 +100,11 @@ public class NemesisSystemCommand extends CommandBase {
 	private void logHotBarItems(EntityPlayer player) {
 		InventoryPlayer inv = player.inventory;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
-			if (inv.getStackInSlot(i) != null && InventoryPlayer.isHotbar(i)) {
+			if (InventoryPlayer.isHotbar(i)) {
 				ItemStack stack = inv.getStackInSlot(i);
 				System.out.println(stack.getTagCompound());
 			}
 		}
-
 	}
 
 	private List<ItemStack> getHotBarItems(EntityPlayer player) {
@@ -176,20 +194,29 @@ public class NemesisSystemCommand extends CommandBase {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
 		if (args.length == 1) {
-			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui", "duel");
+			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui", "duel", "promote");
 		}
 		String command = args[0];
 		switch (command) {
 		case "create":
 			return tabCompletionsForCreate(server, args);
+		case "promote":
+			return tabCompletionsForPromote(server, sender, args);
 		default:
 			return Collections.emptyList();
 		}
 	}
 
+	private List<String> tabCompletionsForPromote(MinecraftServer server, ICommandSender sender, String[] args) {
+		if (args.length == 2) {
+			return getListOfStringsMatchingLastWord(args, getNemesisNames(server, sender));
+		}
+		return Collections.emptyList();
+	}
+
 	private List<String> tabCompletionsForSpawn(MinecraftServer server, ICommandSender sender, String[] args) {
 		if (args.length == 2) {
-			return getListOfStringsMatchingLastWord(args, NemesisRegistryProvider.get(server.getWorld(senderDimId(sender))).list());
+			return getListOfStringsMatchingLastWord(args, getNemesisNames(server, sender));
 		}
 		return Collections.emptyList();
 	}
@@ -209,6 +236,11 @@ public class NemesisSystemCommand extends CommandBase {
 		}
 
 		return Collections.emptyList();
+	}
+
+	private List<String> getNemesisNames(MinecraftServer server, ICommandSender sender) {
+		List<Nemesis> nemeses = NemesisRegistryProvider.get(server.getWorld(senderDimId(sender))).list();
+		return nemeses.stream().map(Nemesis::getName).collect(Collectors.toList());
 	}
 
 }

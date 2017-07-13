@@ -1,5 +1,6 @@
 package net.torocraft.nemesissystem.util;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -8,6 +9,8 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -20,12 +23,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.events.NemesisEvent;
 import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.Nemesis.Trait;
 import net.torocraft.nemesissystem.registry.NemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
@@ -232,5 +238,33 @@ public class NemesisUtil {
 		Collections.shuffle(nemeses);
 		nemeses.sort(Comparator.comparingInt(Nemesis::getLevel));
 		NemesisRegistryProvider.get(world).duel(nemeses.get(0), nemeses.get(1));
+	}
+
+	public static void promote(Nemesis nemesis) {
+		nemesis.setLevel(nemesis.getLevel() + 1);
+		enchantEquipment(nemesis);
+		if (shouldGainAdditionalTrait(nemesis)) {
+			addAdditionalTrait(nemesis);
+		}
+		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Promotion(nemesis));
+	}
+
+	private static void addAdditionalTrait(Nemesis nemesis) {
+		List<Trait> availableTraits = Arrays.asList(Trait.values())
+				.stream()
+				.filter((Trait t) -> !nemesis.getTraits().contains(t))
+				.collect(Collectors.toList());
+
+		if (availableTraits.size() < 1) {
+			return;
+		}
+
+		Trait newTrait = availableTraits.get(rand.nextInt(availableTraits.size()));
+		nemesis.getTraits().add(newTrait);
+		System.out.println("new trait: " + newTrait);
+	}
+
+	private static boolean shouldGainAdditionalTrait(Nemesis nemesis) {
+		return rand.nextInt(10 * nemesis.getTraits().size()) == 0;
 	}
 }
