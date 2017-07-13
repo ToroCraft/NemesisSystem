@@ -151,18 +151,20 @@ public class NemesisSystemCommand extends CommandBase {
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
 
-		int x, z;
+		int x, z, dimension;
 
 		if (sender instanceof EntityPlayer) {
 			EntityPlayer player = getCommandSenderAsPlayer(sender);
 			x = player.getPosition().getX();
 			z = player.getPosition().getZ();
+			dimension = player.dimension;
 		} else {
 			x = 0;
 			z = 0;
+			dimension = 0;
 		}
 
-		Nemesis nemesis = NemesisBuilder.build(args[1], i(args[2]), x, z);
+		Nemesis nemesis = NemesisBuilder.build(args[1], dimension, i(args[2]), x, z);
 		nemesis.register(server.getWorld(senderDimId(sender)));
 		notifyCommandListener(sender, this, "commands.nemesis_system.success.create", nemesis.toString());
 	}

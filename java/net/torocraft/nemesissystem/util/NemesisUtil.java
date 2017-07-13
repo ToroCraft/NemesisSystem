@@ -78,7 +78,7 @@ public class NemesisUtil {
 	}
 
 	public static Nemesis createAndRegisterNemesis(EntityCreature entity, BlockPos nemesisLocation) {
-		Nemesis nemesis = NemesisBuilder.build(getEntityType(entity), 1, nemesisLocation.getX(), nemesisLocation.getZ());
+		Nemesis nemesis = NemesisBuilder.build(getEntityType(entity), entity.dimension, 1, nemesisLocation.getX(), nemesisLocation.getZ());
 		NemesisRegistryProvider.get(entity.world).register(nemesis);
 		return nemesis;
 	}

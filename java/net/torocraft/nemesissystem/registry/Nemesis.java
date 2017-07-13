@@ -3,12 +3,17 @@ package net.torocraft.nemesissystem.registry;
 import java.time.LocalDate;
 import java.util.*;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class Nemesis {
 
@@ -30,6 +35,7 @@ public class Nemesis {
 	private static final String NBT_TRAITS = "traits";
 	private static final String NBT_TITLE = "title";
 	private static final String NBT_LOADED = "loaded";
+	private static final String NBT_DIMENSION = "dimension";
 
 	private String title;
 	private String name;
@@ -41,7 +47,7 @@ public class Nemesis {
 	private List<Trait> traits;
 	private Integer loaded;
 	private List<LogEntry> history;
-	// TODO add DIM_ID
+	private int dimension;
 
 	/**
 	 * This field is not persisted
@@ -72,6 +78,7 @@ public class Nemesis {
 		z = c.getInteger(NBT_Z);
 		id = c.getUniqueId(NBT_ID);
 		title = c.getString(NBT_TITLE);
+		dimension = c.getInteger(NBT_DIMENSION);
 		if(c.hasKey(NBT_LOADED)){
 			loaded = c.getInteger(NBT_LOADED);
 		}
@@ -88,6 +95,7 @@ public class Nemesis {
 		c.setInteger(NBT_Z, z);
 		c.setUniqueId(NBT_ID, id);
 		c.setString(NBT_TITLE, title);
+		c.setInteger(NBT_DIMENSION, dimension);
 		if(loaded != null){
 			c.setInteger(NBT_LOADED, loaded);
 		}
@@ -224,6 +232,12 @@ public class Nemesis {
 		history.add(logEntry);
 	}
 
+	@SideOnly(Side.SERVER)
+	public void markRegistryDirty() {
+		World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimension);
+		NemesisRegistryProvider.get(world).markDirty();
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -322,6 +336,14 @@ public class Nemesis {
 
 	public double getRangeSq() {
 		return RANGE_SQ;
+	}
+
+	public int getDimension() {
+		return dimension;
+	}
+
+	public void setDimension(int dimension) {
+		this.dimension = dimension;
 	}
 
 	public List<LogEntry> getHistory() { return history; }

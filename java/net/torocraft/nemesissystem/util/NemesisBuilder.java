@@ -53,7 +53,7 @@ public class NemesisBuilder {
 			Items.CHAINMAIL_BOOTS
 	};
 
-	public static Nemesis build(String mob, int level, int x, int z) {
+	public static Nemesis build(String mob, int dimension, int level, int x, int z) {
 		Nemesis nemesis = new Nemesis();
 
 		nemesis.setId(UUID.randomUUID());
@@ -65,6 +65,7 @@ public class NemesisBuilder {
 		nemesis.setMob(mob);
 		nemesis.setX(x);
 		nemesis.setZ(z);
+		nemesis.setDimension(dimension);
 
 		nemesis.setTraits(new ArrayList<>());
 		nemesis.getTraits().add(Trait.values()[rand.nextInt(Trait.values().length)]);
