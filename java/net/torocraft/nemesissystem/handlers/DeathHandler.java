@@ -177,7 +177,5 @@ public class DeathHandler {
 		NemesisUtil.findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
 				.forEach((EntityCreature guard) -> guard.setAttackTarget(null));
 
-		// TODO log death
-
 	}
 }

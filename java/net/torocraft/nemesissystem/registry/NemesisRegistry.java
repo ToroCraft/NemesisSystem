@@ -21,8 +21,6 @@ public class NemesisRegistry extends WorldSavedData {
 
 	private Random rand = new Random();
 
-	//TODO add nemesis log (to the nemesis object)
-
 	private List<Nemesis> nemeses = new ArrayList<>();
 
 	public NemesisRegistry() {
@@ -115,8 +113,6 @@ public class NemesisRegistry extends WorldSavedData {
 
 		setDead(loser.getId(), victor.getNameAndTitle());
 		promote(victor.getId());
-
-		// TODO log
 
 		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Duel(victor, loser));
 

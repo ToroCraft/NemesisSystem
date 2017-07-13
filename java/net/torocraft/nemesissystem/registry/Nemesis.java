@@ -1,8 +1,8 @@
 package net.torocraft.nemesissystem.registry;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -40,6 +40,7 @@ public class Nemesis {
 	private UUID id;
 	private List<Trait> traits;
 	private Integer loaded;
+	private List<LogEntry> history;
 	// TODO add DIM_ID
 
 	/**
@@ -109,7 +110,6 @@ public class Nemesis {
 		}
 
 		for (int i = 0; i < l.tagCount(); i++) {
-			Nemesis nemesis = new Nemesis();
 			traits.add(Trait.values()[l.getIntAt(i)]);
 		}
 	}
@@ -152,6 +152,76 @@ public class Nemesis {
 				list.set(j, new ItemStack(nbttagcompound));
 			}
 		}
+	}
+
+	public static class LogEntry {
+		private LogType type;
+		private Map<String, String> details;
+		private LocalDate date;
+
+		private LogEntry(LogType type, Map<String, String> details) {
+			this.type = type;
+			this.details = details;
+			this.date = LocalDate.now();
+		}
+
+		public enum LogType {
+			KILLED, DIED, DUEL_WIN, DUEL_LOSS, PROMOTION, CREATION, FLED
+		}
+
+		public static LogEntry KILLED(String victimName) {
+			Map<String, String> details = new HashMap<>();
+			details.put("victim", victimName);
+			return new LogEntry(LogType.KILLED, details);
+		}
+
+		public static LogEntry DIED(String killerName) {
+			Map<String, String> details = new HashMap<>();
+			details.put("killer", killerName);
+			return new LogEntry(LogType.DIED, details);
+		}
+
+		public static LogEntry DUEL_WIN(String loserName) {
+			Map<String, String> details = new HashMap<>();
+			details.put("opponent", loserName);
+			return new LogEntry(LogType.DUEL_WIN, details);
+		}
+
+		public static LogEntry DUEL_LOSS(String winnerName) {
+			Map<String, String> details = new HashMap<>();
+			details.put("opponent", winnerName);
+			return new LogEntry(LogType.DUEL_LOSS, details);
+		}
+
+		public static LogEntry PROMOTION(int newLevel) {
+			Map<String, String> details = new HashMap<>();
+			details.put("newLevel", String.valueOf(newLevel));
+			return new LogEntry(LogType.PROMOTION, details);
+		}
+
+		public static LogEntry CREATION(int x, int z) {
+			Map<String, String> details = new HashMap<>();
+			details.put("domainX", String.valueOf(x));
+			details.put("domainZ", String.valueOf(z));
+			return new LogEntry(LogType.CREATION, details);
+		}
+
+		public static LogEntry FLED(String lastPlayerName) {
+			Map<String, String> details = new HashMap<>();
+			details.put("opponent", lastPlayerName);
+			return new LogEntry(LogType.FLED, details);
+		}
+
+		public LogType getType() { return type; }
+		public Map<String, String> getDetails() { return details; }
+		public LocalDate getDate() { return date; }
+	}
+
+	public void addToHistory(LogEntry logEntry) {
+		if (history == null) {
+			history = new ArrayList<>();
+		}
+		history.add(logEntry);
 	}
 
 	public String getName() {
@@ -253,4 +323,6 @@ public class Nemesis {
 	public double getRangeSq() {
 		return RANGE_SQ;
 	}
+
+	public List<LogEntry> getHistory() { return history; }
 }
