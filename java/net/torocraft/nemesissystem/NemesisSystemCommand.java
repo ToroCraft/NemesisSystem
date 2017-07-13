@@ -18,6 +18,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
+import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
@@ -81,7 +82,7 @@ public class NemesisSystemCommand extends CommandBase {
 		if (args.length != 2) {
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
-		NemesisRegistry registry = NemesisRegistryProvider.get(server.getWorld(senderDimId(sender)));
+		INemesisRegistry registry = NemesisRegistryProvider.get(server.getWorld(senderDimId(sender)));
 		Nemesis nemesis = registry.getByName(args[1]);
 		if(nemesis == null){
 			return;
@@ -136,7 +137,6 @@ public class NemesisSystemCommand extends CommandBase {
 	}
 
 	private void list(MinecraftServer server, ICommandSender sender, String[] args) {
-		// TODO dimID support
 		List<Nemesis> l = NemesisRegistryProvider.get(server.getWorld(0)).list();
 		l.removeIf(Nemesis::isDead);
 		StringBuilder s = new StringBuilder();

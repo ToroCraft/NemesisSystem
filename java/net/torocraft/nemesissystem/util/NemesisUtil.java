@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -30,9 +29,9 @@ import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.events.NemesisEvent;
+import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.Nemesis.Trait;
-import net.torocraft.nemesissystem.registry.NemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class NemesisUtil {
@@ -70,7 +69,7 @@ public class NemesisUtil {
 		ObfuscationReflectionHelper.setPrivateValue(EntityAIMoveTowardsRestriction.class, ai, followSpeed, "field_75433_e", "movementSpeed");
 	}
 
-	public static void promoteRandomNemesis(EntityCreature entity, NemesisRegistry registry, List<Nemesis> nemeses) {
+	public static void promoteRandomNemesis(EntityCreature entity, INemesisRegistry registry, List<Nemesis> nemeses) {
 		if (nemeses == null || nemeses.size() < 1) {
 			return;
 		}
@@ -93,7 +92,7 @@ public class NemesisUtil {
 	}
 
 	public static void handleRandomPromotions(World world, EntityCreature entity) {
-		NemesisRegistry registry = NemesisRegistryProvider.get(world);
+		INemesisRegistry registry = NemesisRegistryProvider.get(world);
 
 		List<Nemesis> nemeses = registry.list();
 		nemeses.removeIf(Nemesis::isDead);
@@ -161,23 +160,6 @@ public class NemesisUtil {
 
 	private static void removeDuplicateEnchantments(ItemStack item) {
 		EnchantmentHelper.setEnchantments(EnchantmentHelper.getEnchantments(item), item);
-	}
-
-	public static void unLoadNemesis(EntityCreature entity) {
-		Nemesis nemesis = loadNemesisFromEntity(entity);
-		if (nemesis == null) {
-			return;
-		}
-		entity.setDead();
-		NemesisRegistryProvider.get(entity.world).unload(nemesis.getId());
-
-		// TODO this doesn't seem to work well, maybe clean them up directly on load and/or unload
-		findNemesisBodyGuards(entity.world, nemesis.getId(), entity.getPosition()).forEach((EntityCreature e) -> e.setDead());
-	}
-
-	public static Nemesis loadNemesisFromEntity(Entity nemesisEntity) {
-		UUID id = nemesisEntity.getEntityData().getUniqueId(NemesisSystem.NBT_NEMESIS_ID);
-		return NemesisRegistryProvider.get(nemesisEntity.getEntityWorld()).getById(id);
 	}
 
 	public static boolean isBodyGuard(EntityLiving searchEntity, UUID id) {
@@ -266,5 +248,10 @@ public class NemesisUtil {
 
 	private static boolean shouldGainAdditionalTrait(Nemesis nemesis) {
 		return rand.nextInt(10 * nemesis.getTraits().size()) == 0;
+	}
+
+	public static Nemesis loadNemesisFromEntity(Entity nemesisEntity) {
+		UUID id = nemesisEntity.getEntityData().getUniqueId(NemesisSystem.NBT_NEMESIS_ID);
+		return NemesisRegistryProvider.get(nemesisEntity.getEntityWorld()).getById(id);
 	}
 }

@@ -1,14 +1,15 @@
 package net.torocraft.nemesissystem.registry;
 
 import java.time.LocalDate;
-import java.util.*;
-
-import net.minecraft.client.Minecraft;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -17,12 +18,9 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class Nemesis {
 
-	public enum Title {}
-
 	private static final int RANGE_SQ = 100 * 100;
 
 	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, SHIELD, TELEPORT, FIREBALL, HEAL}
-	// TODO: LASER
 
 	private static final String NBT_NAME = "name";
 	private static final String NBT_LEVEL = "level";
@@ -36,6 +34,7 @@ public class Nemesis {
 	private static final String NBT_TITLE = "title";
 	private static final String NBT_LOADED = "loaded";
 	private static final String NBT_DIMENSION = "dimension";
+	private static final String NBT_ENTITY_ID = "entityId";
 
 	private String title;
 	private String name;
@@ -45,16 +44,14 @@ public class Nemesis {
 	private int z;
 	private UUID id;
 	private List<Trait> traits;
-	private Integer loaded;
+	private boolean loaded;
+	private int entityId;
 	private List<LogEntry> history;
 	private int dimension;
 
-	/**
-	 * This field is not persisted
-	 */
-	private boolean dead;
-
 	//TODO spawned check
+
+	private transient boolean isDead;
 
 	private NonNullList<ItemStack> handInventory = NonNullList.withSize(2, ItemStack.EMPTY);
 	private NonNullList<ItemStack> armorInventory = NonNullList.withSize(4, ItemStack.EMPTY);
@@ -65,7 +62,8 @@ public class Nemesis {
 
 	@Override
 	public String toString() {
-		return name + " the " + title + " (" + (loaded != null ? "LOADED" : "UNLOADED" ) + " level:" + level + " loc:" + x + "," + z + ") " + mob + " " + traits.get(0);
+		return name + " the " + title + " (" + (loaded ? "LOADED" : "UNLOADED") + " level:" + level + " loc:" + x + "," + z + ") " + mob + " "
+				+ traits.get(0);
 	}
 
 	public void readFromNBT(NBTTagCompound c) {
@@ -79,9 +77,8 @@ public class Nemesis {
 		id = c.getUniqueId(NBT_ID);
 		title = c.getString(NBT_TITLE);
 		dimension = c.getInteger(NBT_DIMENSION);
-		if(c.hasKey(NBT_LOADED)){
-			loaded = c.getInteger(NBT_LOADED);
-		}
+		loaded = c.getBoolean(NBT_LOADED);
+		entityId = c.getInteger(NBT_ENTITY_ID);
 		readTraits(c);
 		loadAllItems(NBT_HANDS, c, handInventory);
 		loadAllItems(NBT_ARMOR, c, armorInventory);
@@ -96,9 +93,8 @@ public class Nemesis {
 		c.setUniqueId(NBT_ID, id);
 		c.setString(NBT_TITLE, title);
 		c.setInteger(NBT_DIMENSION, dimension);
-		if(loaded != null){
-			c.setInteger(NBT_LOADED, loaded);
-		}
+		c.setBoolean(NBT_LOADED, loaded);
+		c.setInteger(NBT_ENTITY_ID, entityId);
 		writeTraits(c);
 		saveAllItems(NBT_HANDS, c, handInventory);
 		saveAllItems(NBT_ARMOR, c, armorInventory);
@@ -220,9 +216,17 @@ public class Nemesis {
 			return new LogEntry(LogType.FLED, details);
 		}
 
-		public LogType getType() { return type; }
-		public Map<String, String> getDetails() { return details; }
-		public LocalDate getDate() { return date; }
+		public LogType getType() {
+			return type;
+		}
+
+		public Map<String, String> getDetails() {
+			return details;
+		}
+
+		public LocalDate getDate() {
+			return date;
+		}
 	}
 
 	public void addToHistory(LogEntry logEntry) {
@@ -315,22 +319,18 @@ public class Nemesis {
 	}
 
 	public boolean isDead() {
-		return dead;
+		return isDead;
 	}
 
-	public void setDead(boolean dead) {
-		this.dead = dead;
+	public boolean isSpawned() {
+		return entityId == 0;
 	}
 
 	public boolean isLoaded() {
-		return loaded != null;
-	}
-
-	public Integer getLoaded() {
 		return loaded;
 	}
 
-	public void setLoaded(Integer loaded) {
+	public void setLoaded(boolean loaded) {
 		this.loaded = loaded;
 	}
 
@@ -346,5 +346,23 @@ public class Nemesis {
 		this.dimension = dimension;
 	}
 
-	public List<LogEntry> getHistory() { return history; }
+	public Integer getEntityId() {
+		return entityId;
+	}
+
+	public void setEntityId(Integer entityId) {
+		if (entityId == null) {
+			this.entityId = 0;
+		} else {
+			this.entityId = entityId;
+		}
+	}
+
+	public void setDead(boolean dead) {
+		isDead = dead;
+	}
+
+	public List<LogEntry> getHistory() {
+		return history;
+	}
 }

@@ -62,6 +62,8 @@ public class SpawnHandler {
 		NemesisRegistryProvider.get(world).load(nemesisEntity, nemesis.getId());
 		spawnBodyGuard(nemesisEntity, nemesis);
 		nemesisAnnounceEffects(nemesisEntity);
+
+
 	}
 
 	private void nemesisAnnounceEffects(EntityCreature nemesisEntity) {

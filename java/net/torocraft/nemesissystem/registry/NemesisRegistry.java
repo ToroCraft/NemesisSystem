@@ -14,14 +14,9 @@ import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.events.NemesisEvent;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
-public class NemesisRegistry extends WorldSavedData {
-	public static final String NAME = NemesisSystem.MODID + ":NemesisSaveData";
+public class NemesisRegistry extends NemesisWorldSaveData implements INemesisRegistry {
 
-	private static final String NBT_NEMESES = "nemeses";
-
-	private Random rand = new Random();
-
-	private List<Nemesis> nemeses = new ArrayList<>();
+	private final Random rand = new Random();
 
 	public NemesisRegistry() {
 		super(NAME);
@@ -31,19 +26,17 @@ public class NemesisRegistry extends WorldSavedData {
 		super(s);
 	}
 
-	public Nemesis getSpawnableNemesis(String className, int chunkX, int chunkZ) {
-		return null;
-	}
-
+	@Override
 	public void unload(UUID id) {
 		Nemesis nemesis = getById(id);
 		if(nemesis == null){
 			return;
 		}
-		nemesis.setLoaded(null);
+		nemesis.setLoaded(false);
 		markDirty();
 	}
 
+	@Override
 	public Nemesis getById(UUID id) {
 		if (id == null) {
 			return null;
@@ -56,6 +49,7 @@ public class NemesisRegistry extends WorldSavedData {
 		return null;
 	}
 
+	@Override
 	public Nemesis getByName(String name) {
 		name = name.trim().toLowerCase();
 		for (Nemesis nemesis : nemeses) {
@@ -66,15 +60,18 @@ public class NemesisRegistry extends WorldSavedData {
 		return null;
 	}
 
+	@Override
 	public void load(EntityCreature entity, UUID id) {
 		Nemesis nemesis = getById(id);
 		if(nemesis == null){
 			return;
 		}
-		nemesis.setLoaded(entity.getEntityId());
+		nemesis.setLoaded(true);
+		nemesis.setEntityId(entity.getEntityId());
 		markDirty();
 	}
 
+	@Override
 	public void register(Nemesis nemesis) {
 		nemeses.add(nemesis);
 		markDirty();
@@ -82,6 +79,7 @@ public class NemesisRegistry extends WorldSavedData {
 		System.out.println(nemesis.getNameAndTitle() + " has established rule of " + nemesis.getX() + "," + nemesis.getZ());
 	}
 
+	@Override
 	public void promote(UUID id) {
 		Nemesis nemesis = getById(id);
 		if(nemesis == null){
@@ -91,6 +89,7 @@ public class NemesisRegistry extends WorldSavedData {
 		markDirty();
 	}
 
+	@Override
 	public void duel(Nemesis opponentOne, Nemesis opponentTwo) {
 		Nemesis victor;
 		Nemesis loser;
@@ -113,84 +112,31 @@ public class NemesisRegistry extends WorldSavedData {
 
 		setDead(loser.getId(), victor.getNameAndTitle());
 		promote(victor.getId());
-
 		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Duel(victor, loser));
-
-		System.out.println(victor.getNameAndTitle() + " defeated " + loser.getNameAndTitle() + " in a fight to the death!");
-
 	}
 
-	/**
-	 * Remove nemesis from registry
-	 */
+	@Override
 	public void setDead(UUID id, String slayerName) {
-		if (id == null) {
+		Nemesis nemesis = getById(id);
+		if(nemesis == null){
 			return;
 		}
-		for (Nemesis nemesis : nemeses) {
-			if (id.equals(nemesis.getId())) {
-				nemesis.setDead(true);
-				System.out.println(nemesis.getNameAndTitle() + " has been slain");
-				MinecraftForge.EVENT_BUS.post(new NemesisEvent.Death(nemesis, slayerName));
-				markDirty();
-				return;
-			}
-		}
-		System.out.println("Nemesis ID[" + id + "] was not found and could not be marked as dead!");
-	}
-
-	public List<Nemesis> list() {
-		return new ArrayList<>(nemeses);
-	}
-
-	public void clear() {
-		nemeses.clear();
+		nemesis.setLoaded(false);
+		nemesis.setEntityId(null);
+		nemesis.setDead(true);
+		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Death(nemesis, slayerName));
 		markDirty();
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound c) {
-		nemeses = readNemesesFromNBT(c);
-	}
-
-	public static List<Nemesis> readNemesesFromNBT(NBTTagCompound c) {
-		NBTTagList nbtNemeses = loadNbtList(c);
-		ArrayList<Nemesis> nemeses = new ArrayList<>();
-		for (int i = 0; i < nbtNemeses.tagCount(); i++) {
-			Nemesis nemesis = new Nemesis();
-			nemesis.readFromNBT(nbtNemeses.getCompoundTagAt(i));
-			nemeses.add(nemesis);
-		}
-		return nemeses;
-	}
-
-	private static NBTTagList loadNbtList(NBTTagCompound c) {
-		NBTTagList l = null;
-		try {
-			l = (NBTTagList) c.getTag(NBT_NEMESES);
-		} catch (Exception ignored) {
-
-		}
-		if (l == null) {
-			l = new NBTTagList();
-		}
-		return l;
+	public List<Nemesis> list() {
+		return new ArrayList<>(nemeses);
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound c) {
-		writeNemesesToNBT(c, nemeses);
-		return c;
-	}
-
-	public static void writeNemesesToNBT(NBTTagCompound c, List<Nemesis> nemeses) {
-		NBTTagList nbtNemeses = new NBTTagList();
-		for (Nemesis nemesis : nemeses) {
-			if (!nemesis.isDead()) {
-				nbtNemeses.appendTag(nemesis.writeToNBT(new NBTTagCompound()));
-			}
-		}
-		c.setTag(NBT_NEMESES, nbtNemeses);
+	public void clear() {
+		nemeses.clear();
+		markDirty();
 	}
 
 }

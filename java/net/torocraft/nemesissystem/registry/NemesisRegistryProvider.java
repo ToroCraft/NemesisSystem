@@ -5,7 +5,7 @@ import net.minecraft.world.storage.MapStorage;
 
 public class NemesisRegistryProvider {
 
-	public static NemesisRegistry get(World world) {
+	public static INemesisRegistry get(World world) {
 		MapStorage storage = world.getPerWorldStorage();
 		NemesisRegistry instance = (NemesisRegistry) storage.getOrLoadData(NemesisRegistry.class, NemesisRegistry.NAME);
 		if (instance == null) {
