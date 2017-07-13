@@ -5,65 +5,55 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 
 public class NemesisEvent extends Event {
 
-    public NemesisEvent() {
+	private final Nemesis nemesis;
 
-    }
+	public NemesisEvent(final Nemesis nemesis) {
+		this.nemesis = nemesis;
+	}
 
-    public static class Promotion extends NemesisEvent {
-        protected final Nemesis nemesis;
+	public static class Promotion extends NemesisEvent {
+		public Promotion(final Nemesis nemesis) {
+			super(nemesis);
+		}
+	}
 
-        public Promotion(final Nemesis nemesis) {
-            this.nemesis = nemesis;
-        }
+	public static class Duel extends NemesisEvent {
+		protected final Nemesis loser;
 
-        public Nemesis getNemesis() {
-            return nemesis;
-        }
-    }
+		public Duel(final Nemesis winner, final Nemesis loser) {
+			super(winner);
+			this.loser = loser;
+		}
 
-    public static class Duel extends NemesisEvent {
-        protected final Nemesis winner;
-        protected final Nemesis loser;
+		public Nemesis getWinner() {
+			return getNemesis();
+		}
 
-        public Duel(final Nemesis winner, final Nemesis loser) {
-            this.winner = winner;
-            this.loser = loser;
-        }
+		public Nemesis getLoser() {
+			return loser;
+		}
+	}
 
-        public Nemesis getWinner() {
-            return winner;
-        }
+	public static class Register extends NemesisEvent {
+		public Register(final Nemesis nemesis) {
+			super(nemesis);
+		}
+	}
 
-        public Nemesis getLoser() {
-            return loser;
-        }
-    }
+	public static class Death extends NemesisEvent {
+		protected final String slayerName;
 
-    public static class Register extends NemesisEvent {
-        protected final Nemesis nemesis;
+		public Death(final Nemesis nemesis, final String slayerName) {
+			super(nemesis);
+			this.slayerName = slayerName;
+		}
 
-        public Register(final Nemesis nemesis) {
-            this.nemesis = nemesis;
-        }
+		public String getSlayerName() {
+			return slayerName;
+		}
+	}
 
-        public Nemesis getNemesis() {
-            return nemesis;
-        }
-    }
-
-    public static class Death extends NemesisEvent {
-        protected final Nemesis nemesis;
-        protected final String slayerName;
-
-        public Death(final Nemesis nemesis, final String slayerName) {
-            this.nemesis = nemesis;
-            this.slayerName = slayerName;
-        }
-
-        public Nemesis getNemesis() {
-            return nemesis;
-        }
-
-        public String getSlayerName() { return slayerName; }
-    }
+	public Nemesis getNemesis() {
+		return nemesis;
+	}
 }
