@@ -9,6 +9,8 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -21,9 +23,11 @@ import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.nemesissystem.util.EntityDecorator;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisBuilder;
 import net.torocraft.nemesissystem.util.NemesisUtil;
+import net.torocraft.nemesissystem.util.SpawnUtil;
 
 public class NemesisSystemCommand extends CommandBase {
 
@@ -55,6 +59,9 @@ public class NemesisSystemCommand extends CommandBase {
 		case "create":
 			create(server, sender, args);
 			return;
+		case "spawn":
+			spawn(server, sender, args);
+			return;
 		case "list":
 			list(server, sender, args);
 			return;
@@ -78,6 +85,29 @@ public class NemesisSystemCommand extends CommandBase {
 		}
 	}
 
+	private void spawn(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+		if (!(sender instanceof EntityPlayer)) {
+			return;
+		}
+
+		if (args.length != 2) {
+			throw new WrongUsageException("commands.nemesis_system.usage");
+		}
+
+		EntityPlayer player = getCommandSenderAsPlayer(sender);
+		World world = player.world;
+
+		INemesisRegistry registry = NemesisRegistryProvider.get(world);
+		Nemesis nemesis = registry.getByName(args[1]);
+
+		Entity entity = SpawnUtil.getEntityFromString(world, nemesis.getMob());
+		if (!(entity instanceof EntityCreature)) {
+			return;
+		}
+		EntityDecorator.decorate((EntityCreature) entity, nemesis);
+		SpawnUtil.spawnEntityLiving(world, (EntityCreature) entity, player.getPosition(), 10);
+	}
+
 	private void promote(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length != 2) {
 			throw new WrongUsageException("commands.nemesis_system.usage");
@@ -85,7 +115,7 @@ public class NemesisSystemCommand extends CommandBase {
 		World world = server.getWorld(senderDimId(sender));
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);
 		Nemesis nemesis = registry.getByName(args[1]);
-		if(nemesis == null){
+		if (nemesis == null) {
 			return;
 		}
 		NemesisActions.promote(world, nemesis);
@@ -139,10 +169,13 @@ public class NemesisSystemCommand extends CommandBase {
 
 	private void list(MinecraftServer server, ICommandSender sender, String[] args) {
 		List<Nemesis> l = NemesisRegistryProvider.get(server.getWorld(0)).list();
-		l.removeIf(Nemesis::isDead);
 		StringBuilder s = new StringBuilder();
 		for (Nemesis nemesis : l) {
-			s.append(" * ").append(nemesis).append("\n");
+			s.append(" * ");
+			if (nemesis.isDead()) {
+				s.append(" DEAD ");
+			}
+			s.append(nemesis).append("\n");
 		}
 		notifyCommandListener(sender, this, "commands.nemesis_system.success.list", s.toString());
 	}
@@ -171,17 +204,17 @@ public class NemesisSystemCommand extends CommandBase {
 	}
 
 	private int senderDimId(ICommandSender sender) {
-		try{
+		try {
 			return getCommandSenderAsPlayer(sender).dimension;
-		}catch(Exception e){
+		} catch (Exception e) {
 			return 0;
 		}
 	}
 
 	private BlockPos senderPos(ICommandSender sender) {
-		try{
+		try {
 			return getCommandSenderAsPlayer(sender).getPosition();
-		}catch(Exception e){
+		} catch (Exception e) {
 			return BlockPos.ORIGIN;
 		}
 	}
@@ -197,20 +230,21 @@ public class NemesisSystemCommand extends CommandBase {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
 		if (args.length == 1) {
-			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui", "duelIfCrowded", "promote");
+			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui", "duelIfCrowded", "promote", "spawn");
 		}
 		String command = args[0];
 		switch (command) {
 		case "create":
 			return tabCompletionsForCreate(server, args);
 		case "promote":
-			return tabCompletionsForPromote(server, sender, args);
+		case "spawn":
+			return tabCompletionsForName(server, sender, args);
 		default:
 			return Collections.emptyList();
 		}
 	}
 
-	private List<String> tabCompletionsForPromote(MinecraftServer server, ICommandSender sender, String[] args) {
+	private List<String> tabCompletionsForName(MinecraftServer server, ICommandSender sender, String[] args) {
 		if (args.length == 2) {
 			return getListOfStringsMatchingLastWord(args, getNemesisNames(server, sender));
 		}

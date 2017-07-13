@@ -182,7 +182,7 @@ public class DeathHandler {
 		}
 
 		NemesisActions.kill(nemesisEntity.world, nemesis, attacker.getName());
-		
+
 		NemesisUtil.findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
 				.forEach((EntityCreature guard) -> guard.setAttackTarget(null));
 
