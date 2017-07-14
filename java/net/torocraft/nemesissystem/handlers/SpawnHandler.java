@@ -20,6 +20,7 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.registry.NemesisRegistry;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.EntityDecorator;
 import net.torocraft.nemesissystem.registry.Nemesis;
@@ -43,6 +44,15 @@ public class SpawnHandler {
 		NemesisActions.handleRandomPromotions(event.getWorld(), (EntityCreature) event.getEntity());
 
 		if (event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
+			Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
+			if (nemesis == null || !nemesis.isSpawned()) {
+				System.out.println(nemesis == null ? "UNKNOWN" : nemesis.getNameAndTitle() + " has already been despawned");
+				//event.setCanceled(true);
+			}else{
+				System.out.println(nemesis.getNameAndTitle() + " has not left the battle grounds yet!");
+				nemesis.setUnloaded(null);
+				NemesisRegistryProvider.get(event.getWorld()).update(nemesis);
+			}
 			return;
 		}
 
@@ -56,25 +66,39 @@ public class SpawnHandler {
 			return;
 		}
 
-		World world = event.getWorld();
-		EntityCreature nemesisEntity = (EntityCreature) event.getEntity();
-		// TODO check age
-		EntityDecorator.decorate(nemesisEntity, nemesis);
-		nemesis.setSpawned(nemesisEntity.getEntityId());
-		nemesis.setLoaded(true);
-		NemesisRegistryProvider.get(world).update(nemesis);
-		spawnBodyGuard(nemesisEntity, nemesis);
-		nemesisAnnounceEffects(nemesisEntity);
+		replaceEntityWithNemesis((EntityCreature)event.getEntity(), nemesis);
 	}
 
-	private void nemesisAnnounceEffects(EntityCreature nemesisEntity) {
+	private void replaceEntityWithNemesis(EntityCreature entity, Nemesis nemesis) {
+		entity.setDead();
+		spawnNemesis(entity.world, entity.getPosition(), nemesis);
+	}
+
+	public static void spawnNemesis(World world, BlockPos pos, Nemesis nemesis) {
+		if(nemesis.isLoaded() || nemesis.isDead() || nemesis.isSpawned()){
+			return;
+		}
+		EntityCreature nemesisEntity = SpawnUtil.getEntityFromString(world, nemesis.getMob());
+
+		EntityDecorator.decorate(nemesisEntity, nemesis);
+		SpawnUtil.spawnEntityLiving(world, nemesisEntity, pos, 1);
+
+		spawnBodyGuard(nemesisEntity, nemesis);
+		nemesisAnnounceEffects(nemesisEntity);
+
+		nemesis.setSpawned(nemesisEntity.getEntityId());
+		nemesis.setUnloaded(null);
+		NemesisRegistryProvider.get(world).update(nemesis);
+	}
+
+	private static void nemesisAnnounceEffects(EntityCreature nemesisEntity) {
 		World world = nemesisEntity.world;
 
 		if (canSeeSky(nemesisEntity)) {
 			world.addWeatherEffect(new EntityLightningBolt(nemesisEntity.world, nemesisEntity.posX, nemesisEntity.posY, nemesisEntity.posZ, true));
 		}
 
-		// TODO sound horn (this would force a clients to have the mod)
+		// TODO sound horn
 
 	}
 
@@ -82,7 +106,7 @@ public class SpawnHandler {
 		return e.world.canSeeSky(new BlockPos(e.posX, e.posY + (double) e.getEyeHeight(), e.posZ));
 	}
 
-	private void spawnBodyGuard(EntityLiving entity, Nemesis nemesis) {
+	private static void spawnBodyGuard(EntityLiving entity, Nemesis nemesis) {
 
 		// TODO high level nemeses spawn other nemesis in their body guard
 
@@ -116,7 +140,7 @@ public class SpawnHandler {
 		return stack;
 	}
 
-	private Nemesis getNemesisForSpawn(EntityEvent event) {
+	private static Nemesis getNemesisForSpawn(EntityEvent event) {
 
 		if (!(event.getEntity() instanceof EntityLiving)) {
 			return null;
@@ -173,7 +197,7 @@ public class SpawnHandler {
 		return nemeses.get(event.getEntity().world.rand.nextInt(nemeses.size()));
 	}
 
-	private boolean otherNemesisNearby(EntityLiving entity, World world) {
+	private static boolean otherNemesisNearby(EntityLiving entity, World world) {
 		int distance = 100;
 		List<EntityLiving> entities = world
 				.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));
@@ -185,7 +209,7 @@ public class SpawnHandler {
 		return false;
 	}
 
-	private boolean playerInRange(EntityLiving entity, World world) {
+	private static boolean playerInRange(EntityLiving entity, World world) {
 		int distance = 100;
 		List<EntityPlayer> players = world
 				.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));

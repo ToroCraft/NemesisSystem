@@ -54,7 +54,7 @@ public class NemesisActions {
 
 	public static void kill(World world, Nemesis nemesis, String slayerName) {
 		nemesis.setDead(true);
-		NemesisRegistryProvider.get(world).register(nemesis);
+		NemesisRegistryProvider.get(world).update(nemesis);
 		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Death(nemesis, slayerName));
 	}
 

@@ -19,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.torocraft.nemesissystem.handlers.SpawnHandler;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
@@ -100,6 +101,11 @@ public class NemesisSystemCommand extends CommandBase {
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);
 		Nemesis nemesis = registry.getByName(args[1]);
 
+		//spawnSimple(player, world, nemesis);
+		SpawnHandler.spawnNemesis(world, player.getPosition(), nemesis);
+	}
+
+	private void spawnSimple(EntityPlayer player, World world, Nemesis nemesis) {
 		Entity entity = SpawnUtil.getEntityFromString(world, nemesis.getMob());
 		if (!(entity instanceof EntityCreature)) {
 			return;

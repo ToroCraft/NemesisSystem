@@ -50,8 +50,6 @@ public class DeathHandler {
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
 
-		System.out.println("death event");
-
 		World world = event.getEntity().getEntityWorld();
 
 		if (world.isRemote) {
@@ -61,7 +59,6 @@ public class DeathHandler {
 		Entity slayer = event.getSource().getTrueSource();
 
 		if (event.getEntity() instanceof EntityPlayer && slayer instanceof EntityCreature) {
-			System.out.println("player death event");
 			handlePlayerDeath((EntityPlayer) event.getEntity(), (EntityCreature) slayer);
 			return;
 		}
@@ -71,7 +68,6 @@ public class DeathHandler {
 		}
 
 		if (event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
-			System.out.println("nemesis death event");
 			handleNemesisDeath((EntityCreature) event.getEntity(), slayer);
 		}
 	}
@@ -82,7 +78,10 @@ public class DeathHandler {
 			return;
 		}
 
-		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity((EntityCreature) event.getEntity());
+		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
+		if(nemesis == null){
+			return;
+		}
 		//TODO determine some kind of formula for scaling the amount of experience received
 		event.setDroppedExperience(event.getOriginalExperience() * (nemesis.getLevel() + 1));
 	}
@@ -169,12 +168,9 @@ public class DeathHandler {
 		}
 
 		INemesisRegistry registry = NemesisRegistryProvider.get(nemesisEntity.world);
-
-		nemesis.setSpawned(0);
-		nemesis.setLoaded(false);
-
+		nemesis.setSpawned(null);
+		nemesis.setUnloaded(null);
 		registry.update(nemesis);
-
 
 		if (attacker == null || !(attacker instanceof EntityLivingBase)) {
 			System.out.println("nemesis was not killed by entity");

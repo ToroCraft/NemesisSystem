@@ -32,14 +32,14 @@ public class Nemesis {
 	private static final String NBT_ID = "id";
 	private static final String NBT_TRAITS = "traits";
 	private static final String NBT_TITLE = "title";
-	private static final String NBT_LOADED = "loaded";
+	private static final String NBT_UNLOADED = "unloaded";
 	private static final String NBT_DIMENSION = "dimension";
 	private static final String NBT_SPAWNED = "spawned";
 
 	/**
 	 * the chunk the entity is in is loaded
 	 */
-	private boolean loaded;
+	private Long unloaded;
 
 	/**
 	 * the entity ID when this nemesis is spawned
@@ -71,7 +71,7 @@ public class Nemesis {
 
 	@Override
 	public String toString() {
-		return name + " the " + title + " (" + (loaded ? "LOADED" : "UNLOADED") + " level:" + level + " loc:" + x + "," + z + ") " + mob + " "
+		return name + " the " + title + " (" + (unloaded == null ? "UNLOADED" : "LOADED") + " " + (isSpawned() ? "SPAWNED" : "NOT_SPAWNED") + " level:" + level + " loc:" + x + "," + z + ") " + mob + " "
 				+ traits.get(0);
 	}
 
@@ -86,7 +86,11 @@ public class Nemesis {
 		id = c.getUniqueId(NBT_ID);
 		title = c.getString(NBT_TITLE);
 		dimension = c.getInteger(NBT_DIMENSION);
-		loaded = c.getBoolean(NBT_LOADED);
+		if (unloaded != null) {
+			unloaded = c.getLong(NBT_UNLOADED);
+		}else{
+			c.removeTag(NBT_UNLOADED);
+		}
 		spawned = c.getInteger(NBT_SPAWNED);
 		readTraits(c);
 		loadAllItems(NBT_HANDS, c, handInventory);
@@ -102,7 +106,10 @@ public class Nemesis {
 		c.setUniqueId(NBT_ID, id);
 		c.setString(NBT_TITLE, title);
 		c.setInteger(NBT_DIMENSION, dimension);
-		c.setBoolean(NBT_LOADED, loaded);
+		unloaded = null;
+		if(c.hasKey(NBT_UNLOADED)){
+			c.setLong(NBT_UNLOADED, unloaded);
+		}
 		c.setInteger(NBT_SPAWNED, spawned);
 		writeTraits(c);
 		saveAllItems(NBT_HANDS, c, handInventory);
@@ -332,15 +339,19 @@ public class Nemesis {
 	}
 
 	public boolean isSpawned() {
-		return spawned == 0;
+		return spawned != 0;
 	}
 
 	public boolean isLoaded() {
-		return loaded;
+		return unloaded != null;
 	}
 
-	public void setLoaded(boolean loaded) {
-		this.loaded = loaded;
+	public Long getUnloaded() {
+		return unloaded;
+	}
+
+	public void setUnloaded(Long unloaded) {
+		this.unloaded = unloaded;
 	}
 
 	public double getRangeSq() {

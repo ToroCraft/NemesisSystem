@@ -11,6 +11,11 @@ public class NameBuilder {
 	}
 
 	public static final String[] TITLES = {
+			"Shiny",
+			"Enchanter",
+			"Great",
+			"Large",
+			"Square Head",
 			"Cookie Hoarder",
 			"Block Breaker",
 			"Sheep Shearer",

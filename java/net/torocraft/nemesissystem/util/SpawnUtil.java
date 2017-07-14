@@ -15,14 +15,10 @@ import net.minecraft.world.World;
 public class SpawnUtil {
 
 	public static void spawn(World world, String mob, BlockPos pos, int spawnRadius) {
-		Entity entity = getEntityFromString(world, mob);
-		if (!(entity instanceof EntityCreature)) {
-			return;
-		}
-		spawnEntityLiving(world, (EntityCreature) entity, pos, spawnRadius);
+		spawnEntityLiving(world, getEntityFromString(world, mob), pos, spawnRadius);
 	}
 
-	public static Entity getEntityFromString(World world, String entityID) {
+	public static EntityCreature getEntityFromString(World world, String entityID) {
 		String[] parts = entityID.split(":");
 		String domain, entityName;
 		if (parts.length == 2) {
@@ -32,7 +28,11 @@ public class SpawnUtil {
 			domain = "minecraft";
 			entityName = entityID;
 		}
-		return EntityList.createEntityByIDFromName(new ResourceLocation(domain, entityName), world);
+		Entity entity = EntityList.createEntityByIDFromName(new ResourceLocation(domain, entityName), world);
+		if (!(entity instanceof EntityCreature)) {
+			return null;
+		}
+		return (EntityCreature) entity;
 	}
 
 	public static boolean spawnEntityLiving(World world, EntityCreature entity, BlockPos pos, int spawnRadius) {
