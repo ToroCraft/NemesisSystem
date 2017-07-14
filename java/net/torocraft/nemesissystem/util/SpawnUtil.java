@@ -5,8 +5,6 @@ import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -42,7 +40,7 @@ public class SpawnUtil {
 		entity.setLocationAndAngles(x, y, z, MathHelper.wrapDegrees(world.rand.nextFloat() * 360.0F), 0.0F);
 		entity.rotationYawHead = entity.rotationYaw;
 		entity.renderYawOffset = entity.rotationYaw;
-		entity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), (IEntityLivingData) null);
+		entity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), null);
 		entity.enablePersistence();
 		findAndSetSuitableSpawnLocation(entity, pos, spawnRadius);
 		world.spawnEntity(entity);

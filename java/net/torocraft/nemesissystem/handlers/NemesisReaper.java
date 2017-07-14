@@ -27,11 +27,13 @@ public class NemesisReaper {
 
 	private void despawnLogic(WorldTickEvent event, INemesisRegistry registry) {
 		registry.list().forEach((Nemesis nemesis) -> {
-			if (!nemesis.isSpawned()) {
-				return;
+			if (nemesis.isSpawned()) {
+				despawnNemesis(event.world, registry, nemesis);
+				unloadNemesis(event.world, registry, nemesis);
+			}else if(nemesis.isLoaded()){
+				System.out.println("Strange, the nemesis loaded but but not spawned, IMPOSSIBLE!");
+				nemesis.setUnloaded(event.world.getTotalWorldTime());
 			}
-			despawnNemesis(event.world, registry, nemesis);
-			unloadNemesis(event.world, registry, nemesis);
 		});
 	}
 
@@ -44,10 +46,8 @@ public class NemesisReaper {
 	}
 
 	private boolean shouldBeDespawned(World world, Nemesis nemesis) {
-		if(nemesis == null || nemesis.getUnloaded() == null){
-			return false;
-		}
-		return !nemesis.isLoaded() && world.getTotalWorldTime() - nemesis.getUnloaded() > MAX_UNLOAD_TIME;
+		if(nemesis.isLoaded()) return false;
+		return (world.getTotalWorldTime() - nemesis.getUnloaded()) > MAX_UNLOAD_TIME;
 	}
 
 	private void unloadNemesis(World world, INemesisRegistry registry, Nemesis nemesis) {

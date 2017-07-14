@@ -20,11 +20,10 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.NemesisRegistry;
-import net.torocraft.nemesissystem.util.BehaviorUtil;
-import net.torocraft.nemesissystem.util.EntityDecorator;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.nemesissystem.util.BehaviorUtil;
+import net.torocraft.nemesissystem.util.EntityDecorator;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 import net.torocraft.nemesissystem.util.SpawnUtil;
@@ -37,22 +36,17 @@ public class SpawnHandler {
 
 	@SubscribeEvent
 	public void handleSpawn(EntityJoinWorldEvent event) {
-		if (event.getEntity().world.isRemote || !(event.getEntity() instanceof EntityCreature) || !NemesisUtil.isNemesisClassEntity(event.getEntity())) {
+		if (event.getEntity().world.isRemote || !(event.getEntity() instanceof EntityCreature) || !NemesisUtil
+				.isNemesisClassEntity(event.getEntity())) {
 			return;
 		}
+
+		System.out.println("spawn " + event.getEntity().getEntityData());
 
 		NemesisActions.handleRandomPromotions(event.getWorld(), (EntityCreature) event.getEntity());
 
 		if (event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
-			Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
-			if (nemesis == null || !nemesis.isSpawned()) {
-				System.out.println(nemesis == null ? "UNKNOWN" : nemesis.getNameAndTitle() + " has already been despawned");
-				//event.setCanceled(true);
-			}else{
-				System.out.println(nemesis.getNameAndTitle() + " has not left the battle grounds yet!");
-				nemesis.setUnloaded(null);
-				NemesisRegistryProvider.get(event.getWorld()).update(nemesis);
-			}
+			handleRespawnOfNemesis(event);
 			return;
 		}
 
@@ -66,7 +60,7 @@ public class SpawnHandler {
 			return;
 		}
 
-		replaceEntityWithNemesis((EntityCreature)event.getEntity(), nemesis);
+		replaceEntityWithNemesis((EntityCreature) event.getEntity(), nemesis);
 	}
 
 	private void replaceEntityWithNemesis(EntityCreature entity, Nemesis nemesis) {
@@ -74,13 +68,49 @@ public class SpawnHandler {
 		spawnNemesis(entity.world, entity.getPosition(), nemesis);
 	}
 
+	private void handleRespawnOfNemesis(EntityJoinWorldEvent event) {
+		Entity entity = event.getEntity();
+		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
+		if (nemesis == null) {
+			System.out.println(nemesis == null ? "UNKNOWN" : nemesis.getNameAndTitle() + " has already been despawned");
+			event.setCanceled(true);
+		} else if (entity.getTags().contains(TAG_SPAWNING)) {
+			System.out.println(nemesis.getNameAndTitle() + " is marching onto the battle field");
+			entity.removeTag(TAG_SPAWNING);
+			nemesis.setSpawned(entity.getEntityId());
+			nemesis.setUnloaded(null);
+			NemesisRegistryProvider.get(entity.world).update(nemesis);
+		} else {
+			System.out.println(nemesis.getNameAndTitle() + " has not left the battle grounds yet!");
+			nemesis.setUnloaded(null);
+			NemesisRegistryProvider.get(event.getWorld()).update(nemesis);
+		}
+	}
+
+	private static final String TAG_SPAWNING = "nemesis_is_spawning";
+
 	public static void spawnNemesis(World world, BlockPos pos, Nemesis nemesis) {
-		if(nemesis.isLoaded() || nemesis.isDead() || nemesis.isSpawned()){
+		if (nemesis.isLoaded()) {
+			System.out.println(nemesis.getNameAndTitle() + " is already loaded");
+			return;
+		}
+		if (nemesis.isDead()) {
+			System.out.println(nemesis.getNameAndTitle() + " is dead!");
+			return;
+		}
+		if (nemesis.isSpawned()) {
+			System.out.println(nemesis.getNameAndTitle() + " is already spawned");
 			return;
 		}
 		EntityCreature nemesisEntity = SpawnUtil.getEntityFromString(world, nemesis.getMob());
 
+		if (nemesisEntity == null) {
+			return;
+		}
+
+		nemesisEntity.addTag(TAG_SPAWNING);
 		EntityDecorator.decorate(nemesisEntity, nemesis);
+		System.out.println("about to spawn : " + nemesisEntity.getEntityData());
 		SpawnUtil.spawnEntityLiving(world, nemesisEntity, pos, 1);
 
 		spawnBodyGuard(nemesisEntity, nemesis);
@@ -170,7 +200,7 @@ public class SpawnHandler {
 		// TODO figure out how to handle nemeses that cannot spawn in their location (Husk not in the desert)
 
 		// TODO increase Nemesis level every time they spawn but are not killed
-		
+
 		if (nemeses == null || nemeses.size() < 1) {
 			return null;
 		}

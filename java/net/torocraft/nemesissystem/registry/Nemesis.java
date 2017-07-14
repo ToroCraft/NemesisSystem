@@ -71,7 +71,7 @@ public class Nemesis {
 
 	@Override
 	public String toString() {
-		return name + " the " + title + " (" + (unloaded == null ? "UNLOADED" : "LOADED") + " " + (isSpawned() ? "SPAWNED" : "NOT_SPAWNED") + " level:" + level + " loc:" + x + "," + z + ") " + mob + " "
+		return name + " the " + title + " (" + (unloaded == null ? "LOADED" : "UNLOADED") + " " + (isSpawned() ? "SPAWNED" : "NOT_SPAWNED") + " level:" + level + " loc:" + x + "," + z + ") " + mob + " "
 				+ traits.get(0);
 	}
 
@@ -343,7 +343,7 @@ public class Nemesis {
 	}
 
 	public boolean isLoaded() {
-		return unloaded != null;
+		return unloaded == null;
 	}
 
 	public Long getUnloaded() {
