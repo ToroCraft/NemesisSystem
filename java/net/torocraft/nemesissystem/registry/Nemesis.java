@@ -1,17 +1,18 @@
 package net.torocraft.nemesissystem.registry;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+
+import akka.actor.FSM;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -35,6 +36,7 @@ public class Nemesis {
 	private static final String NBT_LOADED = "loaded";
 	private static final String NBT_DIMENSION = "dimension";
 	private static final String NBT_SPAWNED = "spawned";
+	private static final String NBT_HISTORY = "history";
 
 	/**
 	 * the chunk the entity is in is loaded
@@ -55,7 +57,7 @@ public class Nemesis {
 	private int z;
 	private UUID id;
 	private List<Trait> traits;
-	private List<LogEntry> history;
+	private List<NemesisLogEntry> history;
 	private int dimension;
 
 	//TODO spawned check
@@ -91,6 +93,7 @@ public class Nemesis {
 		readTraits(c);
 		loadAllItems(NBT_HANDS, c, handInventory);
 		loadAllItems(NBT_ARMOR, c, armorInventory);
+		readHistory(c);
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound c) {
@@ -107,6 +110,7 @@ public class Nemesis {
 		writeTraits(c);
 		saveAllItems(NBT_HANDS, c, handInventory);
 		saveAllItems(NBT_ARMOR, c, armorInventory);
+		writeHistory(c);
 		return c;
 	}
 
@@ -133,6 +137,37 @@ public class Nemesis {
 			l.appendTag(new NBTTagInt(t.ordinal()));
 		}
 		c.setTag(NBT_TRAITS, l);
+	}
+
+	private void readHistory(NBTTagCompound c) {
+		if (!c.hasKey(NBT_HISTORY)) {
+			return;
+		}
+		history = new ArrayList<>();
+		NBTTagList l = null;
+		try {
+			l = (NBTTagList) c.getTag(NBT_HISTORY);
+		} catch (Exception ignore) {}
+
+		if (l == null) {
+			l = new NBTTagList();
+		}
+		for (int i = 0; i < l.tagCount(); i++) {
+			NemesisLogEntry e = new NemesisLogEntry();
+			e.readFromNBT(l.getCompoundTagAt(i));
+			history.add(e);
+		}
+	}
+
+	private void writeHistory(NBTTagCompound c) {
+		if (history == null) {
+			return;
+		}
+		NBTTagList l = new NBTTagList();
+		for (NemesisLogEntry e : history) {
+			l.appendTag(e.writeToNBT(c));
+		}
+		c.setTag(NBT_HISTORY, l);
 	}
 
 	public static void saveAllItems(String key, NBTTagCompound tag, NonNullList<ItemStack> list) {
@@ -167,78 +202,7 @@ public class Nemesis {
 		}
 	}
 
-	public static class LogEntry {
-		private LogType type;
-		private Map<String, String> details;
-		private LocalDate date;
-
-		private LogEntry(LogType type, Map<String, String> details) {
-			this.type = type;
-			this.details = details;
-			this.date = LocalDate.now();
-		}
-
-		public enum LogType {
-			KILLED, DIED, DUEL_WIN, DUEL_LOSS, PROMOTION, CREATION, FLED
-		}
-
-		public static LogEntry KILLED(String victimName) {
-			Map<String, String> details = new HashMap<>();
-			details.put("victim", victimName);
-			return new LogEntry(LogType.KILLED, details);
-		}
-
-		public static LogEntry DIED(String killerName) {
-			Map<String, String> details = new HashMap<>();
-			details.put("killer", killerName);
-			return new LogEntry(LogType.DIED, details);
-		}
-
-		public static LogEntry DUEL_WIN(String loserName) {
-			Map<String, String> details = new HashMap<>();
-			details.put("opponent", loserName);
-			return new LogEntry(LogType.DUEL_WIN, details);
-		}
-
-		public static LogEntry DUEL_LOSS(String winnerName) {
-			Map<String, String> details = new HashMap<>();
-			details.put("opponent", winnerName);
-			return new LogEntry(LogType.DUEL_LOSS, details);
-		}
-
-		public static LogEntry PROMOTION(int newLevel) {
-			Map<String, String> details = new HashMap<>();
-			details.put("newLevel", String.valueOf(newLevel));
-			return new LogEntry(LogType.PROMOTION, details);
-		}
-
-		public static LogEntry CREATION(int x, int z) {
-			Map<String, String> details = new HashMap<>();
-			details.put("domainX", String.valueOf(x));
-			details.put("domainZ", String.valueOf(z));
-			return new LogEntry(LogType.CREATION, details);
-		}
-
-		public static LogEntry FLED(String lastPlayerName) {
-			Map<String, String> details = new HashMap<>();
-			details.put("opponent", lastPlayerName);
-			return new LogEntry(LogType.FLED, details);
-		}
-
-		public LogType getType() {
-			return type;
-		}
-
-		public Map<String, String> getDetails() {
-			return details;
-		}
-
-		public LocalDate getDate() {
-			return date;
-		}
-	}
-
-	public void addToHistory(LogEntry logEntry) {
+	public void addToHistory(NemesisLogEntry logEntry) {
 		if (history == null) {
 			history = new ArrayList<>();
 		}
@@ -371,7 +335,7 @@ public class Nemesis {
 		isDead = dead;
 	}
 
-	public List<LogEntry> getHistory() {
+	public List<NemesisLogEntry> getHistory() {
 		return history;
 	}
 }

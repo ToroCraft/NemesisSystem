@@ -25,7 +25,9 @@ public class NemesisActions {
 			addAdditionalTrait(nemesis);
 		}
 		NemesisRegistryProvider.get(world).update(nemesis);
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Promotion(nemesis));
+		if (!world.isRemote) {
+			MinecraftForge.EVENT_BUS.post(new NemesisEvent.Promotion(nemesis));
+		}
 	}
 
 	private static void addAdditionalTrait(Nemesis nemesis) {
@@ -55,7 +57,9 @@ public class NemesisActions {
 	public static void kill(World world, Nemesis nemesis, String slayerName) {
 		nemesis.setDead(true);
 		NemesisRegistryProvider.get(world).register(nemesis);
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Death(nemesis, slayerName));
+		if (!world.isRemote) {
+			MinecraftForge.EVENT_BUS.post(new NemesisEvent.Death(nemesis, slayerName));
+		}
 	}
 
 	public static void duel(World world, Nemesis opponentOne, Nemesis opponentTwo) {
@@ -80,7 +84,9 @@ public class NemesisActions {
 
 		kill(world, loser, victor.getName());
 		promote(world, victor);
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Duel(victor, loser));
+		if (!world.isRemote) {
+			MinecraftForge.EVENT_BUS.post(new NemesisEvent.Duel(victor, loser));
+		}
 	}
 
 	public static void duelIfCrowded(World world, Nemesis exclude, boolean onlyIfCrowded) {

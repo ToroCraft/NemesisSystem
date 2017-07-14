@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityCreature;
 import net.minecraftforge.common.MinecraftForge;
+import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.events.NemesisEvent;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
@@ -69,7 +72,9 @@ public class NemesisRegistry extends NemesisWorldSaveData implements INemesisReg
 	public void register(Nemesis nemesis) {
 		nemeses.add(nemesis);
 		markDirty();
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Register(nemesis));
+		if (!Minecraft.getMinecraft().world.isRemote) {
+			MinecraftForge.EVENT_BUS.post(new NemesisEvent.Register(nemesis));
+		}
 		System.out.println(nemesis.getNameAndTitle() + " has established rule of " + nemesis.getX() + "," + nemesis.getZ());
 	}
 
