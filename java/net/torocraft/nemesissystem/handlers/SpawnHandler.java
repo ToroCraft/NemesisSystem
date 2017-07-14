@@ -72,15 +72,30 @@ public class SpawnHandler {
 		Entity entity = event.getEntity();
 		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
 		if (nemesis == null) {
+			/*
+			 * missing nemesis data
+			 */
 			System.out.println(nemesis == null ? "UNKNOWN" : nemesis.getNameAndTitle() + " has already been despawned");
 			event.setCanceled(true);
 		} else if (entity.getTags().contains(TAG_SPAWNING)) {
+			/*
+			 * new nemesis spawn in progress
+			 */
 			System.out.println(nemesis.getNameAndTitle() + " is marching onto the battle field");
 			entity.removeTag(TAG_SPAWNING);
 			nemesis.setSpawned(entity.getEntityId());
 			nemesis.setUnloaded(null);
 			NemesisRegistryProvider.get(entity.world).update(nemesis);
+		} else if(!nemesis.isSpawned()) {
+			/*
+			 * nemesis has been marked as despawned
+			 */
+			System.out.println(nemesis.getNameAndTitle() + " has left the battlefield");
+			event.setCanceled(true);
 		} else {
+			/*
+			 * nemesis is marked unloaded, mark as loaded now he is respawning
+			 */
 			System.out.println(nemesis.getNameAndTitle() + " has not left the battle grounds yet!");
 			nemesis.setUnloaded(null);
 			NemesisRegistryProvider.get(event.getWorld()).update(nemesis);
