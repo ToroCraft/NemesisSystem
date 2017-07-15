@@ -206,10 +206,15 @@ public class Nemesis {
 		@NbtField
 		private LogType type;
 
+		@NbtField(genericType = String.class)
 		private Map<String, String> details;
 
 		@NbtField
 		private long date;
+
+		public LogEntry() {
+
+		}
 
 		private LogEntry(LogType type, Map<String, String> details) {
 			this.type = type;
@@ -271,6 +276,18 @@ public class Nemesis {
 
 		public Map<String, String> getDetails() {
 			return details;
+		}
+
+		public void setType(LogType type) {
+			this.type = type;
+		}
+
+		public void setDetails(Map<String, String> details) {
+			this.details = details;
+		}
+
+		public void setDate(long date) {
+			this.date = date;
 		}
 
 		public long getDate() {

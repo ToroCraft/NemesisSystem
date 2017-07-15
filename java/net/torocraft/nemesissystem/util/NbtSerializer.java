@@ -4,7 +4,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import net.minecraft.nbt.NBTBase;
@@ -100,6 +103,15 @@ public class NbtSerializer {
 			return new NBTTagString(value.toString());
 		}
 
+		if (value instanceof Map) {
+			Map<String,?> map = (Map<String, ?>) value;
+			NBTTagCompound c = new NBTTagCompound();
+			for(Entry<String,?> e : map.entrySet()) {
+				c.setTag(e.getKey(), toCompound(e.getValue()));
+			}
+			return c;
+		}
+
 		if (value instanceof List) {
 			// TODO only support array lists
 			List<?> list = (List<?>) value;
@@ -118,10 +130,13 @@ public class NbtSerializer {
 		//logUnsupportedValue(, value);
 	}
 
+	@SuppressWarnings("unchecked")
 	private static Object fromCompound(Field f, Class type, NBTBase value) {
 		if (value == null) {
 			return null;
 		}
+
+		Class genericType;
 
 		switch (value.getClass().getName()) {
 		case "net.minecraft.nbt.NBTTagInt":
@@ -137,13 +152,32 @@ public class NbtSerializer {
 			}
 			return s;
 		case "net.minecraft.nbt.NBTTagList":
-			Class genericType = f.getAnnotation(NbtField.class).genericType();
+			genericType = f.getAnnotation(NbtField.class).genericType();
 			NBTTagList nbtList = (NBTTagList) value;
 			List<Object> list = new ArrayList<>();
 			for (NBTBase nbt : nbtList) {
 				list.add(fromCompound(f, genericType, nbt));
 			}
 			return list;
+		case "net.minecraft.nbt.NBTTagCompound":
+			if (Map.class.isAssignableFrom(type)) {
+				genericType = f.getAnnotation(NbtField.class).genericType();
+				NBTTagCompound c = (NBTTagCompound) value;
+				Map<String, Object> map = new HashMap<>();
+				for (String key : c.getKeySet()) {
+					map.put(key, fromCompound(f, genericType, c.getTag(key)));
+				}
+				return map;
+			}
+
+			try {
+				Object o = type.newInstance();
+				read((NBTTagCompound) value, o);
+				return o;
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+
 		}
 		//logUnsupportedValue(, value);
 
