@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.torocraft.nemesissystem.util.NbtField;
 
 public class Nemesis {
 
@@ -39,23 +40,43 @@ public class Nemesis {
 	/**
 	 * the chunk the entity is in is loaded
 	 */
+	@NbtField
 	private Long unloaded;
 
 	/**
 	 * the entity ID when this nemesis is spawned
 	 */
-	private int spawned;
+	@NbtField
+	private Integer spawned;
 
-
+	@NbtField
 	private String title;
+
+	@NbtField
 	private String name;
+
+	@NbtField
 	private int level;
+
+	@NbtField
 	private String mob;
+
+	@NbtField
 	private int x;
+
+	@NbtField
 	private int z;
+
+	@NbtField
 	private UUID id;
+
+	@NbtField
 	private List<Trait> traits;
+
+	@NbtField
 	private List<LogEntry> history;
+
+	@NbtField
 	private int dimension;
 
 	//TODO spawned check
@@ -71,7 +92,8 @@ public class Nemesis {
 
 	@Override
 	public String toString() {
-		return name + " the " + title + " (" + (unloaded == null ? "LOADED" : "UNLOADED") + " " + (isSpawned() ? "SPAWNED" : "NOT_SPAWNED") + " level:" + level + " loc:" + x + "," + z + ") " + mob + " "
+		return name + " the " + title + " (" + (unloaded == null ? "LOADED" : "UNLOADED") + " " + (isSpawned() ? "SPAWNED" : "NOT_SPAWNED")
+				+ " level:" + level + " loc:" + x + "," + z + ") " + mob + " "
 				+ traits.get(0);
 	}
 
@@ -88,7 +110,13 @@ public class Nemesis {
 		dimension = c.getInteger(NBT_DIMENSION);
 		if (unloaded != null) {
 			unloaded = c.getLong(NBT_UNLOADED);
-		}else{
+		} else {
+			c.removeTag(NBT_UNLOADED);
+		}
+
+		if (spawned != null) {
+			unloaded = c.getLong(NBT_UNLOADED);
+		} else {
 			c.removeTag(NBT_UNLOADED);
 		}
 		spawned = c.getInteger(NBT_SPAWNED);
@@ -107,7 +135,7 @@ public class Nemesis {
 		c.setString(NBT_TITLE, title);
 		c.setInteger(NBT_DIMENSION, dimension);
 		unloaded = null;
-		if(c.hasKey(NBT_UNLOADED)){
+		if (c.hasKey(NBT_UNLOADED)) {
 			c.setLong(NBT_UNLOADED, unloaded);
 		}
 		c.setInteger(NBT_SPAWNED, spawned);
@@ -371,11 +399,7 @@ public class Nemesis {
 	}
 
 	public void setSpawned(Integer spawned) {
-		if (spawned == null) {
-			this.spawned = 0;
-		} else {
-			this.spawned = spawned;
-		}
+		this.spawned = spawned;
 	}
 
 	public void setDead(boolean dead) {

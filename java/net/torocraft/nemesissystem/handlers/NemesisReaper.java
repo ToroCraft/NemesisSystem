@@ -3,6 +3,7 @@ package net.torocraft.nemesissystem.handlers;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
@@ -23,13 +24,11 @@ public class NemesisReaper {
 
 	@SubscribeEvent
 	public void cleanUp(WorldTickEvent event) {
-		//if (event.world.getTotalWorldTime() % 20 != 0) {
-		//	return;
-		//}
+		if (event.world.getTotalWorldTime() % 20 != 0) {
+			return;
+		}
 		//System.out.println("server tick " + event.world.getTotalWorldTime());
-
-
-		//despawnLogic(event, NemesisRegistryProvider.get(event.world));
+		despawnLogic(event, NemesisRegistryProvider.get(event.world));
 	}
 
 	private void despawnLogic(WorldTickEvent event, INemesisRegistry registry) {

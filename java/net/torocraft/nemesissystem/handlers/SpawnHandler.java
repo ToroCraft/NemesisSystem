@@ -128,7 +128,7 @@ public class SpawnHandler {
 		System.out.println("about to spawn : " + nemesisEntity.getEntityData());
 		SpawnUtil.spawnEntityLiving(world, nemesisEntity, pos, 1);
 
-		spawnBodyGuard(nemesisEntity, nemesis);
+		//spawnBodyGuard(nemesisEntity, nemesis);
 		nemesisAnnounceEffects(nemesisEntity);
 
 		nemesis.setSpawned(nemesisEntity.getEntityId());
