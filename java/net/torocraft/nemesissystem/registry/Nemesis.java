@@ -70,10 +70,10 @@ public class Nemesis {
 	@NbtField
 	private UUID id;
 
-	@NbtField
+	@NbtField(genericType = Trait.class)
 	private List<Trait> traits;
 
-	@NbtField
+	@NbtField(genericType = LogEntry.class)
 	private List<LogEntry> history;
 
 	@NbtField
@@ -203,14 +203,19 @@ public class Nemesis {
 	}
 
 	public static class LogEntry {
+		@NbtField
 		private LogType type;
+
 		private Map<String, String> details;
-		private LocalDate date;
+
+		@NbtField
+		private long date;
 
 		private LogEntry(LogType type, Map<String, String> details) {
 			this.type = type;
 			this.details = details;
-			this.date = LocalDate.now();
+			// TODO save world time instead?
+			this.date = System.currentTimeMillis();
 		}
 
 		public enum LogType {
@@ -268,7 +273,7 @@ public class Nemesis {
 			return details;
 		}
 
-		public LocalDate getDate() {
+		public long getDate() {
 			return date;
 		}
 	}
@@ -408,5 +413,9 @@ public class Nemesis {
 
 	public List<LogEntry> getHistory() {
 		return history;
+	}
+
+	public void setHistory(List<LogEntry> history) {
+		this.history = history;
 	}
 }
