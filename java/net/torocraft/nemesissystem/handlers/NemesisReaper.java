@@ -59,6 +59,10 @@ public class NemesisReaper {
 	}
 
 	private void unloadNemesis(World world, INemesisRegistry registry, Nemesis nemesis) {
+		if (nemesis.getSpawned() == null) {
+			System.out.println("nemesis.getSpawned was null, that should not be possible in unloadNemesis()");
+			return;
+		}
 		Entity entity = world.getEntityByID(nemesis.getSpawned());
 		if(entity != null){
 			System.out.println("Entity Found for " + nemesis.getNameAndTitle());

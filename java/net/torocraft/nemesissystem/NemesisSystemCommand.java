@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -182,6 +183,9 @@ public class NemesisSystemCommand extends CommandBase {
 				s.append(" DEAD ");
 			}
 			s.append(nemesis).append("\n");
+			NBTTagCompound c = new NBTTagCompound();
+			nemesis.writeToNBT(c);
+			s.append(c).append("\n");
 		}
 		notifyCommandListener(sender, this, "commands.nemesis_system.success.list", s.toString());
 	}

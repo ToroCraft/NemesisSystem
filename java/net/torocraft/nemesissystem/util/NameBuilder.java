@@ -11,6 +11,8 @@ public class NameBuilder {
 	}
 
 	public static final String[] TITLES = {
+			"Half Finger",
+			"Black Toe",
 			"Shiny",
 			"Enchanter",
 			"Great",

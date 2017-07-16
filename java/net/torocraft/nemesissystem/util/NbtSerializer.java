@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -23,7 +24,7 @@ public class NbtSerializer {
 	/**
 	 * read data from the NBT to the object
 	 */
-	public static void read(NBTTagCompound c, Object o) throws Exception {
+	public static void read(NBTTagCompound c, Object o) {
 		fields(o).forEach((Field f) -> readField(c, o, f));
 	}
 
@@ -105,6 +106,12 @@ public class NbtSerializer {
 			return new NBTTagString(value.toString());
 		}
 
+		if (value instanceof ItemStack) {
+			NBTTagCompound nbttagcompound = new NBTTagCompound();
+			((ItemStack)value).writeToNBT(nbttagcompound);
+			return nbttagcompound;
+		}
+
 		if (value instanceof Map) {
 			Map<String, ?> map = (Map<String, ?>) value;
 			NBTTagCompound c = new NBTTagCompound();
@@ -119,7 +126,9 @@ public class NbtSerializer {
 			List<?> list = (List<?>) value;
 			NBTTagList nbttaglist = new NBTTagList();
 			for (int i = 0; i < list.size(); ++i) {
-				nbttaglist.appendTag(toCompound(list.get(i)));
+				NBTBase nbt = toCompound(list.get(i));
+				// TODO is slot needed for itemStacks? nbttagcompound.setByte("Slot", (byte) i);
+				nbttaglist.appendTag(nbt);
 			}
 			return nbttaglist;
 		}
@@ -154,6 +163,7 @@ public class NbtSerializer {
 			NBTTagList nbtList = (NBTTagList) value;
 			List<Object> list;
 			genericType = f.getAnnotation(NbtField.class).genericType();
+
 			if (NonNullList.class.isAssignableFrom(type)) {
 				list = NonNullList.withSize(nbtList.tagCount(), ItemStack.EMPTY);
 			} else {
@@ -164,7 +174,15 @@ public class NbtSerializer {
 			}
 
 			for (int i = 0; i < nbtList.tagCount(); i++) {
-				list.set(i, fromCompound(f, genericType, nbtList.get(i)));
+
+				if (genericType.isAssignableFrom(ItemStack.class)) {
+					System.out.println("creating item stack");
+					list.set(i, new ItemStack((NBTTagCompound)nbtList.get(i)));
+				} else {
+					list.set(i, fromCompound(f, genericType, nbtList.get(i)));
+				}
+
+
 			}
 
 			return list;

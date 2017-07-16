@@ -16,26 +16,13 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.nemesissystem.util.NbtField;
+import net.torocraft.nemesissystem.util.NbtSerializer;
 
 public class Nemesis {
 
 	private static final int RANGE_SQ = 100 * 100;
 
 	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, SHIELD, TELEPORT, FIREBALL, HEAL}
-
-	private static final String NBT_NAME = "name";
-	private static final String NBT_LEVEL = "level";
-	private static final String NBT_MOB = "mob";
-	private static final String NBT_X = "x";
-	private static final String NBT_Z = "z";
-	private static final String NBT_ARMOR = "armor";
-	private static final String NBT_HANDS = "hands";
-	private static final String NBT_ID = "id";
-	private static final String NBT_TRAITS = "traits";
-	private static final String NBT_TITLE = "title";
-	private static final String NBT_UNLOADED = "unloaded";
-	private static final String NBT_DIMENSION = "dimension";
-	private static final String NBT_SPAWNED = "spawned";
 
 	/**
 	 * the chunk the entity is in is loaded
@@ -101,108 +88,11 @@ public class Nemesis {
 	}
 
 	public void readFromNBT(NBTTagCompound c) {
-		handInventory = NonNullList.withSize(2, ItemStack.EMPTY);
-		armorInventory = NonNullList.withSize(4, ItemStack.EMPTY);
-		name = c.getString(NBT_NAME);
-		level = c.getInteger(NBT_LEVEL);
-		mob = c.getString(NBT_MOB);
-		x = c.getInteger(NBT_X);
-		z = c.getInteger(NBT_Z);
-		id = c.getUniqueId(NBT_ID);
-		title = c.getString(NBT_TITLE);
-		dimension = c.getInteger(NBT_DIMENSION);
-		if (unloaded != null) {
-			unloaded = c.getLong(NBT_UNLOADED);
-		} else {
-			c.removeTag(NBT_UNLOADED);
-		}
-
-		if (spawned != null) {
-			unloaded = c.getLong(NBT_UNLOADED);
-		} else {
-			c.removeTag(NBT_UNLOADED);
-		}
-		spawned = c.getInteger(NBT_SPAWNED);
-		readTraits(c);
-		loadAllItems(NBT_HANDS, c, handInventory);
-		loadAllItems(NBT_ARMOR, c, armorInventory);
+		NbtSerializer.read(c, this);
 	}
 
-	public NBTTagCompound writeToNBT(NBTTagCompound c) {
-		c.setString(NBT_NAME, name);
-		c.setInteger(NBT_LEVEL, level);
-		c.setString(NBT_MOB, mob);
-		c.setInteger(NBT_X, x);
-		c.setInteger(NBT_Z, z);
-		c.setUniqueId(NBT_ID, id);
-		c.setString(NBT_TITLE, title);
-		c.setInteger(NBT_DIMENSION, dimension);
-		unloaded = null;
-		if (c.hasKey(NBT_UNLOADED)) {
-			c.setLong(NBT_UNLOADED, unloaded);
-		}
-		c.setInteger(NBT_SPAWNED, spawned);
-		writeTraits(c);
-		saveAllItems(NBT_HANDS, c, handInventory);
-		saveAllItems(NBT_ARMOR, c, armorInventory);
-		return c;
-	}
-
-	private void readTraits(NBTTagCompound c) {
-		traits = new ArrayList<>();
-		NBTTagList l = null;
-		try {
-			l = (NBTTagList) c.getTag(NBT_TRAITS);
-		} catch (Exception ignored) {
-
-		}
-		if (l == null) {
-			l = new NBTTagList();
-		}
-
-		for (int i = 0; i < l.tagCount(); i++) {
-			traits.add(Trait.values()[l.getIntAt(i)]);
-		}
-	}
-
-	private void writeTraits(NBTTagCompound c) {
-		NBTTagList l = new NBTTagList();
-		for (Trait t : traits) {
-			l.appendTag(new NBTTagInt(t.ordinal()));
-		}
-		c.setTag(NBT_TRAITS, l);
-	}
-
-	public static void saveAllItems(String key, NBTTagCompound tag, NonNullList<ItemStack> list) {
-		NBTTagList nbttaglist = new NBTTagList();
-
-		for (int i = 0; i < list.size(); ++i) {
-			ItemStack itemstack = list.get(i);
-
-			if (!itemstack.isEmpty()) {
-				NBTTagCompound nbttagcompound = new NBTTagCompound();
-				nbttagcompound.setByte("Slot", (byte) i);
-				itemstack.writeToNBT(nbttagcompound);
-				nbttaglist.appendTag(nbttagcompound);
-			}
-		}
-
-		if (!nbttaglist.hasNoTags()) {
-			tag.setTag(key, nbttaglist);
-		}
-	}
-
-	public static void loadAllItems(String key, NBTTagCompound tag, NonNullList<ItemStack> list) {
-		NBTTagList nbttaglist = tag.getTagList(key, 10);
-
-		for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-			NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-			int j = nbttagcompound.getByte("Slot") & 255;
-
-			if (j >= 0 && j < list.size()) {
-				list.set(j, new ItemStack(nbttagcompound));
-			}
-		}
+	public void writeToNBT(NBTTagCompound c) {
+		NbtSerializer.write(c, this);
 	}
 
 	public static class LogEntry {
@@ -392,7 +282,7 @@ public class Nemesis {
 	}
 
 	public boolean isSpawned() {
-		return spawned != 0;
+		return spawned != null;
 	}
 
 	public boolean isLoaded() {

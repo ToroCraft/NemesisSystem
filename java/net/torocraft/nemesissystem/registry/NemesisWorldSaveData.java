@@ -61,7 +61,9 @@ public class NemesisWorldSaveData extends WorldSavedData {
 		NBTTagList nbtNemeses = new NBTTagList();
 		for (Nemesis nemesis : nemeses) {
 			if (!nemesis.isDead()) {
-				nbtNemeses.appendTag(nemesis.writeToNBT(new NBTTagCompound()));
+				NBTTagCompound compound = new NBTTagCompound();
+				nemesis.writeToNBT(compound);
+				nbtNemeses.appendTag(compound);
 			}
 		}
 		c.setTag(NBT_NEMESES, nbtNemeses);
