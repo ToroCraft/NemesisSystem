@@ -23,15 +23,14 @@ import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.Nemesis.Trait;
-import net.torocraft.nemesissystem.registry.NemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
-public class DeathHandler {
+public class Death {
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new DeathHandler());
+		MinecraftForge.EVENT_BUS.register(new Death());
 	}
 
 	@SubscribeEvent

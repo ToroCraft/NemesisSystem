@@ -28,10 +28,10 @@ import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 import net.torocraft.nemesissystem.util.SpawnUtil;
 
-public class SpawnHandler {
+public class Spawn {
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new SpawnHandler());
+		MinecraftForge.EVENT_BUS.register(new Spawn());
 	}
 
 	@SubscribeEvent

@@ -10,12 +10,12 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
-public class NemesisReaper {
+public class Reaper {
 
 	private static final long MAX_UNLOAD_TIME = 200;
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new NemesisReaper());
+		MinecraftForge.EVENT_BUS.register(new Reaper());
 	}
 
 	@SubscribeEvent

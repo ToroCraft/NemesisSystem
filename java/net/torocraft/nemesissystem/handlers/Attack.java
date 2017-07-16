@@ -11,10 +11,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
-public class AttackHandler {
+public class Attack {
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new AttackHandler());
+		MinecraftForge.EVENT_BUS.register(new Attack());
 	}
 
 	@SubscribeEvent

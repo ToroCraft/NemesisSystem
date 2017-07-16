@@ -6,7 +6,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.torocraft.nemesissystem.gui.NemesisSystemGuiHandler;
-import net.torocraft.nemesissystem.handlers.InputHandler;
+import net.torocraft.nemesissystem.handlers.Input;
 
 public class ClientProxy extends CommonProxy {
 	public static KeyBinding[] keyBindings;
@@ -22,7 +22,7 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void init(FMLInitializationEvent e) {
 		NemesisSystemGuiHandler.init();
-		InputHandler.init();
+		Input.init();
 		super.init(e);
 	}
 

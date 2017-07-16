@@ -14,10 +14,10 @@ import net.torocraft.nemesissystem.util.HandleNemesisTraits;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
-public class UpdateHandler {
+public class Update {
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new UpdateHandler());
+		MinecraftForge.EVENT_BUS.register(new Update());
 	}
 
 	@SubscribeEvent
