@@ -75,7 +75,7 @@ public class SpawnHandler {
 			/*
 			 * missing nemesis data
 			 */
-			System.out.println(nemesis == null ? "UNKNOWN" : nemesis.getNameAndTitle() + " has already been despawned");
+			System.out.println("UNKNOWN has already been despawned");
 			event.setCanceled(true);
 		} else if (entity.getTags().contains(TAG_SPAWNING)) {
 			/*
@@ -105,10 +105,6 @@ public class SpawnHandler {
 	private static final String TAG_SPAWNING = "nemesis_is_spawning";
 
 	public static void spawnNemesis(World world, BlockPos pos, Nemesis nemesis) {
-		if (nemesis.isLoaded()) {
-			System.out.println(nemesis.getNameAndTitle() + " is already loaded");
-			return;
-		}
 		if (nemesis.isDead()) {
 			System.out.println(nemesis.getNameAndTitle() + " is dead!");
 			return;
@@ -128,7 +124,7 @@ public class SpawnHandler {
 		System.out.println("about to spawn : " + nemesisEntity.getEntityData());
 		SpawnUtil.spawnEntityLiving(world, nemesisEntity, pos, 1);
 
-		//spawnBodyGuard(nemesisEntity, nemesis);
+		spawnBodyGuard(nemesisEntity, nemesis);
 		nemesisAnnounceEffects(nemesisEntity);
 
 		nemesis.setSpawned(nemesisEntity.getEntityId());
@@ -205,7 +201,7 @@ public class SpawnHandler {
 
 		List<Nemesis> nemeses = NemesisRegistryProvider.get(event.getEntity().world).list();
 
-		nemeses.removeIf(Nemesis::isLoaded);
+		nemeses.removeIf(Nemesis::isSpawned);
 		nemeses.removeIf(Nemesis::isDead);
 
 		// TODO only spawn once a day?

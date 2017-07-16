@@ -1,4 +1,4 @@
-package net.torocraft.nemesissystem.util;
+package net.torocraft.nemesissystem.util.nbt;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -176,7 +175,6 @@ public class NbtSerializer {
 			for (int i = 0; i < nbtList.tagCount(); i++) {
 
 				if (genericType.isAssignableFrom(ItemStack.class)) {
-					System.out.println("creating item stack");
 					list.set(i, new ItemStack((NBTTagCompound)nbtList.get(i)));
 				} else {
 					list.set(i, fromCompound(f, genericType, nbtList.get(i)));
@@ -213,6 +211,7 @@ public class NbtSerializer {
 		System.out.println("NBT serializer error Field[" + f.getName() + "] Object[" + o.getClass().getName() + "]");
 		e.printStackTrace();
 	}
+
 
 	private static void logUnsupportedValue(Field f, Object value) {
 		System.out.println("Unsupported Type[" + f.getType().getName() + "] Field[" + f + "] Value[" + value + "]");

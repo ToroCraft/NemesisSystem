@@ -5,7 +5,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.LogEntry;
 
 public class NemesisEventHandlers {
 
@@ -15,7 +15,7 @@ public class NemesisEventHandlers {
                 event.getNemesis().getNameAndTitle(), event.getNemesis().getLevel());
         sendGlobalMessage(message);
 
-        event.getNemesis().addToHistory(Nemesis.LogEntry.PROMOTION(event.getNemesis().getLevel()));
+        event.getNemesis().addToHistory(LogEntry.PROMOTION(event.getNemesis().getLevel()));
     }
 
     @SubscribeEvent
@@ -24,8 +24,8 @@ public class NemesisEventHandlers {
                 event.getWinner().getNameAndTitle(), event.getLoser().getNameAndTitle());
         sendGlobalMessage(message);
 
-        event.getWinner().addToHistory(Nemesis.LogEntry.DUEL_WIN(event.getLoser().getNameAndTitle()));
-        event.getLoser().addToHistory(Nemesis.LogEntry.DUEL_LOSS(event.getWinner().getNameAndTitle()));
+        event.getWinner().addToHistory(LogEntry.DUEL_WIN(event.getLoser().getNameAndTitle()));
+        event.getLoser().addToHistory(LogEntry.DUEL_LOSS(event.getWinner().getNameAndTitle()));
     }
 
     @SubscribeEvent
@@ -34,7 +34,7 @@ public class NemesisEventHandlers {
                 event.getNemesis().getNameAndTitle(), event.getNemesis().getX(), event.getNemesis().getZ());
         sendGlobalMessage(message);
 
-        event.getNemesis().addToHistory(Nemesis.LogEntry.CREATION(event.getNemesis().getX(), event.getNemesis().getZ()));
+        event.getNemesis().addToHistory(LogEntry.CREATION(event.getNemesis().getX(), event.getNemesis().getZ()));
     }
 
     @SubscribeEvent
@@ -43,7 +43,7 @@ public class NemesisEventHandlers {
                 event.getNemesis().getNameAndTitle(), event.getSlayerName());
         sendGlobalMessage(message);
 
-        event.getNemesis().addToHistory(Nemesis.LogEntry.DIED(event.getSlayerName()));
+        event.getNemesis().addToHistory(LogEntry.DIED(event.getSlayerName()));
     }
 
     // TODO need an event for killing a player

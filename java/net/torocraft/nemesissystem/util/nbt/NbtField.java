@@ -1,4 +1,4 @@
-package net.torocraft.nemesissystem.util;
+package net.torocraft.nemesissystem.util.nbt;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

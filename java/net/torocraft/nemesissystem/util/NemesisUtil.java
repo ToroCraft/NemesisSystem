@@ -5,24 +5,20 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
-
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
-import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.events.NemesisEvent;
-import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
@@ -72,7 +68,7 @@ public class NemesisUtil {
 	}
 
 	public static void enchantItem(ItemStack item) {
-		if(!improveEnchants(item)){
+		if (!improveEnchants(item)) {
 			addNewEnchantment(item);
 		}
 	}
@@ -81,18 +77,18 @@ public class NemesisUtil {
 		boolean improved = false;
 		Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(item);
 
-		if(enchantments.isEmpty()){
+		if (enchantments.isEmpty()) {
 			return false;
 		}
 
 		for (Entry<Enchantment, Integer> enchant : enchantments.entrySet()) {
-			if(shouldImproveEnchantment(rand, enchant.getKey(), enchant.getValue())){
+			if (shouldImproveEnchantment(rand, enchant.getKey(), enchant.getValue())) {
 				enchantments.put(enchant.getKey(), enchant.getValue() + 1);
 				improved = true;
 			}
 		}
 
-		if(improved){
+		if (improved) {
 			EnchantmentHelper.setEnchantments(enchantments, item);
 		}
 
@@ -145,6 +141,10 @@ public class NemesisUtil {
 		}
 
 		return entities.get(0);
+	}
+
+	public static List<EntityPlayer> findPlayersAround(World world, BlockPos position, int distance) {
+		return world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(position).grow(distance, distance, distance));
 	}
 
 	public static Nemesis loadNemesisFromEntity(Entity nemesisEntity) {
