@@ -1,7 +1,6 @@
 package net.torocraft.nemesissystem.util;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,12 +9,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.util.NonNullList;
 
 public class NbtSerializer {
 
@@ -81,6 +82,7 @@ public class NbtSerializer {
 		f.setAccessible(accessible);
 	}
 
+	@SuppressWarnings("unchecked")
 	private static NBTBase toCompound(Object value) {
 		if (value == null) {
 			return null;
@@ -104,9 +106,9 @@ public class NbtSerializer {
 		}
 
 		if (value instanceof Map) {
-			Map<String,?> map = (Map<String, ?>) value;
+			Map<String, ?> map = (Map<String, ?>) value;
 			NBTTagCompound c = new NBTTagCompound();
-			for(Entry<String,?> e : map.entrySet()) {
+			for (Entry<String, ?> e : map.entrySet()) {
 				c.setTag(e.getKey(), toCompound(e.getValue()));
 			}
 			return c;
@@ -122,12 +124,9 @@ public class NbtSerializer {
 			return nbttaglist;
 		}
 
-		System.out.println("toCompound: " + value.getClass().getName());
-
 		NBTTagCompound c = new NBTTagCompound();
 		write(c, value);
 		return c;
-		//logUnsupportedValue(, value);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -145,19 +144,29 @@ public class NbtSerializer {
 			return ((NBTTagLong) value).getLong();
 		case "net.minecraft.nbt.NBTTagString":
 			String s = ((NBTTagString) value).getString();
-			if(type.getTypeName().equals("java.util.UUID")){
+			if (type.getTypeName().equals("java.util.UUID")) {
 				return UUID.fromString(s);
 			} else if (Enum.class.isAssignableFrom(type)) {
 				return Enum.valueOf(type, s);
 			}
 			return s;
 		case "net.minecraft.nbt.NBTTagList":
-			genericType = f.getAnnotation(NbtField.class).genericType();
 			NBTTagList nbtList = (NBTTagList) value;
-			List<Object> list = new ArrayList<>();
-			for (NBTBase nbt : nbtList) {
-				list.add(fromCompound(f, genericType, nbt));
+			List<Object> list;
+			genericType = f.getAnnotation(NbtField.class).genericType();
+			if (NonNullList.class.isAssignableFrom(type)) {
+				list = NonNullList.withSize(nbtList.tagCount(), ItemStack.EMPTY);
+			} else {
+				list = new ArrayList<>();
+				for(int i = 0; i < nbtList.tagCount(); i++){
+					list.add(null);
+				}
 			}
+
+			for (int i = 0; i < nbtList.tagCount(); i++) {
+				list.set(i, fromCompound(f, genericType, nbtList.get(i)));
+			}
+
 			return list;
 		case "net.minecraft.nbt.NBTTagCompound":
 			if (Map.class.isAssignableFrom(type)) {
@@ -174,14 +183,11 @@ public class NbtSerializer {
 				Object o = type.newInstance();
 				read((NBTTagCompound) value, o);
 				return o;
-			}catch(Exception e){
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
 		}
-		//logUnsupportedValue(, value);
-
-		System.out.println("fromCompound: " + value.getClass().getName());
 		return null;
 	}
 

@@ -83,7 +83,10 @@ public class Nemesis {
 
 	private transient boolean isDead;
 
+	@NbtField
 	private NonNullList<ItemStack> handInventory = NonNullList.withSize(2, ItemStack.EMPTY);
+
+	@NbtField
 	private NonNullList<ItemStack> armorInventory = NonNullList.withSize(4, ItemStack.EMPTY);
 
 	public void register(World world) {
@@ -434,5 +437,13 @@ public class Nemesis {
 
 	public void setHistory(List<LogEntry> history) {
 		this.history = history;
+	}
+
+	public void setHandInventory(NonNullList<ItemStack> handInventory) {
+		this.handInventory = handInventory;
+	}
+
+	public void setArmorInventory(NonNullList<ItemStack> armorInventory) {
+		this.armorInventory = armorInventory;
 	}
 }
