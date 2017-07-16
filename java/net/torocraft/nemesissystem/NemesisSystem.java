@@ -22,6 +22,7 @@ public class NemesisSystem {
 	public static final String NBT_NEMESIS_ID = "torocraft_nemesis_id";
 	public static final String TAG_NEMESIS = "torocraft_nemesis";
 	public static final String TAG_BODY_GUARD = "nemesis_body_guard";
+	public static final String TAG_SPAWNING = "nemesis_is_spawning";
 
 	@Mod.Instance(MODID)
 	public static NemesisSystem INSTANCE;

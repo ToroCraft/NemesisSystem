@@ -9,6 +9,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.network.MessageSyncNemesisRequest;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.HandleNemesisTraits;
 import net.torocraft.nemesissystem.registry.Nemesis;
@@ -61,6 +62,7 @@ public class Update {
 	}
 
 	private void flee(EntityCreature bodyGuard) {
+		// TODO USE FLEEING_SPEED_MODIFIER
 		bodyGuard.removeTag(NemesisSystem.TAG_BODY_GUARD);
 		BehaviorUtil.setFollowSpeed(bodyGuard, 2);
 		int distance = 1000;

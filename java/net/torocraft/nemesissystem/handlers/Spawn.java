@@ -20,6 +20,7 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.network.MessageSyncNemesis;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
@@ -36,6 +37,7 @@ public class Spawn {
 
 	@SubscribeEvent
 	public void handleSpawn(EntityJoinWorldEvent event) {
+
 		if (event.getEntity().world.isRemote || !(event.getEntity() instanceof EntityCreature) || !NemesisUtil
 				.isNemesisClassEntity(event.getEntity())) {
 			return;
@@ -75,18 +77,18 @@ public class Spawn {
 			/*
 			 * missing nemesis data
 			 */
-			System.out.println("UNKNOWN has already been despawned");
+			entity.setDead();
 			event.setCanceled(true);
-		} else if (entity.getTags().contains(TAG_SPAWNING)) {
+		} else if (entity.getTags().contains(NemesisSystem.TAG_SPAWNING)) {
 			/*
 			 * new nemesis spawn in progress
 			 */
 			System.out.println(nemesis.getNameAndTitle() + " is marching onto the battle field");
-			entity.removeTag(TAG_SPAWNING);
+			entity.removeTag(NemesisSystem.TAG_SPAWNING);
 			nemesis.setSpawned(entity.getEntityId());
 			nemesis.setUnloaded(null);
 			NemesisRegistryProvider.get(entity.world).update(nemesis);
-		} else if(!nemesis.isSpawned()) {
+		} else if (!nemesis.isSpawned()) {
 			/*
 			 * nemesis has been marked as despawned
 			 */
@@ -96,13 +98,19 @@ public class Spawn {
 			/*
 			 * nemesis is marked unloaded, mark as loaded now he is respawning
 			 */
+
+			if (!entity.getPersistentID().equals(nemesis.getEntityUuid())) {
+				System.out.println("Entity UUIDs do not match, whu?? .... kill'em");
+				event.setCanceled(true);
+				return;
+			}
+
+			nemesis.setSpawned(entity.getEntityId());
 			System.out.println(nemesis.getNameAndTitle() + " has not left the battle grounds yet!");
 			nemesis.setUnloaded(null);
 			NemesisRegistryProvider.get(event.getWorld()).update(nemesis);
 		}
 	}
-
-	private static final String TAG_SPAWNING = "nemesis_is_spawning";
 
 	public static void spawnNemesis(World world, BlockPos pos, Nemesis nemesis) {
 		if (nemesis.isDead()) {
@@ -119,17 +127,20 @@ public class Spawn {
 			return;
 		}
 
-		nemesisEntity.addTag(TAG_SPAWNING);
+		nemesisEntity.addTag(NemesisSystem.TAG_SPAWNING);
+
 		EntityDecorator.decorate(nemesisEntity, nemesis);
-		System.out.println("about to spawn : " + nemesisEntity.getEntityData());
 		SpawnUtil.spawnEntityLiving(world, nemesisEntity, pos, 1);
 
 		spawnBodyGuard(nemesisEntity, nemesis);
 		nemesisAnnounceEffects(nemesisEntity);
 
 		nemesis.setSpawned(nemesisEntity.getEntityId());
+		nemesis.setEntityUuid(nemesisEntity.getPersistentID());
 		nemesis.setUnloaded(null);
 		NemesisRegistryProvider.get(world).update(nemesis);
+
+		NemesisSystem.NETWORK.sendToAll(new MessageSyncNemesis(nemesis));
 	}
 
 	private static void nemesisAnnounceEffects(EntityCreature nemesisEntity) {
@@ -140,7 +151,6 @@ public class Spawn {
 		}
 
 		// TODO sound horn
-
 	}
 
 	private static boolean canSeeSky(Entity e) {
@@ -153,7 +163,7 @@ public class Spawn {
 
 		// TODO add body guard ranks? (different armor, ai, weapons)
 
-		int count = 5 + nemesis.getLevel() * 5;
+		int count = 3 + nemesis.getLevel() * 3;
 
 		for (int i = 0; i < count; i++) {
 			EntityCreature bodyGuard = new EntityZombie(entity.getEntityWorld());

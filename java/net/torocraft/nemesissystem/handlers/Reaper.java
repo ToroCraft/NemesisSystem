@@ -12,7 +12,7 @@ import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class Reaper {
 
-	private static final long MAX_UNLOAD_TIME = 200;
+	private static final long MAX_UNLOAD_TIME = 1;
 
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(new Reaper());

@@ -52,6 +52,9 @@ public class Nemesis {
 	@NbtField
 	private UUID id;
 
+	@NbtField
+	private UUID entityUuid;
+
 	@NbtField(genericType = Trait.class)
 	private List<Trait> traits;
 
@@ -237,5 +240,13 @@ public class Nemesis {
 
 	public void setArmorInventory(NonNullList<ItemStack> armorInventory) {
 		this.armorInventory = armorInventory;
+	}
+
+	public UUID getEntityUuid() {
+		return entityUuid;
+	}
+
+	public void setEntityUuid(UUID entityUuid) {
+		this.entityUuid = entityUuid;
 	}
 }

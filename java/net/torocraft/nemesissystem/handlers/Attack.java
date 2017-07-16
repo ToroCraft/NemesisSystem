@@ -4,6 +4,7 @@ import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -22,13 +23,31 @@ public class Attack {
 
 		World world = event.getEntity().getEntityWorld();
 
+		//entityDebug(event);
+
 		if (world.isRemote || !(event.getEntity() instanceof EntityCreature)) {
 			return;
 		}
 
+
 		if (event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
 			orderGuardsToAttackAggressor((EntityCreature) event.getEntity(), event.getSource().getTrueSource());
 		}
+	}
+
+	private void entityDebug(LivingAttackEvent event) {
+		try {
+			if (event.getSource().getTrueSource() instanceof EntityPlayer) {
+				System.out.println("-------------------------------------");
+				System.out.println("ID: " + event.getEntity().getEntityId());
+				for (String tag : event.getEntity().getTags()) {
+					System.out.println("TAG: " + tag);
+				}
+
+				System.out.println("Data: " + event.getEntity().getEntityData());
+				System.out.println("-------------------------------------");
+			}
+		}catch(Exception e){}
 	}
 
 	private void orderGuardsToAttackAggressor(EntityCreature boss, Entity attacker) {

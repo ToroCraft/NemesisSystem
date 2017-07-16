@@ -16,6 +16,7 @@ import net.torocraft.nemesissystem.handlers.Update;
 import net.torocraft.nemesissystem.network.MessageHealAnimation;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGuiRequest;
+import net.torocraft.nemesissystem.network.MessageSyncNemesis;
 
 public class CommonProxy {
 
@@ -48,6 +49,7 @@ public class CommonProxy {
 		MessageOpenNemesisGui.init(packetId++);
 		MessageOpenNemesisGuiRequest.init(packetId++);
 		MessageHealAnimation.init(packetId++);
+		MessageSyncNemesis.init(packetId++);
 	}
 
 }
