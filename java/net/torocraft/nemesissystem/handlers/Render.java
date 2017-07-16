@@ -18,6 +18,7 @@ public class Render {
 		if (modelShouldBeScaled(event)) {
 			GlStateManager.pushAttrib();
 			GlStateManager.pushMatrix();
+			GlStateManager.translate(5, 0, 5);
 			GlStateManager.scale(scale, scale, scale);
 		}
 	}

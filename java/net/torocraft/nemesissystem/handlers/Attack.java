@@ -23,7 +23,7 @@ public class Attack {
 
 		World world = event.getEntity().getEntityWorld();
 
-		//entityDebug(event);
+		entityDebug(event);
 
 		if (world.isRemote || !(event.getEntity() instanceof EntityCreature)) {
 			return;

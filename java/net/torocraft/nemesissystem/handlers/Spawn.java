@@ -21,6 +21,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.network.MessageSyncNemesis;
+import net.torocraft.nemesissystem.network.MessageSyncNemesisRequest;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
@@ -38,8 +39,12 @@ public class Spawn {
 	@SubscribeEvent
 	public void handleSpawn(EntityJoinWorldEvent event) {
 
-		if (event.getEntity().world.isRemote || !(event.getEntity() instanceof EntityCreature) || !NemesisUtil
-				.isNemesisClassEntity(event.getEntity())) {
+		if (event.getEntity().world.isRemote) {
+			requestNemesisDataFromServer(event);
+			return;
+		}
+
+		if (!(event.getEntity() instanceof EntityCreature) || !NemesisUtil.isNemesisClassEntity(event.getEntity())) {
 			return;
 		}
 
@@ -65,6 +70,14 @@ public class Spawn {
 		replaceEntityWithNemesis((EntityCreature) event.getEntity(), nemesis);
 	}
 
+	private void requestNemesisDataFromServer(EntityJoinWorldEvent event) {
+		if (event.getEntity() instanceof EntityCreature) {
+			if (!event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
+				NemesisSystem.NETWORK.sendToServer(new MessageSyncNemesisRequest(event.getEntity().getPersistentID()));
+			}
+		}
+	}
+
 	private void replaceEntityWithNemesis(EntityCreature entity, Nemesis nemesis) {
 		entity.setDead();
 		spawnNemesis(entity.world, entity.getPosition(), nemesis);
@@ -88,6 +101,7 @@ public class Spawn {
 			nemesis.setSpawned(entity.getEntityId());
 			nemesis.setUnloaded(null);
 			NemesisRegistryProvider.get(entity.world).update(nemesis);
+			sendNemesisDataToClient(nemesis);
 		} else if (!nemesis.isSpawned()) {
 			/*
 			 * nemesis has been marked as despawned
@@ -109,6 +123,7 @@ public class Spawn {
 			System.out.println(nemesis.getNameAndTitle() + " has not left the battle grounds yet!");
 			nemesis.setUnloaded(null);
 			NemesisRegistryProvider.get(event.getWorld()).update(nemesis);
+			sendNemesisDataToClient(nemesis);
 		}
 	}
 
@@ -140,6 +155,11 @@ public class Spawn {
 		nemesis.setUnloaded(null);
 		NemesisRegistryProvider.get(world).update(nemesis);
 
+		sendNemesisDataToClient(nemesis);
+	}
+
+	private static void sendNemesisDataToClient(Nemesis nemesis) {
+		System.out.println("****** on server, send packet to client about " + nemesis.getNameAndTitle());
 		NemesisSystem.NETWORK.sendToAll(new MessageSyncNemesis(nemesis));
 	}
 
