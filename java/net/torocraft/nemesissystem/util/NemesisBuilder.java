@@ -68,7 +68,8 @@ public class NemesisBuilder {
 		nemesis.setDimension(dimension);
 
 		nemesis.setTraits(new ArrayList<>());
-		nemesis.getTraits().add(Trait.values()[rand.nextInt(Trait.values().length)]);
+		//nemesis.getTraits().add(Trait.values()[rand.nextInt(Trait.values().length)]);
+		nemesis.getTraits().add(Trait.SUMMON);
 
 		nemesis.getHandInventory().set(0, new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]));
 		setOffhandItem(nemesis);

@@ -220,11 +220,15 @@ public class TraitsUtil {
 			return;
 		}
 
-		if (rand.nextInt(5) != 0) {
+		if (rand.nextInt(3) != 0) {
 			return;
 		}
 
-		// TODO check total number of near by mobs before spawning new ones
+		int summonedCount = entity.world.getEntitiesWithinAABB(EntityMob.class, around(entity.getPosition(), 40), TraitsUtil::isSummonedMob).size();
+
+		if (summonedCount > (nemesis.getLevel() * 2)) {
+			return;
+		}
 
 		int roll = rand.nextInt(100);
 
@@ -239,7 +243,16 @@ public class TraitsUtil {
 		}
 
 		mob.setPosition(entity.posX, entity.posY, entity.posZ);
+		mob.addTag(NemesisSystem.TAG_SUMMONED_MOB);
 		world.spawnEntity(mob);
+	}
+
+	private static AxisAlignedBB around(BlockPos pos, int radius) {
+		return new AxisAlignedBB(pos).grow(radius, radius, radius);
+	}
+
+	private static boolean isSummonedMob(Entity e) {
+		return e.getTags().contains(NemesisSystem.TAG_SUMMONED_MOB);
 	}
 
 	private static void handleHeatTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
