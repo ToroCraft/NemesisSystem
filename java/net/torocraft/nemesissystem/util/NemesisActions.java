@@ -28,6 +28,16 @@ public class NemesisActions {
 		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Promotion(nemesis));
 	}
 
+	public static void demote(World world, Nemesis nemesis, String slayerName) {
+		nemesis.setLevel(nemesis.getLevel() - 1);
+		if (nemesis.getLevel() < 1) {
+			kill(world, nemesis, slayerName);
+		}else{
+			NemesisRegistryProvider.get(world).update(nemesis);
+			MinecraftForge.EVENT_BUS.post(new NemesisEvent.Demotion(nemesis, slayerName));
+		}
+	}
+
 	private static void addAdditionalTrait(Nemesis nemesis) {
 		List<Trait> availableTraits = Arrays.stream(Trait.values())
 				.filter((Trait t) -> !nemesis.getTraits().contains(t))
@@ -53,6 +63,7 @@ public class NemesisActions {
 	}
 
 	public static void kill(World world, Nemesis nemesis, String slayerName) {
+		nemesis.setSpawned(null);
 		nemesis.setDead(true);
 		NemesisRegistryProvider.get(world).update(nemesis);
 		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Death(nemesis, slayerName));

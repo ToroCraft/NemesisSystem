@@ -78,7 +78,7 @@ public class Death {
 		}
 
 		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
-		if(nemesis == null){
+		if (nemesis == null) {
 			return;
 		}
 		//TODO determine some kind of formula for scaling the amount of experience received
@@ -142,7 +142,8 @@ public class Death {
 				drops.add(drop(nemesisEntity, new ItemStack(Items.LAVA_BUCKET)));
 				break;
 			case POTION:
-				drops.add(drop(nemesisEntity, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionType.REGISTRY.getRandomObject(rand))));
+				drops.add(drop(nemesisEntity,
+						PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionType.REGISTRY.getRandomObject(rand))));
 				break;
 			case TELEPORT:
 				drops.add(drop(nemesisEntity, new ItemStack(Items.ENDER_PEARL, rand.nextInt(16))));
@@ -156,28 +157,25 @@ public class Death {
 		return new EntityItem(entity.getEntityWorld(), entity.posX, entity.posY, entity.posZ, stack);
 	}
 
-	private void handleNemesisDeath(EntityCreature nemesisEntity, Entity attacker) {
+	private static void handleNemesisDeath(EntityCreature nemesisEntity, Entity attacker) {
 		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(nemesisEntity);
 
 		if (nemesis == null) {
-			System.out.println("nemesis not found on death, can't deregister");
+			return;
+		}
+
+		if (attacker == null || !(attacker instanceof EntityLivingBase)) {
 			return;
 		}
 
 		INemesisRegistry registry = NemesisRegistryProvider.get(nemesisEntity.world);
-		nemesis.setSpawned(null);
-		nemesis.setUnloaded(null);
-		registry.update(nemesis);
 
-		if (attacker == null || !(attacker instanceof EntityLivingBase)) {
-			System.out.println("nemesis was not killed by entity");
-			return;
+		NemesisActions.demote(nemesisEntity.world, nemesis, attacker.getName());
+
+		if (nemesis.getLevel() < 1) {
+			NemesisUtil.findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
+					.forEach((EntityCreature guard) -> guard.setAttackTarget(null));
 		}
-
-		NemesisActions.kill(nemesisEntity.world, nemesis, attacker.getName());
-
-		NemesisUtil.findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
-				.forEach((EntityCreature guard) -> guard.setAttackTarget(null));
-
 	}
+
 }

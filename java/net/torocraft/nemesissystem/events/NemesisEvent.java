@@ -17,6 +17,19 @@ public class NemesisEvent extends Event {
 		}
 	}
 
+	public static class Demotion extends NemesisEvent {
+		protected final String slayerName;
+
+		public Demotion(final Nemesis nemesis, final String slayerName) {
+			super(nemesis);
+			this.slayerName = slayerName;
+		}
+
+		public Object getSlayerName() {
+			return slayerName;
+		}
+	}
+
 	public static class Duel extends NemesisEvent {
 		protected final Nemesis loser;
 
