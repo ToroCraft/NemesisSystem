@@ -105,7 +105,8 @@ public class NemesisBuilder {
 			offhand = new ItemStack(Items.STICK);
 			break;
 		case REFLECT:
-			offhand = ItemStack.EMPTY;
+			// TODO color shield
+			offhand = new ItemStack(Items.SHIELD);
 			break;
 		case TELEPORT:
 			offhand = new ItemStack(Items.ENDER_PEARL);

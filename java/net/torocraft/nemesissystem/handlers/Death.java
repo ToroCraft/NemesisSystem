@@ -144,8 +144,6 @@ public class Death {
 			case POTION:
 				drops.add(drop(nemesisEntity, PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionType.REGISTRY.getRandomObject(rand))));
 				break;
-			case SHIELD:
-				break;
 			case TELEPORT:
 				drops.add(drop(nemesisEntity, new ItemStack(Items.ENDER_PEARL, rand.nextInt(16))));
 				break;

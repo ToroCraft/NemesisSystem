@@ -3,6 +3,7 @@ package net.torocraft.nemesissystem.util;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -24,6 +25,8 @@ import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -32,14 +35,21 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.network.MessageHealAnimation;
+import net.torocraft.nemesissystem.network.MessageReflectDamageAnimation;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.Nemesis.Trait;
 
-public class HandleNemesisTraits {
+public class TraitsUtil {
+
+	private static final Random rand = new Random();
 
 	public static void handleTraits(Nemesis nemesis, EntityLiving nemesisEntity) {
+		// caching to an array to avoid: java.util.ArrayList$Itr.checkForComodification
+		Trait[] traits = nemesis.getTraits().toArray(new Trait[0]);
 		for (Trait trait : nemesis.getTraits()) {
 			//TODO secondary traits should be used less frequently
+
+			// TODO randomize attack timing
 			handleTraitUpdate(nemesisEntity, nemesis, trait);
 		}
 	}
@@ -59,6 +69,7 @@ public class HandleNemesisTraits {
 			handleSummonTraitUpdate(entity, nemesis, trait);
 			return;
 		case REFLECT:
+			handleReflectTraitUpdate(entity, nemesis, trait);
 			return;
 		case HEAT:
 			handleHeatTraitUpdate(entity, nemesis, trait);
@@ -74,6 +85,10 @@ public class HandleNemesisTraits {
 		}
 	}
 
+	private static void handleReflectTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
+
+	}
+
 	private static void handleHealTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
 		World world = entity.world;
 		Random rand = entity.getRNG();
@@ -83,7 +98,7 @@ public class HandleNemesisTraits {
 		}
 
 		List<EntityCreature> guards = NemesisUtil.findNemesisBodyGuards(entity.world, nemesis.getId(), entity.getPosition());
-		guards.forEach(HandleNemesisTraits::possiblyHealCreature);
+		guards.forEach(TraitsUtil::possiblyHealCreature);
 	}
 
 	private static void possiblyHealCreature(EntityCreature entity) {
@@ -296,24 +311,28 @@ public class HandleNemesisTraits {
 			return;
 		}
 
+		attackWithArrow(entity, target);
+	}
+
+	private static void attackWithArrow(EntityLiving archer, EntityLivingBase target) {
 		int charge = 2 + rand.nextInt(10);
 
-		EntityArrow arrow = new EntityTippedArrow(world, entity);
+		EntityArrow arrow = new EntityTippedArrow(archer.world, archer);
 
-		double dX = target.posX - entity.posX;
+		double dX = target.posX - archer.posX;
 		double dY = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - arrow.posY;
-		double dZ = target.posZ - entity.posZ;
+		double dZ = target.posZ - archer.posZ;
 
 		double levelDistance = (double) MathHelper.sqrt(dX * dX + dZ * dZ);
 
 		arrow.setThrowableHeading(dX, dY + levelDistance * 0.20000000298023224D, dZ, 1.6F,
-				(float) (14 - world.getDifficulty().getDifficultyId() * 4));
+				(float) (14 - archer.world.getDifficulty().getDifficultyId() * 4));
 
-		int power = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.POWER, entity);
-		int punch = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.PUNCH, entity);
+		int power = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.POWER, archer);
+		int punch = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.PUNCH, archer);
 
 		arrow.setDamage((double) (charge * 2.0F) + rand.nextGaussian() * 0.25D
-				+ (double) ((float) world.getDifficulty().getDifficultyId() * 0.11F));
+				+ (double) ((float) archer.world.getDifficulty().getDifficultyId() * 0.11F));
 
 		if (power > 0) {
 			arrow.setDamage(arrow.getDamage() + (double) power * 0.5D + 0.5D);
@@ -325,8 +344,59 @@ public class HandleNemesisTraits {
 
 		// TODO bow enchants
 
-		entity.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.8F));
+		archer.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.8F));
 
-		world.spawnEntity(arrow);
+		archer.world.spawnEntity(arrow);
+	}
+
+	public static void reflectDamage(EntityCreature nemesisEntity, Nemesis nemesis, DamageSource source, float amount) {
+		if (nemesisEntity.isEntityInvulnerable(source)) {
+			return;
+		}
+
+		if (source instanceof EntityDamageSourceIndirect) {
+			reflectArrowAtAttacker(nemesis, nemesisEntity, source);
+		} else {
+			reflectMeleeAttack(nemesis, nemesisEntity, source, amount);
+		}
+	}
+
+	private static void reflectMeleeAttack(Nemesis nemesis, EntityCreature nemesisEntity, DamageSource source, float amount) {
+		Entity attacker = source.getTrueSource();
+
+		if (attacker == null) {
+			return;
+		}
+
+		float reflectFactor = (float) nemesis.getLevel() * 0.2f;
+		float reflectAmount = amount * reflectFactor;
+
+		attacker.attackEntityFrom(DamageSource.causeMobDamage(nemesisEntity), reflectAmount);
+
+		TargetPoint point = new TargetPoint(attacker.dimension, attacker.posX, attacker.posY, attacker.posZ, 100);
+		NemesisSystem.NETWORK.sendToAllAround(new MessageReflectDamageAnimation(attacker.getEntityId()), point);
+	}
+
+	private static void reflectArrowAtAttacker(Nemesis nemesis, EntityCreature nemesisEntity, DamageSource source) {
+		if (!"arrow".equals(source.getDamageType())) {
+			return;
+		}
+		if (source.getTrueSource() != null && source.getTrueSource() instanceof EntityLivingBase) {
+			int arrowCount = 1;
+			if (nemesis.getLevel() > 8) {
+				arrowCount = 4;
+			} else if (nemesis.getLevel() > 6) {
+				arrowCount = 3;
+			} else if (nemesis.getLevel() > 4) {
+				arrowCount = 2;
+			}
+
+			for (int i = 0; i < arrowCount; i++) {
+				attackWithArrow(nemesisEntity, (EntityLivingBase) source.getTrueSource());
+			}
+		}
+		if (source.getImmediateSource() != null) {
+			source.getImmediateSource().setDead();
+		}
 	}
 }

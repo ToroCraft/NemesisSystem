@@ -183,6 +183,8 @@ public class Spawn {
 
 		// TODO add body guard ranks? (different armor, ai, weapons)
 
+		// TODO use nemesis colors
+
 		int count = 3 + nemesis.getLevel() * 3;
 
 		for (int i = 0; i < count; i++) {

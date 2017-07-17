@@ -16,6 +16,7 @@ import net.torocraft.nemesissystem.handlers.Update;
 import net.torocraft.nemesissystem.network.MessageHealAnimation;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGuiRequest;
+import net.torocraft.nemesissystem.network.MessageReflectDamageAnimation;
 import net.torocraft.nemesissystem.network.MessageSyncNemesis;
 import net.torocraft.nemesissystem.network.MessageSyncNemesisRequest;
 
@@ -52,6 +53,7 @@ public class CommonProxy {
 		MessageHealAnimation.init(packetId++);
 		MessageSyncNemesis.init(packetId++);
 		MessageSyncNemesisRequest.init(packetId++);
+		MessageReflectDamageAnimation.init(packetId++);
 	}
 
 }

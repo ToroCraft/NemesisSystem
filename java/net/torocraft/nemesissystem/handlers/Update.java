@@ -9,9 +9,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.network.MessageSyncNemesisRequest;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
-import net.torocraft.nemesissystem.util.HandleNemesisTraits;
+import net.torocraft.nemesissystem.util.TraitsUtil;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
@@ -89,7 +88,7 @@ public class Update {
 
 		// TODO look for closer target
 
-		HandleNemesisTraits.handleTraits(nemesis, entity);
+		TraitsUtil.handleTraits(nemesis, entity);
 	}
 
 }

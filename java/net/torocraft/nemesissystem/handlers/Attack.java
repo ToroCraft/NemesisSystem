@@ -5,12 +5,16 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.Nemesis.Trait;
 import net.torocraft.nemesissystem.util.NemesisUtil;
+import net.torocraft.nemesissystem.util.TraitsUtil;
 
 public class Attack {
 
@@ -23,15 +27,46 @@ public class Attack {
 
 		World world = event.getEntity().getEntityWorld();
 
-		entityDebug(event);
+		//entityDebug(event);
 
 		if (world.isRemote || !(event.getEntity() instanceof EntityCreature)) {
 			return;
 		}
 
-
 		if (event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
+			handleTraitDefenses(event);
 			orderGuardsToAttackAggressor((EntityCreature) event.getEntity(), event.getSource().getTrueSource());
+		}
+	}
+
+	private void handleTraitDefenses(LivingAttackEvent event) {
+		EntityCreature nemesisEntity = (EntityCreature) event.getEntity();
+		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(nemesisEntity);
+		if (nemesis == null) {
+			return;
+		}
+		for(Trait trait : nemesis.getTraits()){
+			switch(trait) {
+			case DOUBLE_MELEE:
+				break;
+			case ARROW:
+				break;
+			case SUMMON:
+				break;
+			case REFLECT:
+				TraitsUtil.reflectDamage(nemesisEntity, nemesis, event.getSource(), event.getAmount());
+				break;
+			case HEAT:
+				break;
+			case POTION:
+				break;
+			case TELEPORT:
+				break;
+			case FIREBALL:
+				break;
+			case HEAL:
+				break;
+			}
 		}
 	}
 
@@ -45,9 +80,17 @@ public class Attack {
 				}
 
 				System.out.println("Data: " + event.getEntity().getEntityData());
+				Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
+				NBTTagCompound c = new NBTTagCompound();
+				if (nemesis != null) {
+					nemesis.writeToNBT(c);
+				}
+				System.out.println("Nemesis: " + (nemesis == null ? "null" : c));
 				System.out.println("-------------------------------------");
 			}
-		}catch(Exception e){}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void orderGuardsToAttackAggressor(EntityCreature boss, Entity attacker) {

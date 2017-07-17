@@ -60,6 +60,9 @@ public class NemesisUtil {
 	}
 
 	public static void enchantItems(List<ItemStack> items) {
+		if (items == null) {
+			return;
+		}
 		for (ItemStack item : items) {
 			if (rand.nextBoolean()) {
 				enchantItem(item);
@@ -68,6 +71,9 @@ public class NemesisUtil {
 	}
 
 	public static void enchantItem(ItemStack item) {
+		if (item == null || item.isEmpty()) {
+			return;
+		}
 		if (!improveEnchants(item)) {
 			addNewEnchantment(item);
 		}
@@ -148,6 +154,9 @@ public class NemesisUtil {
 	}
 
 	public static Nemesis loadNemesisFromEntity(Entity nemesisEntity) {
+		if (nemesisEntity == null) {
+			return null;
+		}
 		UUID id = nemesisEntity.getEntityData().getUniqueId(NemesisSystem.NBT_NEMESIS_ID);
 		return NemesisRegistryProvider.get(nemesisEntity.getEntityWorld()).getById(id);
 	}

@@ -17,7 +17,7 @@ public class Nemesis {
 
 	private static final int RANGE_SQ = 100 * 100;
 
-	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, SHIELD, TELEPORT, FIREBALL, HEAL}
+	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, TELEPORT, FIREBALL, HEAL}
 
 	/**
 	 * the chunk the entity is in is loaded
@@ -56,10 +56,10 @@ public class Nemesis {
 	private UUID entityUuid;
 
 	@NbtField(genericType = Trait.class)
-	private List<Trait> traits;
+	private List<Trait> traits = new ArrayList<>();
 
 	@NbtField(genericType = LogEntry.class)
-	private List<LogEntry> history;
+	private List<LogEntry> history = new ArrayList<>();
 
 	@NbtField
 	private int dimension;
@@ -80,9 +80,11 @@ public class Nemesis {
 
 	@Override
 	public String toString() {
-		return name + " the " + title + " (" + (unloaded == null ? "LOADED" : "UNLOADED") + " " + (isSpawned() ? "SPAWNED" : "NOT_SPAWNED")
-				+ " level:" + level + " loc:" + x + "," + z + ") " + mob + " "
-				+ traits.get(0);
+		return getNameAndTitle();
+
+//				name + " the " + title + " (" + (unloaded == null ? "LOADED" : "UNLOADED") + " " + (isSpawned() ? "SPAWNED" : "NOT_SPAWNED")
+//				+ " level:" + level + " loc:" + x + "," + z + ") " + mob + " "
+//				+ traits.get(0);
 	}
 
 	public void readFromNBT(NBTTagCompound c) {
@@ -107,11 +109,14 @@ public class Nemesis {
 	}
 
 	public String getName() {
+		if (name == null) {
+			return "Nobody";
+		}
 		return name;
 	}
 
 	public String getNameAndTitle() {
-		return name + " the " + title;
+		return getName() + " the " + getTitle();
 	}
 
 	public void setName(String name) {
@@ -175,6 +180,9 @@ public class Nemesis {
 	}
 
 	public String getTitle() {
+		if (title == null) {
+			return "Unknown";
+		}
 		return title;
 	}
 

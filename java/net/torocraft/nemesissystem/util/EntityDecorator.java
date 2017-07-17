@@ -39,11 +39,11 @@ public class EntityDecorator {
 
 		for (IAttributeInstance attribute : entity.getAttributeMap().getAllAttributes()) {
 			if (attribute.getAttribute() == SharedMonsterAttributes.ATTACK_DAMAGE) {
-				attribute.setBaseValue(attribute.getAttributeValue() * nemesis.getLevel());
+				attribute.setBaseValue(attribute.getAttributeValue() * (nemesis.getLevel() / 3));
 			}
 
 			if (attribute.getAttribute() == SharedMonsterAttributes.ATTACK_SPEED) {
-				attribute.setBaseValue(attribute.getAttributeValue() * (nemesis.getLevel() / 4));
+				attribute.setBaseValue(attribute.getAttributeValue() * (nemesis.getLevel() / 8));
 			}
 
 			if (attribute.getAttribute() == SharedMonsterAttributes.MAX_HEALTH) {
