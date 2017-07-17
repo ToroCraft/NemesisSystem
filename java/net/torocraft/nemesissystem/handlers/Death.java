@@ -29,6 +29,8 @@ import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class Death {
 
+
+
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(new Death());
 	}
@@ -113,12 +115,15 @@ public class Death {
 			return;
 		}
 
-		drops.add(drop(nemesisEntity, new ItemStack(Items.DIAMOND, rand.nextInt(nemesis.getLevel()))));
+		drops.add(drop(nemesisEntity, new ItemStack(Items.DIAMOND, rand.nextInt(1 + nemesis.getLevel()))));
 
-		ItemStack specialDrop = nemesisEntity.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
-		// TODO drop all of the nemesis's items
-		specialDrop.setStackDisplayName("Property of " + nemesisEntity.getName());
-		drops.add(drop(nemesisEntity, specialDrop));
+		for (ItemStack stack : nemesis.getArmorInventory()) {
+			drops.add(damageAndDrop(nemesisEntity, stack));
+		}
+
+		for (ItemStack stack : nemesis.getHandInventory()) {
+			drops.add(damageAndDrop(nemesisEntity, stack));
+		}
 
 		for (Trait trait : nemesis.getTraits()) {
 			switch (trait) {
@@ -151,6 +156,13 @@ public class Death {
 			}
 		}
 
+	}
+
+	private EntityItem damageAndDrop(EntityCreature entity, ItemStack stack) {
+		if (stack.isItemStackDamageable()) {
+			stack.setItemDamage(stack.getMaxDamage() - entity.getRNG().nextInt(1 + entity.getRNG().nextInt(Math.max(stack.getMaxDamage() - 3, 1))));
+		}
+		return drop(entity, stack);
 	}
 
 	private EntityItem drop(EntityCreature entity, ItemStack stack) {
