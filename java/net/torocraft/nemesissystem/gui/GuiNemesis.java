@@ -86,11 +86,12 @@ public class GuiNemesis extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-
 		drawRect(0, 0, width, height, 0xd0000000);
 		GlStateManager.translate(offsetX, offsetY, 0);
 		drawRect(0, 0, WIDTH, HEIGHT, 0xd0ffffff);
-		itemDisplays.forEach(GuiDisplay::draw);
+		for (GuiDisplay display : itemDisplays) {
+			display.draw(mouseX, mouseY);
+		}
 		GlStateManager.translate(-offsetX, -offsetY, 0);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 

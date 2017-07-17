@@ -17,7 +17,10 @@ public class EntityDisplay implements GuiDisplay {
 	private static final int WIDTH = 40;
 	private static final int HEIGHT = WIDTH;
 
+	private int x;
 	private int y;
+	private float mouseX;
+	private float mouseY;
 
 	private float glX;
 	private float glY;
@@ -36,6 +39,7 @@ public class EntityDisplay implements GuiDisplay {
 
 	@Override
 	public void setPosition(int x, int y) {
+		this.x = x;
 		this.y = y;
 		glX = (float) x + WIDTH / 2;
 		updateScale();
@@ -51,7 +55,9 @@ public class EntityDisplay implements GuiDisplay {
 	}
 
 	@Override
-	public void draw() {
+	public void draw(float mouseX, float mouseY) {
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
 		try {
 			pushEntityRotations();
 			glDraw();
@@ -79,13 +85,31 @@ public class EntityDisplay implements GuiDisplay {
 		GlStateManager.pushMatrix();
 
 		GlStateManager.translate(glX, glY, 50.0F);
+
+		//GlStateManager.translate((float)x, (float)y, 50.0F);
+
+
 		GlStateManager.scale((float) (-scale), (float) scale, (float) scale);
 		GlStateManager.rotate(180.0F, 0.0F, 0.0F, 1.0F);
 		GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate(-100.0F, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate(0.0f, 1.0F, 0.0F, 0.0F);
+		//GlStateManager.rotate(-100.0F, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+		//GlStateManager.rotate(0.0f, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotate(-((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
 
 		RenderHelper.enableStandardItemLighting();
+
+		entity.renderYawOffset = (float)Math.atan((double)(mouseX / 40.0F)) * 40.0F;
+
+
+		entity.rotationYaw = (float)Math.atan((double)(mouseX / 40.0F)) * 40.0F;
+
+
+		entity.rotationPitch = -((float)Math.atan((double)(mouseY / 40.0F))) * 40.0F;
+
+
+		entity.rotationYawHead = entity.rotationYaw;
+		entity.prevRotationYawHead = entity.rotationYaw;
 
 		GlStateManager.translate(0.0F, 0.0F, 0.0F);
 		RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();

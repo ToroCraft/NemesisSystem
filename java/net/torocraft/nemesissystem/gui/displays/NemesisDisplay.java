@@ -23,6 +23,8 @@ public class NemesisDisplay implements GuiDisplay {
 
 	private float x;
 	private float y;
+	private float mouseX;
+	private float mouseY;
 	private NemesisDisplayData data;
 	private final FontRenderer fontRenderer = mc.fontRenderer;
 	private final GuiScreen gui;
@@ -65,7 +67,9 @@ public class NemesisDisplay implements GuiDisplay {
 	}
 
 	@Override
-	public void draw() {
+	public void draw(float mouseX, float mouseY) {
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
 		GlStateManager.pushAttrib();
 		GlStateManager.pushMatrix();
 		GlStateManager.translate(x, y, 0);
@@ -128,7 +132,7 @@ public class NemesisDisplay implements GuiDisplay {
 	private void drawNemesisModel() {
 		GlStateManager.color(0xff, 0xff, 0xff, 0xff);
 		drawEntityBackground();
-		entityDisplay.draw();
+		entityDisplay.draw(mouseX, mouseY);
 	}
 
 	private void drawEntityBackground() {
