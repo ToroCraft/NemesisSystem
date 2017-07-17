@@ -89,8 +89,10 @@ public class GuiNemesis extends GuiScreen {
 		drawRect(0, 0, width, height, 0xd0000000);
 		GlStateManager.translate(offsetX, offsetY, 0);
 		drawRect(0, 0, WIDTH, HEIGHT, 0xd0ffffff);
+		int yMouseOffset = 0;
 		for (GuiDisplay display : itemDisplays) {
-			display.draw(mouseX, mouseY);
+			display.draw(mouseX - offsetX, mouseY - offsetY - yMouseOffset);
+			yMouseOffset += 48;
 		}
 		GlStateManager.translate(-offsetX, -offsetY, 0);
 		super.drawScreen(mouseX, mouseY, partialTicks);

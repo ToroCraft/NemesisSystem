@@ -1,6 +1,7 @@
 package net.torocraft.nemesissystem.gui.displays;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
@@ -43,10 +44,6 @@ public class EntityDisplay implements GuiDisplay {
 		this.y = y;
 		glX = (float) x + WIDTH / 2;
 		updateScale();
-
-		// TODO rotote model on hover
-
-		// TODO animate model
 	}
 
 	public void setEntity(EntityLivingBase entity) {
@@ -56,8 +53,8 @@ public class EntityDisplay implements GuiDisplay {
 
 	@Override
 	public void draw(float mouseX, float mouseY) {
-		this.mouseX = mouseX;
-		this.mouseY = mouseY;
+		this.mouseX = mouseX - 26;
+		this.mouseY = mouseY - 16;
 		try {
 			pushEntityRotations();
 			glDraw();
@@ -95,17 +92,17 @@ public class EntityDisplay implements GuiDisplay {
 		//GlStateManager.rotate(-100.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
 		//GlStateManager.rotate(0.0f, 1.0F, 0.0F, 0.0F);
-		GlStateManager.rotate(-((float)Math.atan((double)(mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotate(-((float)Math.atan((double)(-mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
 
 		RenderHelper.enableStandardItemLighting();
 
-		entity.renderYawOffset = (float)Math.atan((double)(mouseX / 40.0F)) * 40.0F;
+		entity.renderYawOffset = (float)Math.atan((double)(-mouseX / 40.0F)) * 40.0F;
 
 
-		entity.rotationYaw = (float)Math.atan((double)(mouseX / 40.0F)) * 40.0F;
+		entity.rotationYaw = (float)Math.atan((double)(-mouseX / 40.0F)) * 40.0F;
 
 
-		entity.rotationPitch = -((float)Math.atan((double)(mouseY / 40.0F))) * 40.0F;
+		entity.rotationPitch = -((float)Math.atan((double)(-mouseY / 40.0F))) * 40.0F;
 
 
 		entity.rotationYawHead = entity.rotationYaw;
