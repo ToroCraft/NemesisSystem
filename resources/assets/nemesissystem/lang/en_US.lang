@@ -6,6 +6,7 @@ gui.next=Next
 gui.previous=Previous
 gui.close=Close
 gui.location=Location: %d,%d (%dm)
+gui.distance=Distance
 
 trait.DOUBLE_MELEE=Double Melee
 trait.ARROW=Arrow

@@ -91,22 +91,24 @@ public class EntityDisplay implements GuiDisplay {
 		GlStateManager.rotate(135.0F, 0.0F, 1.0F, 0.0F);
 		//GlStateManager.rotate(-100.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotate(-135.0F, 0.0F, 1.0F, 0.0F);
-		//GlStateManager.rotate(0.0f, 1.0F, 0.0F, 0.0F);
-		GlStateManager.rotate(-((float)Math.atan((double)(-mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
+
+
+		GlStateManager.rotate(0.0f, 1.0F, 0.0F, 0.0F);
+		//GlStateManager.rotate(-((float)Math.atan((double)(-mouseY / 40.0F))) * 20.0F, 1.0F, 0.0F, 0.0F);
 
 		RenderHelper.enableStandardItemLighting();
 
 		entity.renderYawOffset = (float)Math.atan((double)(-mouseX / 40.0F)) * 40.0F;
-
-
 		entity.rotationYaw = (float)Math.atan((double)(-mouseX / 40.0F)) * 40.0F;
-
-
 		entity.rotationPitch = -((float)Math.atan((double)(-mouseY / 40.0F))) * 40.0F;
 
+		entity.rotationPitch = reduce(entity.rotationPitch);
+		entity.rotationYaw = reduce(entity.rotationYaw);
+		entity.renderYawOffset = reduce(entity.renderYawOffset);
 
 		entity.rotationYawHead = entity.rotationYaw;
 		entity.prevRotationYawHead = entity.rotationYaw;
+		
 
 		GlStateManager.translate(0.0F, 0.0F, 0.0F);
 		RenderManager rendermanager = Minecraft.getMinecraft().getRenderManager();
@@ -121,6 +123,10 @@ public class EntityDisplay implements GuiDisplay {
 		GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
 		GlStateManager.disableTexture2D();
 		GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+	}
+
+	private static float reduce(float f) {
+		return f/2;
 	}
 
 	private void popEntityRotations() {

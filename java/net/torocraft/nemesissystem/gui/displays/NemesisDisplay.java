@@ -79,7 +79,7 @@ public class NemesisDisplay implements GuiDisplay {
 	}
 
 	private void drawWork() {
-		GuiScreen.drawRect(0, 0, 290, 46, 0x60000000);
+		//GuiScreen.drawRect(0, 0, 290, 46, 0x60000000);
 		if (data != null) {
 			drawNemesisInfo();
 		}
@@ -112,13 +112,17 @@ public class NemesisDisplay implements GuiDisplay {
 		GlStateManager.translate(51, 4, 0);
 		Nemesis n = data.nemesis;
 
-		fontRenderer.drawString(n.getNameAndTitle(), 0, 0, 0xffffffff);
-		drawLevelIcons(0, 10);
-		fontRenderer.drawString(I18n.format("gui.location", n.getX(), n.getZ(), data.distance), 0, 20, 0xff404040);
+		int grey = 0xff404040;
+
+		fontRenderer.drawString(n.getNameAndTitle(), 0, 0, 0x0);
+		//drawLevelIcons(0, 10);
+		//fontRenderer.drawString(I18n.format("gui.location", n.getX(), n.getZ(), data.distance), 0, 20, grey);
+		fontRenderer.drawString(I18n.format("gui.distance") + ": " + data.distance, 0, 10, grey);
+
 		int x = 0;
 		for (int i = 0; i < n.getTraits().size(); i++) {
 			String s = I18n.format("trait." + n.getTraits().get(i));
-			fontRenderer.drawString(s, 0, 30, 0xff404040);
+			fontRenderer.drawString(s, x, 20, grey);
 			x += fontRenderer.getStringWidth(s) + 3;
 		}
 
@@ -131,7 +135,7 @@ public class NemesisDisplay implements GuiDisplay {
 
 	private void drawNemesisModel() {
 		GlStateManager.color(0xff, 0xff, 0xff, 0xff);
-		drawEntityBackground();
+		//drawEntityBackground();
 		entityDisplay.draw(mouseX, mouseY);
 	}
 

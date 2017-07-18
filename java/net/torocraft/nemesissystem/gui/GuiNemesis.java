@@ -6,12 +6,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.torocraft.nemesissystem.NemesisConfig;
+import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.gui.displays.GuiDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
@@ -20,7 +23,7 @@ import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 public class GuiNemesis extends GuiScreen {
 
 	private static final int HEIGHT = 230;
-	private static final int WIDTH = 300;
+	private static final int WIDTH = 256;
 
 	private int offsetX;
 	private int offsetY;
@@ -84,11 +87,20 @@ public class GuiNemesis extends GuiScreen {
 		}
 	}
 
+	public static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation(NemesisSystem.MODID, "textures/gui/nemeses_gui.png");
+
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		drawRect(0, 0, width, height, 0xd0000000);
+		//drawRect(0, 0, width, height, 0xd0000000);
 		GlStateManager.translate(offsetX, offsetY, 0);
-		drawRect(0, 0, WIDTH, HEIGHT, 0xd0ffffff);
+
+		//drawRect(0, 0, WIDTH, HEIGHT, 0xd0ffffff);
+
+		GlStateManager.enableAlpha();
+		GlStateManager.color(0xff, 0xff, 0xff, 0xff);
+		this.mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
+		drawTexturedModalRect(0, 0, 0, 0, WIDTH, HEIGHT);
+
 		int yMouseOffset = 0;
 		for (GuiDisplay display : itemDisplays) {
 			display.draw(mouseX - offsetX, mouseY - offsetY - yMouseOffset);
