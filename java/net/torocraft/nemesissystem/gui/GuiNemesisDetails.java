@@ -5,7 +5,6 @@ import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -18,11 +17,9 @@ import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.gui.displays.GuiDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
-import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGuiRequest;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
-import net.torocraft.nemesissystem.registry.Nemesis;
 
-public class GuiNemesis extends GuiScreen {
+public class GuiNemesisDetails extends GuiScreen {
 
 	private static final int HEIGHT = 230;
 	private static final int WIDTH = 256;
@@ -44,7 +41,7 @@ public class GuiNemesis extends GuiScreen {
 
 	private final List<NemesisDisplay> itemDisplays = new ArrayList<>(6);
 
-	public GuiNemesis() {
+	public GuiNemesisDetails() {
 		for (int i = 0; i < 4; i++) {
 			NemesisDisplay display = new NemesisDisplay(this);
 			display.setPosition(5, 5 + (48 * i));
@@ -52,44 +49,7 @@ public class GuiNemesis extends GuiScreen {
 		}
 	}
 
-	@Override
-	public void onGuiClosed() {
-		super.onGuiClosed();
-
-	}
-
-	private void setPage(int page) {
-
-		if (nemeses == null) {
-			if (MessageOpenNemesisGui.NEMESES == null) {
-				return;
-			}
-			nemeses = MessageOpenNemesisGui.NEMESES.stream().map(NemesisDisplayData::new).collect(toList());
-			computeLastPage();
-		}
-
-		this.page = page;
-
-		for (int i = (page * 4); i < ((page + 1) * 4); i++) {
-			if (nemeses.size() > i) {
-				itemDisplays.get(i % 4).setData(nemeses.get(i));
-			} else {
-				itemDisplays.get(i % 4).setData(null);
-			}
-		}
-
-		updatePager();
-	}
-
-	private void computeLastPage() {
-		int maxCount = Math.max(NemesisConfig.NEMESIS_LIMIT, nemeses.size());
-		lastPage = MathHelper.floor(maxCount / 4d) - 1;
-		if (maxCount % 4 != 0) {
-			lastPage++;
-		}
-	}
-
-	public static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation(NemesisSystem.MODID, "textures/gui/nemeses_gui.png");
+	public static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation(NemesisSystem.MODID, "textures/gui/nemesis_details_gui.png");
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
@@ -103,37 +63,9 @@ public class GuiNemesis extends GuiScreen {
 		this.mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
 		drawTexturedModalRect(0, 0, 0, 0, WIDTH, HEIGHT);
 
-		int yMouseOffset = 0;
-		for (GuiDisplay display : itemDisplays) {
-			display.draw(mouseX - offsetX, mouseY - offsetY - yMouseOffset);
-			yMouseOffset += 48;
-		}
-		GlStateManager.translate(-offsetX, -offsetY, 0);
-		super.drawScreen(mouseX, mouseY, partialTicks);
-
-		// TODO move page string to the left of the buttons
-		drawCenteredString(fontRenderer, currentPage, (WIDTH - 78) + offsetX, buttonY + 5, 0x00FFFFFF);
-
-		// TODO sort
-
-		// TODO summary info
-
-	}
-
-	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		super.mouseClicked(mouseX, mouseY, mouseButton);
-		if (mouseX < 10 && mouseY < 10) {
-
-			Nemesis nemesis = MessageOpenNemesisGui.NEMESES.get(0);
-			System.out.println(nemesis);
-
-			UUID id = nemesis.getId();
-			System.out.println(id);
 
 
-			NemesisSystem.NETWORK.sendToServer(new MessageOpenNemesisDetailsGuiRequest(id));
-		}
+
 	}
 
 	@Override
@@ -155,7 +87,6 @@ public class GuiNemesis extends GuiScreen {
 		buttonList.add(buttonClose);
 		buttonList.add(buttonNext);
 		buttonList.add(buttonPrevious);
-		setPage(page);
 	}
 
 	private void updatePager() {
@@ -169,9 +100,9 @@ public class GuiNemesis extends GuiScreen {
 		if (button == buttonClose) {
 			closeGui();
 		} else if (button == buttonNext) {
-			setPage(++page);
+
 		} else if (button == buttonPrevious) {
-			setPage(--page);
+
 		}
 	}
 

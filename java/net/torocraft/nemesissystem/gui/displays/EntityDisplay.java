@@ -46,6 +46,11 @@ public class EntityDisplay implements GuiDisplay {
 		updateScale();
 	}
 
+	@Override
+	public void clicked(int mouseX, int mouseY, int mouseButton) {
+
+	}
+
 	public void setEntity(EntityLivingBase entity) {
 		this.entity = entity;
 		updateScale();

@@ -21,6 +21,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.torocraft.nemesissystem.handlers.Spawn;
+import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
@@ -164,10 +165,25 @@ public class NemesisSystemCommand extends CommandBase {
 	}
 
 	private void gui(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (sender instanceof EntityPlayer) {
-			EntityPlayerMP player = getCommandSenderAsPlayer(sender);
-			NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisGui(player), player);
+
+		if (!(sender instanceof EntityPlayer)) {
+			return;
 		}
+
+		EntityPlayerMP player = getCommandSenderAsPlayer(sender);
+
+		if (args.length == 1) {
+			NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisGui(player), player);
+			return;
+		}
+
+		if (args.length == 2) {
+			Nemesis nemesis = NemesisRegistryProvider.get(player.world).getByName(args[1]);
+			NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis), player);
+			return;
+		}
+
+		throw new WrongUsageException("commands.nemesis_system.usage");
 	}
 
 	private void clear(MinecraftServer server, ICommandSender sender, String[] args) {
@@ -248,6 +264,7 @@ public class NemesisSystemCommand extends CommandBase {
 			return tabCompletionsForCreate(server, args);
 		case "promote":
 		case "spawn":
+		case "gui":
 			return tabCompletionsForName(server, sender, args);
 		default:
 			return Collections.emptyList();

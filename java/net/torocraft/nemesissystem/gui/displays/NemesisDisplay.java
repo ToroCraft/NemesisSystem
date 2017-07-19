@@ -67,6 +67,11 @@ public class NemesisDisplay implements GuiDisplay {
 	}
 
 	@Override
+	public void clicked(int mouseX, int mouseY, int mouseButton) {
+
+	}
+
+	@Override
 	public void draw(float mouseX, float mouseY) {
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
@@ -111,6 +116,10 @@ public class NemesisDisplay implements GuiDisplay {
 	private void drawNemesisInfo() {
 		GlStateManager.translate(51, 4, 0);
 		Nemesis n = data.nemesis;
+
+		if (n == null) {
+			return;
+		}
 
 		int grey = 0xff404040;
 
