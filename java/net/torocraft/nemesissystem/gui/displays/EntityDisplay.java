@@ -126,7 +126,7 @@ public class EntityDisplay implements GuiDisplay {
 	}
 
 	private static float reduce(float f) {
-		return f/2;
+		return f/(2f);
 	}
 
 	private void popEntityRotations() {

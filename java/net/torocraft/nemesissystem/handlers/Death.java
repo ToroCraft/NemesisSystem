@@ -9,7 +9,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
@@ -28,8 +27,6 @@ import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class Death {
-
-
 
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(new Death());
@@ -184,10 +181,8 @@ public class Death {
 
 		NemesisActions.demote(nemesisEntity.world, nemesis, attacker.getName());
 
-		if (nemesis.getLevel() < 1) {
-			NemesisUtil.findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
-					.forEach((EntityCreature guard) -> guard.setAttackTarget(null));
-		}
+		NemesisUtil.findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
+				.forEach((EntityCreature guard) -> guard.setAttackTarget(null));
 	}
 
 }
