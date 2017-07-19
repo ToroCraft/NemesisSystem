@@ -1,10 +1,8 @@
 package net.torocraft.nemesissystem.network;
 
 import io.netty.buffer.ByteBuf;
-import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -14,15 +12,12 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.gui.NemesisSystemGuiHandler;
 import net.torocraft.nemesissystem.registry.Nemesis;
-import net.torocraft.nemesissystem.registry.NemesisRegistry;
-import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class MessageOpenNemesisDetailsGui implements IMessage {
 
 	public static Nemesis NEMESIS;
 
-	private Nemesis nemesis;
-
+	private NBTTagCompound nemesisCompound;
 
 	public static void init(int packetId) {
 		NemesisSystem.NETWORK.registerMessage(MessageOpenNemesisDetailsGui.Handler.class, MessageOpenNemesisDetailsGui.class, packetId, Side.CLIENT);
@@ -33,29 +28,19 @@ public class MessageOpenNemesisDetailsGui implements IMessage {
 	}
 
 	public MessageOpenNemesisDetailsGui(Nemesis nemesis) {
-		this.nemesis = nemesis;
+		NBTTagCompound c = new NBTTagCompound();
+		nemesis.writeToNBT(c);
+		this.nemesisCompound = c;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		try {
-			NBTTagCompound c = ByteBufUtils.readTag(buf);
-			this.nemesis = new Nemesis();
-			nemesis.readFromNBT(c);
-		}catch(Exception e){
-
-		}
+		nemesisCompound = ByteBufUtils.readTag(buf);
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
-		try {
-			NBTTagCompound c = new NBTTagCompound();
-			nemesis.readFromNBT(c);
-			ByteBufUtils.writeTag(buf, c);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
+		ByteBufUtils.writeTag(buf, nemesisCompound);
 	}
 
 	public static class Handler implements IMessageHandler<MessageOpenNemesisDetailsGui, IMessage> {
@@ -67,9 +52,11 @@ public class MessageOpenNemesisDetailsGui implements IMessage {
 	}
 
 	public static void work(MessageOpenNemesisDetailsGui message) {
-		NEMESIS = message.nemesis;
+		NEMESIS = new Nemesis();
+		NEMESIS.readFromNBT(message.nemesisCompound);
 		EntityPlayer player = Minecraft.getMinecraft().player;
-		player.openGui(NemesisSystem.INSTANCE, NemesisSystemGuiHandler.NEMESIS_DETAILS_GUI, player.world, (int) player.posX, (int) player.posY, (int) player.posZ);
+		player.openGui(NemesisSystem.INSTANCE, NemesisSystemGuiHandler.NEMESIS_DETAILS_GUI, player.world, (int) player.posX, (int) player.posY,
+				(int) player.posZ);
 	}
 
 }

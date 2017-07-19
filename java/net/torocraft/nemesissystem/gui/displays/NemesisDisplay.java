@@ -18,6 +18,8 @@ public class NemesisDisplay implements GuiDisplay {
 
 	private static final ResourceLocation SKIN_BASIC = new ResourceLocation(NemesisSystem.MODID, "textures/gui/default_skin_basic.png");
 
+	private static int grey = 0xff404040;
+
 	private final EntityDisplay entityDisplay = new EntityDisplay();
 	private final Minecraft mc = Minecraft.getMinecraft();
 
@@ -121,25 +123,30 @@ public class NemesisDisplay implements GuiDisplay {
 			return;
 		}
 
-		int grey = 0xff404040;
-
 		fontRenderer.drawString(n.getNameAndTitle(), 0, 0, 0x0);
 		//drawLevelIcons(0, 10);
 		//fontRenderer.drawString(I18n.format("gui.location", n.getX(), n.getZ(), data.distance), 0, 20, grey);
 		fontRenderer.drawString(I18n.format("gui.distance") + ": " + data.distance, 0, 10, grey);
 
-		int x = 0;
-		for (int i = 0; i < n.getTraits().size(); i++) {
-			String s = I18n.format("trait." + n.getTraits().get(i));
-			fontRenderer.drawString(s, x, 20, grey);
-			x += fontRenderer.getStringWidth(s) + 3;
-		}
+		drawTraits(n);
 
 		// TODO journal
 
 		// TODO gui textures
 
 		GlStateManager.translate(-51, -4, 0);
+	}
+
+	private void drawTraits(Nemesis n) {
+		if (n.getTraits() == null) {
+			return;
+		}
+		int x = 0;
+		for (int i = 0; i < n.getTraits().size(); i++) {
+			String s = I18n.format("trait." + n.getTraits().get(i));
+			fontRenderer.drawString(s, x, 20, grey);
+			x += fontRenderer.getStringWidth(s) + 3;
+		}
 	}
 
 	private void drawNemesisModel() {
