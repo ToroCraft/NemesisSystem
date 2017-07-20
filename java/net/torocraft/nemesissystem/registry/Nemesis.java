@@ -65,7 +65,7 @@ public class Nemesis {
 	private int dimension;
 
 	@NbtField
-	private boolean isChild;
+	private int isChild;
 
 	//TODO spawned check
 
@@ -261,7 +261,9 @@ public class Nemesis {
 		this.entityUuid = entityUuid;
 	}
 
-	public boolean isChild() { return isChild; }
+	public int getIsChild() { return isChild; }
 
-	public void setChild(boolean child) { isChild = child; }
+	public boolean isChild() { return isChild == 1; }
+
+	public void setChild(int child) { isChild = child; }
 }
