@@ -6,7 +6,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityEnderPearl;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.torocraft.nemesissystem.NemesisConfig;
@@ -139,4 +144,28 @@ public class NemesisActions {
 		promoteRandomNemesis(entity, registry, nemeses);
 		createAndRegisterNemesis(entity, NemesisUtil.getRandomLocationAround(entity));
 	}
+
+    public static void throwPearl(EntityLiving entity, EntityLivingBase target) {
+        World world = entity.getEntityWorld();
+        EntityEnderPearl pearl = new EntityEnderPearl(world, entity);
+
+        double dX = target.posX - entity.posX;
+        double dY = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - pearl.posY;
+        double dZ = target.posZ - entity.posZ;
+
+        double distanceSq = dX * dX + dY * dY + dZ * dZ;
+
+        if (distanceSq < 20) {
+            return;
+        }
+
+        double levelDistance = MathHelper.sqrt(dX * dX + dZ * dZ);
+
+        pearl.setThrowableHeading(dX, dY + levelDistance * 0.20000000298023224D, dZ, 1.6F,
+                (float) (14 - world.getDifficulty().getDifficultyId() * 4));
+
+        entity.playSound(SoundEvents.ENTITY_ENDERPEARL_THROW, 1.0F, 1.0F / (world.rand.nextFloat() * 0.4F + 0.8F));
+
+        world.spawnEntity(pearl);
+    }
 }

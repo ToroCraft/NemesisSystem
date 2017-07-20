@@ -177,8 +177,6 @@ public class Death {
 			return;
 		}
 
-		INemesisRegistry registry = NemesisRegistryProvider.get(nemesisEntity.world);
-
 		NemesisActions.demote(nemesisEntity.world, nemesis, attacker.getName());
 
 		NemesisUtil.findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())

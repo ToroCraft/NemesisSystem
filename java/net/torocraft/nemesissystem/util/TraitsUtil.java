@@ -7,7 +7,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityEnderPearl;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityWitch;
@@ -161,9 +160,6 @@ public class TraitsUtil {
 
 	private static void handleTeleportTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
 		World world = entity.world;
-		Random rand = entity.getRNG();
-
-		//TODO teleport away when hurt (back to body guard?)
 
 		if (world.getTotalWorldTime() % 40 != 0) {
 			return;
@@ -179,31 +175,7 @@ public class TraitsUtil {
 			return;
 		}
 
-		int charge = 2 + rand.nextInt(5);
-
-		EntityEnderPearl pearl = new EntityEnderPearl(world, entity);
-
-		double dX = target.posX - entity.posX;
-		double dY = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - pearl.posY;
-		double dZ = target.posZ - entity.posZ;
-
-		double distanceSq = dX * dX + dY * dY + dZ * dZ;
-
-		if (distanceSq < 20) {
-			return;
-		}
-
-		double levelDistance = MathHelper.sqrt(dX * dX + dZ * dZ);
-
-		pearl.setThrowableHeading(dX, dY + levelDistance * 0.20000000298023224D, dZ, 1.6F,
-				(float) (14 - world.getDifficulty().getDifficultyId() * 4));
-
-		int power = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.POWER, entity);
-		int punch = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.PUNCH, entity);
-
-		entity.playSound(SoundEvents.ENTITY_ENDERPEARL_THROW, 1.0F, 1.0F / (rand.nextFloat() * 0.4F + 0.8F));
-
-		world.spawnEntity(pearl);
+		NemesisActions.throwPearl(entity, target);
 	}
 
 	private static void handleSummonTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {

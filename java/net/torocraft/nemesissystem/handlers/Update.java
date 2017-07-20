@@ -53,7 +53,6 @@ public class Update {
 		EntityLiving nemesisEntity = NemesisUtil.findNemesisAround(event.getEntity().world, id, event.getEntity().getPosition());
 
 		if (nemesisEntity == null) {
-			flee(bodyGuard);
 			return;
 		}
 
