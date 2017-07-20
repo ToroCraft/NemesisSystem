@@ -233,27 +233,9 @@ public class Spawn {
 		nemeses.removeIf(Nemesis::isSpawned);
 		nemeses.removeIf(Nemesis::isDead);
 		nemeses.removeIf((Nemesis n) -> notReadyToSpawn(world, n));
+		nemeses.removeIf((Nemesis n) -> outOfRange(entity, n));
 
 		// TODO increase Nemesis level every time they spawn but are not killed
-
-		if (nemeses == null || nemeses.size() < 1) {
-			return null;
-		}
-
-		String entityType = NemesisUtil.getEntityType(event.getEntity());
-
-		nemeses.removeIf(nemesis -> {
-
-			if (!nemesis.getMob().equals(entityType)) {
-				return true;
-			}
-
-			if (entity.getDistanceSq(nemesis.getX(), entity.posY, nemesis.getZ()) > nemesis.getRangeSq()) {
-				return true;
-			}
-
-			return false;
-		});
 
 		if (nemeses.size() < 1) {
 			return null;
@@ -262,11 +244,13 @@ public class Spawn {
 		return nemeses.get(event.getEntity().world.rand.nextInt(nemeses.size()));
 	}
 
+	private static boolean outOfRange(Entity entity, Nemesis nemesis) {
+		// TODO change to a square radius, instead of a round one
+		return entity.getDistanceSq(nemesis.getX(), entity.posY, nemesis.getZ()) > nemesis.getRangeSq();
+	}
+
 	private static boolean notReadyToSpawn(World world, Nemesis n) {
-		if (n.getLastSpawned() == null) {
-			return false;
-		}
-		return world.getTotalWorldTime() - n.getLastSpawned() > 16000;
+		return n.getLastSpawned() == null || world.getTotalWorldTime() - n.getLastSpawned() > 16000;
 	}
 
 	private static boolean otherNemesisNearby(EntityLiving entity, World world) {
