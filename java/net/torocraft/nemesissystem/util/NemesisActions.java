@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityEnderPearl;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -62,7 +63,11 @@ public class NemesisActions {
 	}
 
 	public static Nemesis createAndRegisterNemesis(EntityCreature entity, BlockPos nemesisLocation) {
-		Nemesis nemesis = NemesisBuilder.build(NemesisUtil.getEntityType(entity), entity.dimension, 1, nemesisLocation.getX(), nemesisLocation.getZ());
+		boolean isChild = false;
+		if (entity instanceof EntityZombie) {
+			isChild = ((EntityZombie)entity).isChild();
+		}
+		Nemesis nemesis = NemesisBuilder.build(NemesisUtil.getEntityType(entity), isChild, entity.dimension, 1, nemesisLocation.getX(), nemesisLocation.getZ());
 		NemesisRegistryProvider.get(entity.world).register(nemesis);
 		return nemesis;
 	}

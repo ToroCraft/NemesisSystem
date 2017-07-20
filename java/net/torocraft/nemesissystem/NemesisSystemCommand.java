@@ -224,7 +224,7 @@ public class NemesisSystemCommand extends CommandBase {
 			dimension = 0;
 		}
 
-		Nemesis nemesis = NemesisBuilder.build(args[1], dimension, i(args[2]), x, z);
+		Nemesis nemesis = NemesisBuilder.build(args[1], sender.getEntityWorld().rand.nextBoolean(), dimension, i(args[2]), x, z);
 		nemesis.register(server.getWorld(senderDimId(sender)));
 		notifyCommandListener(sender, this, "commands.nemesis_system.success.create", nemesis.toString());
 	}

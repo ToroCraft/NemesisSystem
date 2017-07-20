@@ -3,6 +3,7 @@ package net.torocraft.nemesissystem.util;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.torocraft.nemesissystem.NemesisSystem;
@@ -21,6 +22,10 @@ public class EntityDecorator {
 		entity.addTag(NemesisSystem.TAG_NEMESIS);
 		entity.getEntityData().setUniqueId(NemesisSystem.NBT_NEMESIS_ID, nemesis.getId());
 		entity.setCustomNameTag(nemesis.getNameAndTitle());
+
+		if (entity instanceof EntityZombie) {
+			((EntityZombie) entity).setChild(nemesis.isChild());
+		}
 
 		ItemStack helmet = nemesis.getArmorInventory().get(EntityEquipmentSlot.HEAD.getIndex());
 
