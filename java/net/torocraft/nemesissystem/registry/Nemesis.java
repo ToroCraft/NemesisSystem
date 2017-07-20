@@ -32,6 +32,9 @@ public class Nemesis {
 	private Integer spawned;
 
 	@NbtField
+	private Long lastSpawned;
+
+	@NbtField
 	private String title;
 
 	@NbtField
@@ -259,6 +262,14 @@ public class Nemesis {
 
 	public void setEntityUuid(UUID entityUuid) {
 		this.entityUuid = entityUuid;
+	}
+
+	public Long getLastSpawned() {
+		return lastSpawned;
+	}
+
+	public void setLastSpawned(Long lastSpawned) {
+		this.lastSpawned = lastSpawned;
 	}
 
 	public int getIsChild() { return isChild; }

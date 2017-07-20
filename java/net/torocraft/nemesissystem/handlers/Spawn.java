@@ -32,6 +32,8 @@ import net.torocraft.nemesissystem.util.SpawnUtil;
 
 public class Spawn {
 
+	private static final int SPAWN_CHANCE = 10;
+
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(new Spawn());
 	}
@@ -47,8 +49,6 @@ public class Spawn {
 		if (!(event.getEntity() instanceof EntityCreature) || !NemesisUtil.isNemesisClassEntity(event.getEntity())) {
 			return;
 		}
-
-		System.out.println("spawn " + event.getEntity().getEntityData());
 
 		NemesisActions.handleRandomPromotions(event.getWorld(), (EntityCreature) event.getEntity());
 
@@ -96,7 +96,6 @@ public class Spawn {
 			/*
 			 * new nemesis spawn in progress
 			 */
-			System.out.println(nemesis.getNameAndTitle() + " is marching onto the battle field");
 			entity.removeTag(NemesisSystem.TAG_SPAWNING);
 			nemesis.setSpawned(entity.getEntityId());
 			nemesis.setUnloaded(null);
@@ -106,7 +105,6 @@ public class Spawn {
 			/*
 			 * nemesis has been marked as despawned
 			 */
-			System.out.println(nemesis.getNameAndTitle() + " has left the battlefield");
 			event.setCanceled(true);
 		} else {
 			/*
@@ -114,13 +112,11 @@ public class Spawn {
 			 */
 
 			if (!entity.getPersistentID().equals(nemesis.getEntityUuid())) {
-				System.out.println("Entity UUIDs do not match, whu?? .... kill'em");
 				event.setCanceled(true);
 				return;
 			}
 
 			nemesis.setSpawned(entity.getEntityId());
-			System.out.println(nemesis.getNameAndTitle() + " has not left the battle grounds yet!");
 			nemesis.setUnloaded(null);
 			NemesisRegistryProvider.get(event.getWorld()).update(nemesis);
 			sendNemesisDataToClient(nemesis);
@@ -129,11 +125,9 @@ public class Spawn {
 
 	public static void spawnNemesis(World world, BlockPos pos, Nemesis nemesis) {
 		if (nemesis.isDead()) {
-			System.out.println(nemesis.getNameAndTitle() + " is dead!");
 			return;
 		}
 		if (nemesis.isSpawned()) {
-			System.out.println(nemesis.getNameAndTitle() + " is already spawned");
 			return;
 		}
 		EntityCreature nemesisEntity = SpawnUtil.getEntityFromString(world, nemesis.getMob());
@@ -159,7 +153,6 @@ public class Spawn {
 	}
 
 	private static void sendNemesisDataToClient(Nemesis nemesis) {
-		System.out.println("****** on server, send packet to client about " + nemesis.getNameAndTitle());
 		NemesisSystem.NETWORK.sendToAll(new MessageSyncNemesis(nemesis));
 	}
 
@@ -215,7 +208,7 @@ public class Spawn {
 
 	private static Nemesis getNemesisForSpawn(EntityEvent event) {
 
-		if (!(event.getEntity() instanceof EntityLiving)) {
+		if (!(event.getEntity() instanceof EntityZombie)) {
 			return null;
 		}
 
@@ -231,16 +224,15 @@ public class Spawn {
 			return null;
 		}
 
+		if (world.rand.nextInt(SPAWN_CHANCE) != 0) {
+			return null;
+		}
+
 		List<Nemesis> nemeses = NemesisRegistryProvider.get(event.getEntity().world).list();
 
 		nemeses.removeIf(Nemesis::isSpawned);
 		nemeses.removeIf(Nemesis::isDead);
-
-		// TODO only spawn once a day?
-
-		// TODO add a spawn chance, unless nemesis has not been spawned in a long time
-
-		// TODO figure out how to handle nemeses that cannot spawn in their location (Husk not in the desert)
+		nemeses.removeIf((Nemesis n) -> notReadyToSpawn(world, n));
 
 		// TODO increase Nemesis level every time they spawn but are not killed
 
@@ -270,6 +262,13 @@ public class Spawn {
 		return nemeses.get(event.getEntity().world.rand.nextInt(nemeses.size()));
 	}
 
+	private static boolean notReadyToSpawn(World world, Nemesis n) {
+		if (n.getLastSpawned() == null) {
+			return false;
+		}
+		return world.getTotalWorldTime() - n.getLastSpawned() > 16000;
+	}
+
 	private static boolean otherNemesisNearby(EntityLiving entity, World world) {
 		int distance = 100;
 		List<EntityLiving> entities = world
@@ -283,7 +282,7 @@ public class Spawn {
 	}
 
 	private static boolean playerInRange(EntityLiving entity, World world) {
-		int distance = 100;
+		int distance = 60;
 		List<EntityPlayer> players = world
 				.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));
 		for (EntityPlayer player : players) {
