@@ -67,7 +67,7 @@ public class NemesisActions {
 		if (entity instanceof EntityZombie) {
 			isChild = ((EntityZombie)entity).isChild();
 		}
-		Nemesis nemesis = NemesisBuilder.build(NemesisUtil.getEntityType(entity), isChild, entity.dimension, 1, nemesisLocation.getX(), nemesisLocation.getZ());
+		Nemesis nemesis = NemesisBuilder.build(entity.getEntityWorld(), NemesisUtil.getEntityType(entity), isChild, entity.dimension, 1, nemesisLocation.getX(), nemesisLocation.getZ());
 		NemesisRegistryProvider.get(entity.world).register(nemesis);
 		return nemesis;
 	}

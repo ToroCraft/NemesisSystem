@@ -7,8 +7,11 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.Nemesis.Trait;
+import net.torocraft.nemesissystem.registry.NemesisRegistry;
+import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class NemesisBuilder {
 
@@ -53,17 +56,16 @@ public class NemesisBuilder {
 			Items.CHAINMAIL_BOOTS
 	};
 
-	public static Nemesis build(String mob, boolean isChild, int dimension, int level, int x, int z) {
+	public static Nemesis build(World world, String mob, boolean isChild, int dimension, int level, int x, int z) {
 		Nemesis nemesis = new Nemesis();
 
 		nemesis.setId(UUID.randomUUID());
-		nemesis.setName(NameBuilder.build());
-		// TODO pick a title that is not currently in use
-		nemesis.setTitle(NameBuilder.TITLES[rand.nextInt(NameBuilder.TITLES.length)]);
+		nemesis.setName(getUniqueName(world));
+		nemesis.setTitle(getUniqueTitle(world));
 
 		nemesis.setLevel(level);
 		nemesis.setMob(mob);
-		nemesis.setChild(isChild);
+		nemesis.setChild(isChild ? 1 : 0);
 		nemesis.setX(x);
 		nemesis.setZ(z);
 		nemesis.setDimension(dimension);
@@ -78,6 +80,36 @@ public class NemesisBuilder {
 		NemesisUtil.enchantEquipment(nemesis);
 
 		return nemesis;
+	}
+
+	private static String getUniqueTitle(World world) {
+		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
+		String title = getRandomTitle();
+		while(!isUniqueTitle(title, nemeses)) {
+			title = getRandomTitle();
+		}
+		return title;
+	}
+
+	private static String getRandomTitle() {
+		return NameBuilder.TITLES[rand.nextInt(NameBuilder.TITLES.length)];
+	}
+
+	private static boolean isUniqueTitle(String title, List<Nemesis> nemeses) {
+		for (Nemesis nemesis : nemeses) {
+			if (nemesis.getTitle().equals(title)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private static String getUniqueName(World world) {
+		String name = NameBuilder.build();
+		if (NemesisRegistryProvider.get(world).getByName(name) == null) {
+			return name;
+		}
+		return getUniqueName(world);
 	}
 
 	private static void setArmor(Nemesis nemesis) {
