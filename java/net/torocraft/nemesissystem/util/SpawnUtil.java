@@ -74,6 +74,8 @@ public class SpawnUtil {
 			}
 		}
 
+		entity.setPosition(around.getX() + 0.5, around.getY(), around.getZ() + 0.5);
+
 		return false;
 	}
 
@@ -88,13 +90,13 @@ public class SpawnUtil {
 
 		for(int i = 0; i < radius; i++){
 
-			scanUp.up();
+			scanUp = scanUp.up();
 
 			if (setAndCheckSpawnPosition(entity, scanUp)) {
 				return true;
 			}
 
-			scanDown.down();
+			scanDown = scanDown.down();
 
 			if (setAndCheckSpawnPosition(entity, scanDown)) {
 				return true;
@@ -107,7 +109,7 @@ public class SpawnUtil {
 
 	private static boolean setAndCheckSpawnPosition(EntityCreature entity, BlockPos posIn) {
 		entity.setPosition(posIn.getX() + 0.5, posIn.getY(), posIn.getZ() + 0.5);
-		return entity.getCanSpawnHere();
+		return entity.isNotColliding();
 	}
 
 
