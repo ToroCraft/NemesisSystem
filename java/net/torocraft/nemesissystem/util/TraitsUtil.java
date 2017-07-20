@@ -229,7 +229,6 @@ public class TraitsUtil {
 
 	private static void handleHeatTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
 		World world = entity.world;
-		Random rand = entity.getRNG();
 		int heatDistance = 8;
 
 		List<EntityPlayer> playersToCook = world
@@ -282,10 +281,6 @@ public class TraitsUtil {
 	}
 
 	private static void handleArrowTraitUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
-
-		World world = entity.world;
-		Random rand = entity.getRNG();
-
 		EntityLivingBase target = entity.getAttackTarget();
 
 		if (target == null) {

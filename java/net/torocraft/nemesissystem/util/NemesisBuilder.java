@@ -10,7 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.Nemesis.Trait;
-import net.torocraft.nemesissystem.registry.NemesisRegistry;
+import net.torocraft.nemesissystem.registry.Nemesis.Weakness;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class NemesisBuilder {
@@ -73,6 +73,9 @@ public class NemesisBuilder {
 		nemesis.setTraits(new ArrayList<>());
 		nemesis.getTraits().add(Trait.values()[rand.nextInt(Trait.values().length)]);
 		//nemesis.getTraits().add(Trait.TELEPORT);
+
+		nemesis.setWeaknesses(new ArrayList<>());
+		nemesis.getWeaknesses().add(Weakness.values()[rand.nextInt(Weakness.values().length)]);
 
 		nemesis.getHandInventory().set(0, new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]));
 		setOffhandItem(nemesis);
