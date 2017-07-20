@@ -1,25 +1,45 @@
 package net.torocraft.nemesissystem.events;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.MoverType;
-import net.minecraft.init.SoundEvents;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemAppleGold;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.Nemesis.Weakness;
+import net.torocraft.nemesissystem.registry.Nemesis.Trait;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
+import net.torocraft.nemesissystem.util.WeaknessesUtil;
 
 import java.util.List;
 
 public class EventHandlers {
 
     @SubscribeEvent
-    public void onTeleportEntityHarm(LivingHurtEvent event) {
+    public void onItemPickup(EntityItemPickupEvent event) {
+        if (!event.getEntityLiving().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
+            return;
+        }
 
+        EntityLiving entity = (EntityLiving)event.getEntityLiving();
+        Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(entity);
+        if (nemesis == null) {
+            return;
+        }
+
+        if (nemesis.getWeaknesses().contains(Weakness.GREEDY) && event.getItem().getItem().getItem().equals(Items.GOLD_INGOT)) {
+            entity.getTags().add(WeaknessesUtil.TAG_WORSHIPPING);
+        }
+
+    }
+
+    @SubscribeEvent
+    public void onTeleportEntityHarm(LivingHurtEvent event) {
         if (!(event.getEntityLiving() instanceof EntityLiving) || !event.getEntityLiving().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
             return;
         }
@@ -30,7 +50,7 @@ public class EventHandlers {
             return;
         }
 
-        if (!nemesis.getTraits().contains(Nemesis.Trait.TELEPORT)) {
+        if (!nemesis.getTraits().contains(Trait.TELEPORT)) {
             return;
         }
 
