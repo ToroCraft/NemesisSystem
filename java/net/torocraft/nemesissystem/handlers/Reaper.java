@@ -39,7 +39,7 @@ public class Reaper {
 	}
 
 	private void despawnNemesis(World world, INemesisRegistry registry, Nemesis nemesis) {
-		System.out.println(nemesis.getNameAndTitle() + " is moving on, despawning now");
+		// TODO increase Nemesis level every time they spawn but are not killed
 		Entity entity = world.getEntityByID(nemesis.getSpawned());
 		if (entity != null) {
 			entity.setDead();
@@ -52,10 +52,6 @@ public class Reaper {
 		if (nemesis.isLoaded()) {
 			return false;
 		}
-
-		System.out.println("Despawn check: [" + (world.getTotalWorldTime() - nemesis.getUnloaded()) + "] > [" + (MAX_UNLOAD_TIME) + "] :: " + (
-				(world.getTotalWorldTime() - nemesis.getUnloaded()) > MAX_UNLOAD_TIME));
-
 		return (world.getTotalWorldTime() - nemesis.getUnloaded()) > MAX_UNLOAD_TIME;
 	}
 
@@ -63,7 +59,6 @@ public class Reaper {
 		Entity entity = world.getEntityByID(nemesis.getSpawned());
 
 		if (nemesis.isLoaded() && entity == null) {
-			System.out.println("Entity is not found for nemesis, marking as unloaded");
 			nemesis.setUnloaded(world.getTotalWorldTime());
 			registry.update(nemesis);
 			return;
@@ -76,19 +71,16 @@ public class Reaper {
 		boolean playersNear = NemesisUtil.findPlayersAround(world, entity.getPosition(), 100).size() > 0;
 
 		if (nemesis.isLoaded() && !playersNear) {
-			System.out.println("no players near, unloading");
 			nemesis.setUnloaded(world.getTotalWorldTime());
 			registry.update(nemesis);
 			return;
 		}
 
 		if (!nemesis.isLoaded() && playersNear) {
-			System.out.println("players near, loading");
 			nemesis.setUnloaded(null);
 			registry.update(nemesis);
 			return;
 		}
-
 	}
 
 }

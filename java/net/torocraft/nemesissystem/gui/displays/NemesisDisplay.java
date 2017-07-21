@@ -123,7 +123,7 @@ public class NemesisDisplay implements GuiDisplay {
 			return;
 		}
 
-		fontRenderer.drawString(n.getNameAndTitle(), 0, 0, 0x0);
+		fontRenderer.drawString(n.getNameAndTitle() + " (" + romanize(n.getLevel()) + ")", 0, 0, 0x0);
 		//drawLevelIcons(0, 10);
 		//fontRenderer.drawString(I18n.format("gui.location", n.getX(), n.getZ(), data.distance), 0, 20, grey);
 		fontRenderer.drawString(I18n.format("gui.distance") + ": " + data.distance, 0, 10, grey);
@@ -135,6 +135,32 @@ public class NemesisDisplay implements GuiDisplay {
 		// TODO gui textures
 
 		GlStateManager.translate(-51, -4, 0);
+	}
+
+	private static String romanize(int i) {
+		switch(i) {
+		case 1:
+			return "I";
+		case 2:
+			return "II";
+		case 3:
+			return "III";
+		case 4:
+			return "IV";
+		case 5:
+			return "V";
+		case 6:
+			return "VI";
+		case 7:
+			return "VII";
+		case 8:
+			return "VIII";
+		case 9:
+			return "IX";
+		case 10:
+			return "X";
+		}
+		return Integer.toString(i, 10);
 	}
 
 	private void drawTraits(Nemesis n) {

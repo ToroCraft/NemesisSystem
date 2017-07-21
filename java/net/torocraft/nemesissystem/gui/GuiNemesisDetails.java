@@ -63,8 +63,11 @@ public class GuiNemesisDetails extends GuiScreen {
 		this.mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
 		drawTexturedModalRect(0, 0, 0, 0, WIDTH, HEIGHT);
 
+		// TODO health display (using hearts)
 
+		// TODO show attack damage
 
+		// TODO show armor defense?  attack speed?
 
 	}
 

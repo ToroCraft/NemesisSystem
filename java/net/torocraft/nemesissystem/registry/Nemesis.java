@@ -12,10 +12,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
+import scala.tools.nsc.doc.model.Trait;
 
 public class Nemesis {
 
-	private static final int RANGE_SQ = 100 * 100;
+	/**
+	 * the range of the nemesis's domain, setting to 50 would make a 100x100 block domain
+	 */
+	private static final int RANGE = 50;
 
 	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, TELEPORT, FIREBALL, HEAL}
 
@@ -225,8 +229,8 @@ public class Nemesis {
 		this.unloaded = unloaded;
 	}
 
-	public double getRangeSq() {
-		return RANGE_SQ;
+	public int getRange() {
+		return RANGE;
 	}
 
 	public int getDimension() {

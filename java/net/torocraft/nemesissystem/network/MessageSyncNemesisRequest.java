@@ -54,7 +54,6 @@ public class MessageSyncNemesisRequest implements IMessage {
 		UUID entityUuid = message.entityUuid;
 
 		if (entityUuid == null) {
-			System.out.println("entity uuid sent to the server is null");
 			return;
 		}
 
@@ -66,11 +65,9 @@ public class MessageSyncNemesisRequest implements IMessage {
 				return;
 			}
 		}
-		System.out.println("nemesis entityUUID["+entityUuid+"] not found on the server");
 	}
 
 	private static void sendPacketToClient(EntityPlayerMP player, Nemesis nemesis) {
-		System.out.println("**** sending Nemesis data direct to client in response to a request");
 		updateNameTag(player, nemesis);
 		NemesisSystem.NETWORK.sendTo(new MessageSyncNemesis(nemesis), player);
 	}
