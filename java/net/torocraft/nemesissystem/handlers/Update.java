@@ -50,6 +50,11 @@ public class Update {
 		}
 
 		EntityCreature bodyGuard = (EntityCreature) event.getEntity();
+		if (bodyGuard.getTags().contains(Death.TAG_RONIN)) {
+			flee(bodyGuard);
+			return;
+		}
+
 		UUID id = bodyGuard.getEntityData().getUniqueId(NemesisSystem.NBT_NEMESIS_ID);
 		EntityLiving nemesisEntity = NemesisUtil.findNemesisAround(event.getEntity().world, id, event.getEntity().getPosition());
 

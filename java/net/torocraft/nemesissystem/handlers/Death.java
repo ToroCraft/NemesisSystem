@@ -32,6 +32,8 @@ public class Death {
 		MinecraftForge.EVENT_BUS.register(new Death());
 	}
 
+	public static final String TAG_RONIN = "nemesissystem_ronin";
+
 	@SubscribeEvent
 	public void onDrops(LivingDropsEvent event) {
 		World world = event.getEntity().getEntityWorld();
@@ -180,7 +182,10 @@ public class Death {
 		NemesisActions.demote(nemesisEntity.world, nemesis, attacker.getName());
 
 		NemesisUtil.findNemesisBodyGuards(nemesisEntity.world, nemesis.getId(), nemesisEntity.getPosition())
-				.forEach((EntityCreature guard) -> guard.setAttackTarget(null));
+				.forEach((EntityCreature guard) -> {
+					guard.setAttackTarget(null);
+					guard.getTags().add(TAG_RONIN);
+				});
 	}
 
 }
