@@ -4,6 +4,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class NemesisDiscovery {
@@ -18,13 +20,13 @@ public class NemesisDiscovery {
     private boolean location;
 
     @NbtField
-    private int[] traits = new int[]{};
+    private List<Integer> traits = new ArrayList<>();
 
     @NbtField
-    private int[] strengths = new int[]{};
+    private List<Integer> strengths = new ArrayList<>();
 
     @NbtField
-    private int[] weaknesses = new int[]{};
+    private List<Integer> weaknesses = new ArrayList<>();
 
     public NemesisDiscovery(final UUID nemesisId) {
         this.nemesisId = nemesisId;
@@ -48,17 +50,17 @@ public class NemesisDiscovery {
 
     public void setLocation(boolean location) { this.location = location; }
 
-    public int[] getTraits() { return traits; }
+    public List<Integer> getTraits() { return traits; }
 
-    public void setTraits(int[] traits) { this.traits = traits; }
+    public void setTraits(List<Integer> traits) { this.traits = traits; }
 
-    public int[] getStrengths() { return strengths; }
+    public List<Integer> getStrengths() { return strengths; }
 
-    public void setStrengths(int[] strengths) { this.strengths = strengths; }
+    public void setStrengths(List<Integer> strengths) { this.strengths = strengths; }
 
-    public int[] getWeaknesses() { return weaknesses; }
+    public List<Integer> getWeaknesses() { return weaknesses; }
 
-    public void setWeaknesses(int[] weaknesses) { this.weaknesses = weaknesses; }
+    public void setWeaknesses(List<Integer> weaknesses) { this.weaknesses = weaknesses; }
 
 }
 
