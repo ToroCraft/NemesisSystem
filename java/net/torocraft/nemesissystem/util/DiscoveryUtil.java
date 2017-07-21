@@ -8,19 +8,52 @@ import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class DiscoveryUtil {
 
     private static Random rand = new Random();
 
     private static int chance = 5;
+    private static int attempts_ceiling = 12;
 
-    public static NemesisDiscovery buildRandomDiscovery(World world) {
+    public static NemesisDiscovery buildRandomDiscovery(World world, List<NemesisDiscovery> playerDiscoveries) {
         List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
-        Nemesis nemesis = nemeses.get(rand.nextInt(nemeses.size()));
+        Nemesis nemesis = getRandomNemesis(nemeses);
+        NemesisDiscovery discovered = getPlayerDiscoveryForNemesis(nemesis.getId(), playerDiscoveries);
+        int attempts = 0;
+        while(isFullyDiscovered(discovered, nemesis) && ++attempts < attempts_ceiling) {
+            nemesis = getRandomNemesis(nemeses);
+            discovered = getPlayerDiscoveryForNemesis(nemesis.getId(), playerDiscoveries);
+        }
+        if (attempts == attempts_ceiling) {;
+            System.out.println("too many attempts bailing out");
+            return null;
+        }
         NemesisDiscovery discovery = new NemesisDiscovery(nemesis.getId());
         setRandomInformation(discovery, nemesis);
         return discovery;
+    }
+
+    private static NemesisDiscovery getPlayerDiscoveryForNemesis(UUID id, List<NemesisDiscovery> playerDiscoveries) {
+        for (NemesisDiscovery discovery : playerDiscoveries) {
+            if (discovery.getNemesisId().equals(id)) {
+                return discovery;
+            }
+        }
+        return null;
+    }
+
+    private static Nemesis getRandomNemesis(List<Nemesis> nemeses) {
+        return nemeses.get(rand.nextInt(nemeses.size()));
+    }
+
+    private static boolean isFullyDiscovered(NemesisDiscovery discovery, Nemesis nemesis) {
+        if (discovery == null) {
+            return false;
+        }
+        return discovery.isName() && discovery.isLocation() && discovery.getWeaknesses().size() == nemesis.getWeaknesses().size() &&
+                discovery.getTraits().size() == nemesis.getTraits().size() && discovery.getStrengths().size() == nemesis.getStrengths().size();
     }
 
     public static void setRandomInformation(NemesisDiscovery discovery, Nemesis nemesis) {
@@ -66,9 +99,8 @@ public class DiscoveryUtil {
      */
     private static void setRandomIndex(List<Integer> a, List<? extends Object> l) {
         int random = rand.nextInt(l.size());
-        boolean alreadyExists = a.contains(random);
 
-        if (!alreadyExists) {
+        if (!a.contains(random)) {
             a.add(random);
             return;
         }
