@@ -3,7 +3,7 @@ package net.torocraft.nemesissystem.events;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Items;
-import net.minecraft.item.ItemAppleGold;
+import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
@@ -19,24 +19,6 @@ import net.torocraft.nemesissystem.util.WeaknessesUtil;
 import java.util.List;
 
 public class EventHandlers {
-
-    @SubscribeEvent
-    public void onItemPickup(EntityItemPickupEvent event) {
-        if (!event.getEntityLiving().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
-            return;
-        }
-
-        EntityLiving entity = (EntityLiving)event.getEntityLiving();
-        Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(entity);
-        if (nemesis == null) {
-            return;
-        }
-
-        if (nemesis.getWeaknesses().contains(Weakness.GREEDY) && event.getItem().getItem().getItem().equals(Items.GOLD_INGOT)) {
-            entity.getTags().add(WeaknessesUtil.TAG_WORSHIPPING);
-        }
-
-    }
 
     @SubscribeEvent
     public void onTeleportEntityHarm(LivingHurtEvent event) {
