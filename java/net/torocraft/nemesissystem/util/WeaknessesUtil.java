@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.nbt.NBTTagInt;
@@ -38,6 +39,7 @@ public class WeaknessesUtil {
                 handleGreedyBehavior(entity, nemesis);
                 return;
             case CHICKEN:
+                handleChickenBehavior(entity, nemesis);
                 return;
             case GLUTTONY:
                 handleGluttonyBehavior(entity, nemesis);
@@ -57,6 +59,15 @@ public class WeaknessesUtil {
             case STONE_ALLERGY:
                 // LivingHurtEvent needs to check damage source and if item is stone, apply more damage
                 return;
+        }
+    }
+
+    private static void handleChickenBehavior(EntityLiving entity, Nemesis nemesis) {
+        List<EntityChicken> nearbyChickens = entity.world.getEntitiesWithinAABB(EntityChicken.class,
+                new AxisAlignedBB(entity.getPosition()).grow(5, 5, 5));
+
+        if (nearbyChickens.size() > 0) {
+            panic(entity, false);
         }
     }
 
