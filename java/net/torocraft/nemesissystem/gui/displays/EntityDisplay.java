@@ -58,8 +58,8 @@ public class EntityDisplay implements GuiDisplay {
 
 	@Override
 	public void draw(float mouseX, float mouseY) {
-		this.mouseX = mouseX - 26;
-		this.mouseY = mouseY - 16;
+		this.mouseX = mouseX - 26 - x;
+		this.mouseY = mouseY - 16 - y;
 		try {
 			pushEntityRotations();
 			glDraw();

@@ -1,5 +1,6 @@
 package net.torocraft.nemesissystem.gui.displays;
 
+import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -7,9 +8,10 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.util.ResourceLocation;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGuiRequest;
+import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.EntityDecorator;
 import net.torocraft.nemesissystem.util.SpawnUtil;
@@ -19,22 +21,26 @@ public class NemesisDisplay implements GuiDisplay {
 	private static final ResourceLocation SKIN_BASIC = new ResourceLocation(NemesisSystem.MODID, "textures/gui/default_skin_basic.png");
 
 	private static int grey = 0xff404040;
+	private static int lightGrey = 0xff909090;
+	private static int lighterGrey = 0xffc0c0c0;
 
 	private final EntityDisplay entityDisplay = new EntityDisplay();
 	private final Minecraft mc = Minecraft.getMinecraft();
 
-	private float x;
-	private float y;
+	private int x;
+	private int y;
 	private float mouseX;
 	private float mouseY;
+
+	private static int WIDTH = 245;
+	private static int HEIGHT = 45;
+
 	private NemesisDisplayData data;
 	private final FontRenderer fontRenderer = mc.fontRenderer;
 	private final GuiScreen gui;
 
 	public NemesisDisplay(GuiScreen gui) {
 		this.gui = gui;
-		EntityZombie entity = new EntityZombie(mc.world);
-		entityDisplay.setPosition(0, 4);
 	}
 
 	public void setData(NemesisDisplayData data) {
@@ -55,7 +61,7 @@ public class NemesisDisplay implements GuiDisplay {
 
 	private EntityCreature createEntity(Nemesis nemesis) {
 		try {
-			return (EntityCreature) SpawnUtil.getEntityFromString(mc.world, nemesis.getMob());
+			return SpawnUtil.getEntityFromString(mc.world, nemesis.getMob());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -66,79 +72,59 @@ public class NemesisDisplay implements GuiDisplay {
 	public void setPosition(int x, int y) {
 		this.x = x;
 		this.y = y;
+		entityDisplay.setPosition(x, y + 4);
 	}
 
 	@Override
 	public void clicked(int mouseX, int mouseY, int mouseButton) {
-
+		if (mouseButton == 0 && data != null && data.nemesis != null && isHovering()) {
+			NemesisSystem.NETWORK.sendToServer(new MessageOpenNemesisDetailsGuiRequest(data.nemesis.getId()));
+		}
 	}
 
 	@Override
 	public void draw(float mouseX, float mouseY) {
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
-		GlStateManager.pushAttrib();
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(x, y, 0);
 		drawWork();
-		GlStateManager.popMatrix();
-		GlStateManager.popAttrib();
 	}
 
 	private void drawWork() {
-		//GuiScreen.drawRect(0, 0, 290, 46, 0x60000000);
 		if (data != null) {
+			drawOutline();
 			drawNemesisInfo();
+			drawNemesisModel();
 		}
-		drawNemesisModel();
 	}
 
-	private void drawLevelIcons(int x, int y) {
-		if (data == null) {
-			return;
-		}
-		mc.renderEngine.bindTexture(Gui.ICONS);
-		for (int i = 0; i < 10; i++) {
-			heartContainer(x + (i * 9), y);
-		}
-		for (int i = 0; i < data.nemesis.getLevel(); i++) {
-			heartFull(x + (i * 9), y);
-		}
-
+	private void drawOutline() {
+		int color = isHovering() ? lightGrey : lighterGrey;
+		Gui.drawRect(x, y, x + WIDTH, y + 1, color);
+		Gui.drawRect(x, y, x + 1, y + HEIGHT + 1, color);
+		Gui.drawRect(x + WIDTH, y, x + WIDTH + 1, y + HEIGHT + 1, color);
+		Gui.drawRect(x, y + HEIGHT, x + WIDTH, y + HEIGHT + 1, color);
 	}
 
-	private void heartContainer(int x, int y) {
-		gui.drawTexturedModalRect(x, y, 16, 0, 9, 9);
-	}
-
-	private void heartFull(int x, int y) {
-		gui.drawTexturedModalRect(x, y, 16 + 36, 0, 9, 9);
+	private boolean isHovering() {
+		return mouseX > x && mouseX < x + WIDTH && mouseY > y && mouseY < y + HEIGHT;
 	}
 
 	private void drawNemesisInfo() {
-		GlStateManager.translate(51, 4, 0);
-		Nemesis n = data.nemesis;
-
-		if (n == null) {
-			return;
+		if (data.nemesis != null) {
+			drawTitleAndInfo(data.nemesis);
+			drawTraits(data.nemesis);
 		}
+	}
 
-		fontRenderer.drawString(n.getNameAndTitle() + " (" + romanize(n.getLevel()) + ")", 0, 0, 0x0);
-		//drawLevelIcons(0, 10);
-		//fontRenderer.drawString(I18n.format("gui.location", n.getX(), n.getZ(), data.distance), 0, 20, grey);
-		fontRenderer.drawString(I18n.format("gui.distance") + ": " + data.distance, 0, 10, grey);
-
-		drawTraits(n);
-
-		// TODO journal
-
-		// TODO gui textures
-
-		GlStateManager.translate(-51, -4, 0);
+	private void drawTitleAndInfo(Nemesis n) {
+		int x = this.x + 51;
+		int y = this.y + 4;
+		fontRenderer.drawString(n.getNameAndTitle() + " (" + romanize(n.getLevel()) + ")", x, y, 0x0);
+		fontRenderer.drawString(I18n.format("gui.distance") + ": " + data.distance, x, y + 10, grey);
 	}
 
 	private static String romanize(int i) {
-		switch(i) {
+		switch (i) {
 		case 1:
 			return "I";
 		case 2:
@@ -167,23 +153,19 @@ public class NemesisDisplay implements GuiDisplay {
 		if (n.getTraits() == null) {
 			return;
 		}
-		int x = 0;
+
+		int x = this.x + 51;
+		int y = this.y + 24;
+
 		for (int i = 0; i < n.getTraits().size(); i++) {
 			String s = I18n.format("trait." + n.getTraits().get(i));
-			fontRenderer.drawString(s, x, 20, grey);
+			fontRenderer.drawString(s, x, y, grey);
 			x += fontRenderer.getStringWidth(s) + 3;
 		}
 	}
 
 	private void drawNemesisModel() {
 		GlStateManager.color(0xff, 0xff, 0xff, 0xff);
-		//drawEntityBackground();
 		entityDisplay.draw(mouseX, mouseY);
-	}
-
-	private void drawEntityBackground() {
-		mc.getTextureManager().bindTexture(SKIN_BASIC);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		Gui.drawModalRectWithCustomSizedTexture(3 - 10, 3 - 10, 0.0f, 0.0f, 160, 60, 160, 60);
 	}
 }

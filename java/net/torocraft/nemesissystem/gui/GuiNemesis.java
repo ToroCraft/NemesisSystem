@@ -43,7 +43,7 @@ public class GuiNemesis extends GuiScreen {
 
 	private final Minecraft mc = Minecraft.getMinecraft();
 
-	private final List<NemesisDisplay> itemDisplays = new ArrayList<>(6);
+	private final List<NemesisDisplay> itemDisplays = new ArrayList<>(4);
 
 	public GuiNemesis() {
 		for (int i = 0; i < 4; i++) {
@@ -51,12 +51,6 @@ public class GuiNemesis extends GuiScreen {
 			display.setPosition(5, 5 + (48 * i));
 			itemDisplays.add(display);
 		}
-	}
-
-	@Override
-	public void onGuiClosed() {
-		super.onGuiClosed();
-
 	}
 
 	private void setPage(int page) {
@@ -104,11 +98,10 @@ public class GuiNemesis extends GuiScreen {
 		this.mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
 		drawTexturedModalRect(0, 0, 0, 0, WIDTH, HEIGHT);
 
-		int yMouseOffset = 0;
 		for (GuiDisplay display : itemDisplays) {
-			display.draw(mouseX - offsetX, mouseY - offsetY - yMouseOffset);
-			yMouseOffset += 48;
+			display.draw(mouseX - offsetX, mouseY - offsetY);
 		}
+
 		GlStateManager.translate(-offsetX, -offsetY, 0);
 		super.drawScreen(mouseX, mouseY, partialTicks);
 
@@ -124,16 +117,8 @@ public class GuiNemesis extends GuiScreen {
 	@Override
 	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
 		super.mouseClicked(mouseX, mouseY, mouseButton);
-		if (mouseX < 10 && mouseY < 10) {
-
-			Nemesis nemesis = MessageOpenNemesisGui.NEMESES.get(0);
-			System.out.println(nemesis);
-
-			UUID id = nemesis.getId();
-			System.out.println(id);
-
-
-			NemesisSystem.NETWORK.sendToServer(new MessageOpenNemesisDetailsGuiRequest(id));
+		for (GuiDisplay display : itemDisplays) {
+			display.clicked(mouseX, mouseY, mouseButton);
 		}
 	}
 
@@ -144,7 +129,6 @@ public class GuiNemesis extends GuiScreen {
 
 	@Override
 	public void initGui() {
-		System.out.println("INIT GUI");
 		offsetX = (width - WIDTH) / 2;
 		offsetY = (height - HEIGHT) / 2;
 		buttonY = offsetY + HEIGHT - 25;
