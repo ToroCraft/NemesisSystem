@@ -1,12 +1,18 @@
 package net.torocraft.nemesissystem.util;
 
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.Nemesis.Weakness;
 
@@ -37,8 +43,10 @@ public class WeaknessesUtil {
                 handleGluttonyBehavior(entity, nemesis);
                 return;
             case PYROPHOBIA:
+                handlePyrophobiaBehavior(entity, nemesis);
                 return;
             case HYDROPHOBIA:
+                handleHydrophobiaBehavior(entity, nemesis);
                 return;
             case GOLD_ALLERGY:
                 // LivingHurtEvent needs to check damage source and if item is gold, apply more damage
@@ -50,6 +58,59 @@ public class WeaknessesUtil {
                 // LivingHurtEvent needs to check damage source and if item is stone, apply more damage
                 return;
         }
+    }
+
+    private static void handleHydrophobiaBehavior(EntityLiving entity, Nemesis nemesis) {
+        if (entity.isWet()) {
+            panic(entity, false);
+        }
+    }
+
+    private static void handlePyrophobiaBehavior(EntityLiving entity, Nemesis nemesis) {
+        if (entity.isBurning()) {
+            panic(entity, true);
+        }
+    }
+
+    private static void panic(EntityLiving entity, boolean seekWater) {
+        BlockPos randBlock = null;
+        if (seekWater) {
+            randBlock = lookForNearbyWater(entity.world, entity, 5, 4);
+        }
+        if (randBlock == null) {
+            randBlock = new BlockPos(RandomPositionGenerator.findRandomTarget((EntityCreature)entity, 5, 4));
+        }
+        entity.getNavigator().tryMoveToXYZ(randBlock.getX(), randBlock.getY(), randBlock.getZ(), 2.0D);
+    }
+
+    private static BlockPos lookForNearbyWater(World worldIn, Entity entityIn, int horizontalRange, int verticalRange) {
+        BlockPos blockpos = new BlockPos(entityIn);
+        int x = blockpos.getX();
+        int y = blockpos.getY();
+        int z = blockpos.getZ();
+        float f = (float)(horizontalRange * horizontalRange * verticalRange * 2);
+        BlockPos blockPos = null;
+        BlockPos.MutableBlockPos mutableBlockPos = new BlockPos.MutableBlockPos();
+
+        for (int l = x - horizontalRange; l <= x + horizontalRange; ++l) {
+            for (int i = y - verticalRange; i <= y + verticalRange; ++i) {
+                for (int j = z - horizontalRange; j <= z + horizontalRange; ++j) {
+                    mutableBlockPos.setPos(l, i, j);
+                    IBlockState iblockstate = worldIn.getBlockState(mutableBlockPos);
+
+                    if (iblockstate.getMaterial() == Material.WATER) {
+                        float f1 = (float)((l - x) * (l - x) + (i - y) * (i - y) + (j - z) * (j - z));
+
+                        if (f1 < f) {
+                            f = f1;
+                            blockPos = new BlockPos(mutableBlockPos);
+                        }
+                    }
+                }
+            }
+        }
+
+        return blockPos;
     }
 
     private static void handleGluttonyBehavior(EntityLiving entity, Nemesis nemesis) {
