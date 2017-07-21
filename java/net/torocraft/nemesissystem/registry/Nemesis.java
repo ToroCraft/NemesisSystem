@@ -25,6 +25,8 @@ public class Nemesis {
 
 	public enum Weakness {HYDROPHOBIA, PYROPHOBIA, WOOD_ALLERGY, GOLD_ALLERGY, STONE_ALLERGY, GREEDY, GLUTTONY, CHICKEN } // AMOROUS, DANCE, PLASMOPHOBIA, ICHTHYOPHOBIA, ANIMAL_LOVER
 
+	public enum Strength {}
+
 	/**
 	 * the chunk the entity is in is loaded
 	 */
@@ -66,6 +68,9 @@ public class Nemesis {
 
 	@NbtField(genericType = Trait.class)
 	private List<Trait> traits = new ArrayList<>();
+
+	@NbtField(genericType = Strength.class)
+	private List<Strength> strengths = new ArrayList<>();
 
 	@NbtField(genericType = Weakness.class)
 	private List<Weakness> weaknesses = new ArrayList<>();
@@ -197,6 +202,10 @@ public class Nemesis {
 	public List<Weakness> getWeaknesses() { return weaknesses; }
 
 	public void setWeaknesses(List<Weakness> weaknesses) { this.weaknesses = weaknesses; }
+
+	public List<Strength> getStrengths() { return strengths; }
+
+	public void setStrengths(List<Strength> strengths) { this.strengths = strengths; }
 
 	public String getTitle() {
 		if (title == null) {
