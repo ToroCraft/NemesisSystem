@@ -2,19 +2,14 @@ package net.torocraft.nemesissystem.events;
 
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.init.Items;
-import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.Nemesis;
-import net.torocraft.nemesissystem.registry.Nemesis.Weakness;
 import net.torocraft.nemesissystem.registry.Nemesis.Trait;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
-import net.torocraft.nemesissystem.util.WeaknessesUtil;
 
 import java.util.List;
 

@@ -34,6 +34,7 @@ public class WeaknessesUtil {
             case CHICKEN:
                 return;
             case GLUTTONY:
+                handleGluttonyBehavior(entity, nemesis);
                 return;
             case PYROPHOBIA:
                 return;
@@ -51,6 +52,25 @@ public class WeaknessesUtil {
         }
     }
 
+    private static void handleGluttonyBehavior(EntityLiving entity, Nemesis nemesis) {
+        if (isWorshiping(entity)) {
+            if (entity.getEntityData().getInteger(TAG_COOLDOWN) >= 0) {
+                return;
+            }
+            stopWorshiping(entity, nemesis);
+        }
+
+        if (pickupItem(entity, getFoodWithinAABB(entity, 1.0D, 0.0D, 1.0D))) {
+            return;
+        }
+
+        int distractDistance = 20;
+        EntityItem food = getVisibleItem(entity, getFoodWithinAABB(entity, distractDistance, distractDistance, distractDistance));
+        if (food != null) {
+            moveToItem(entity, food);
+        }
+    }
+
     private static void handleGreedyBehavior(EntityLiving entity, Nemesis nemesis) {
         if (isWorshiping(entity)) {
             if (entity.getEntityData().getInteger(TAG_COOLDOWN) >= 0) {
@@ -59,31 +79,40 @@ public class WeaknessesUtil {
             stopWorshiping(entity, nemesis);
         }
 
-        if (pickupShiny(entity)) {
+        if (pickupItem(entity, getShiniesWithinAABB(entity, 1.0D,0.0D, 1.0D))) {
             return;
         }
 
-        EntityItem shiny = getVisibleShiny(entity);
+        int distractDistance = 20;
+        EntityItem shiny = getVisibleItem(entity, getShiniesWithinAABB(entity, distractDistance, distractDistance, distractDistance));
         if (shiny != null) {
-            moveToShiny(entity, shiny);
+            moveToItem(entity, shiny);
         }
 
     }
 
-    private static boolean pickupShiny(EntityLiving entity) {
-        List<EntityItem> shinies = entity.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(entity.getPosition()).grow(1.0D,
-                0.0D, 1.0D), item -> item.getItem().getItem().equals(Items.GOLD_INGOT) ||
-                item.getItem().getItem().equals(Items.EMERALD) || item.getItem().getItem().equals(Items.DIAMOND));
-
-        if (shinies.size() > 0) {
-            entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, shinies.get(0).getItem());
+    private static boolean pickupItem(EntityLiving entity, List<EntityItem> desiredItems) {
+        if (desiredItems.size() > 0) {
+            entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, desiredItems.get(0).getItem());
             startWorshiping(entity);
-            for (EntityItem shiny : shinies) {
-                entity.world.removeEntity(shiny);
+            for (EntityItem item : desiredItems) {
+                entity.world.removeEntity(item);
             }
             return true;
         }
         return false;
+    }
+
+    private static List<EntityItem> getShiniesWithinAABB(EntityLiving entity, double x, double y, double z) {
+        return entity.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(entity.getPosition()).grow(x, y, z),
+                item -> item.getItem().getItem().equals(Items.GOLD_INGOT) || item.getItem().getItem().equals(Items.EMERALD) || item.getItem().getItem().equals(Items.DIAMOND));
+    }
+
+    private static List<EntityItem> getFoodWithinAABB(EntityLiving entity, double x, double y, double z) {
+        return entity.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(entity.getPosition()).grow(x, y, z),
+                item -> item.getItem().getItem().equals(Items.BEEF) || item.getItem().getItem().equals(Items.CHICKEN) ||
+                        item.getItem().getItem().equals(Items.MUTTON) || item.getItem().getItem().equals(Items.PORKCHOP) ||
+                        item.getItem().getItem().equals(Items.RABBIT));
     }
 
     private static void startWorshiping(EntityLiving entity) {
@@ -99,20 +128,15 @@ public class WeaknessesUtil {
         resumeAITasks(entity);
     }
 
-    private static void moveToShiny(EntityLiving entity, EntityItem shiny) {
+    private static void moveToItem(EntityLiving entity, EntityItem item) {
         EntityCreature mob = (EntityCreature)entity;
-        mob.getNavigator().tryMoveToXYZ(shiny.getPosition().getX() + 0.5D, shiny.getPosition().getY() + 1, shiny.getPosition().getZ() + 0.5D, 2.0);
+        mob.getNavigator().tryMoveToXYZ(item.getPosition().getX() + 0.5D, item.getPosition().getY() + 1, item.getPosition().getZ() + 0.5D, 2.0);
     }
 
-    private static EntityItem getVisibleShiny(EntityLiving entity) {
-        int distractDistance = 20;
-        List<EntityItem> shinies = entity.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(entity.getPosition()).grow(distractDistance,
-                distractDistance, distractDistance), item -> item.getItem().getItem().equals(Items.GOLD_INGOT) ||
-                item.getItem().getItem().equals(Items.EMERALD) || item.getItem().getItem().equals(Items.DIAMOND));
-
-        for (EntityItem shiny : shinies) {
-            if (entity.getEntitySenses().canSee(shiny)) {
-                return shiny;
+    private static EntityItem getVisibleItem(EntityLiving entity, List<EntityItem> desiredItems) {
+        for (EntityItem item : desiredItems) {
+            if (entity.getEntitySenses().canSee(item)) {
+                return item;
             }
         }
 
