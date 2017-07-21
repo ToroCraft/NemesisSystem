@@ -13,6 +13,7 @@ import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.TraitsUtil;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.NemesisUtil;
+import net.torocraft.nemesissystem.util.WeaknessesUtil;
 
 public class Update {
 
@@ -88,6 +89,7 @@ public class Update {
 		// TODO look for closer target
 
 		TraitsUtil.handleTraits(nemesis, entity);
+		WeaknessesUtil.handleWeaknesses(nemesis, entity);
 	}
 
 }

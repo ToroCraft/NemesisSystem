@@ -76,6 +76,7 @@ public class NemesisBuilder {
 
 		nemesis.setWeaknesses(new ArrayList<>());
 		nemesis.getWeaknesses().add(Weakness.values()[rand.nextInt(Weakness.values().length)]);
+		//nemesis.getWeaknesses().add(Weakness.GREEDY);
 
 		nemesis.getHandInventory().set(0, new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]));
 		setOffhandItem(nemesis);
