@@ -58,24 +58,17 @@ public class MessageSyncNemesis implements IMessage {
 	}
 
 	public static void work(MessageSyncNemesis message) {
-
-		System.out.println("*** on client, set tags to entity");
-
 		Nemesis nemesis = message.nemesis;
 
 		if (nemesis == null) {
-			System.out.println("************** nemesis not sent to client");
 			return;
 		}
 
 		Entity entity = Minecraft.getMinecraft().world.getEntityByID(nemesis.getSpawned());
 
 		if (entity == null) {
-			System.out.println("*************** Entity not found client");
 			return;
 		}
-
-		System.out.println("******* tagging nemesis on client side: " + nemesis.getNameAndTitle());
 
 		entity.addTag(NemesisSystem.TAG_NEMESIS);
 	}

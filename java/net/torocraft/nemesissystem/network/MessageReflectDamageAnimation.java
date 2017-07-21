@@ -48,7 +48,6 @@ public class MessageReflectDamageAnimation implements IMessage {
 	}
 
 	public static void work(MessageReflectDamageAnimation message) {
-		System.out.println("reflect damage request");
 		Minecraft mc = Minecraft.getMinecraft();
 		Entity e = mc.world.getEntityByID(message.id);
 		if(e != null){

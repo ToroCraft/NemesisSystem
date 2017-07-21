@@ -198,10 +198,9 @@ public class NemesisSystemCommand extends CommandBase {
 			if (nemesis.isDead()) {
 				s.append(" DEAD ");
 			}
-			s.append(nemesis).append("\n");
-			NBTTagCompound c = new NBTTagCompound();
-			nemesis.writeToNBT(c);
-			s.append(c).append("\n");
+			s.append(nemesis);
+			s.append(" ").append(nemesis.getX()).append(",").append(nemesis.getZ());
+			s.append("\n");
 		}
 		notifyCommandListener(sender, this, "commands.nemesis_system.success.list", s.toString());
 	}

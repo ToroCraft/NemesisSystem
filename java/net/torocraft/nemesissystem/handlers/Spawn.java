@@ -32,7 +32,7 @@ import net.torocraft.nemesissystem.util.SpawnUtil;
 
 public class Spawn {
 
-	private static final int SPAWN_CHANCE = 10;
+	private static final int SPAWN_CHANCE = 1;
 
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(new Spawn());
@@ -66,6 +66,9 @@ public class Spawn {
 		if (nemesis == null) {
 			return;
 		}
+
+		// TODO add event, log and notification of for a nemesis spawn
+		System.out.println(nemesis.getNameAndTitle() + " has been spawned at " + event.getEntity().getPosition());
 
 		replaceEntityWithNemesis((EntityCreature) event.getEntity(), nemesis);
 	}
@@ -118,6 +121,7 @@ public class Spawn {
 
 			nemesis.setSpawned(entity.getEntityId());
 			nemesis.setUnloaded(null);
+			nemesis.setLastSpawned(entity.world.getTotalWorldTime());
 			NemesisRegistryProvider.get(event.getWorld()).update(nemesis);
 			sendNemesisDataToClient(nemesis);
 		}
@@ -172,10 +176,6 @@ public class Spawn {
 
 	private static void spawnBodyGuard(EntityLiving entity, Nemesis nemesis) {
 
-		// TODO high level nemeses spawn other nemesis in their body guard
-
-		// TODO add body guard ranks? (different armor, ai, weapons)
-
 		// TODO use nemesis colors
 
 		int count = 3 + nemesis.getLevel() * 3;
@@ -192,7 +192,6 @@ public class Spawn {
 
 	private static void equipBodyGuard(EntityCreature bodyGuard) {
 		int color = 0xffffff;
-		// TODO change weapon base on rank, or nemesis boss title, or trait?
 		bodyGuard.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
 		bodyGuard.setItemStackToSlot(EntityEquipmentSlot.HEAD, colorArmor(new ItemStack(Items.LEATHER_HELMET, 1), color));
 		bodyGuard.setItemStackToSlot(EntityEquipmentSlot.CHEST, colorArmor(new ItemStack(Items.LEATHER_CHESTPLATE, 1), color));
@@ -233,9 +232,7 @@ public class Spawn {
 		nemeses.removeIf(Nemesis::isSpawned);
 		nemeses.removeIf(Nemesis::isDead);
 		nemeses.removeIf((Nemesis n) -> notReadyToSpawn(world, n));
-		nemeses.removeIf((Nemesis n) -> outOfRange(entity, n));
-
-		// TODO increase Nemesis level every time they spawn but are not killed
+		nemeses.removeIf((Nemesis n) -> !inRage(entity, n));
 
 		if (nemeses.size() < 1) {
 			return null;
@@ -244,9 +241,16 @@ public class Spawn {
 		return nemeses.get(event.getEntity().world.rand.nextInt(nemeses.size()));
 	}
 
-	private static boolean outOfRange(Entity entity, Nemesis nemesis) {
-		// TODO change to a square radius, instead of a round one
-		return entity.getDistanceSq(nemesis.getX(), entity.posY, nemesis.getZ()) > nemesis.getRangeSq();
+	private static boolean inRage(Entity entity, Nemesis nemesis) {
+		int x = (int) entity.posX;
+		int z = (int) entity.posZ;
+
+		int nx = nemesis.getX();
+		int nz = nemesis.getZ();
+
+		int r = nemesis.getRange();
+
+		return x < nx + r && x > nx - r && z < nz + r && z > nz - r;
 	}
 
 	private static boolean notReadyToSpawn(World world, Nemesis n) {
