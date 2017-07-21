@@ -21,13 +21,13 @@ import java.util.List;
 
 public class WeaknessesUtil {
 
-    public static final String TAG_WORSHIPING = "worshiping";
-    public static final String TAG_COOLDOWN = "cooldown";
+    public static final String TAG_WORSHIPING = "nemesissystem_worshiping";
+    public static final String NBT_COOLDOWN = "nemesissystem_cooldown";
 
     public static void handleWeaknesses(Nemesis nemesis, EntityLiving nemesisEntity) {
         // caching to an array to avoid: java.util.ArrayList$Itr.checkForComodification
         Weakness[] weaknesses = nemesis.getWeaknesses().toArray(new Weakness[0]);
-        for (Weakness weakness : nemesis.getWeaknesses()) {
+        for (Weakness weakness : weaknesses) {
             handleWeaknessUpdate(nemesisEntity, nemesis, weakness);
         }
     }
@@ -51,13 +51,10 @@ public class WeaknessesUtil {
                 handleHydrophobiaBehavior(entity, nemesis);
                 return;
             case GOLD_ALLERGY:
-                // LivingHurtEvent needs to check damage source and if item is gold, apply more damage
                 return;
             case WOOD_ALLERGY:
-                // LivingHurtEvent needs to check damage source and if item is wooden, apply more damage
                 return;
             case STONE_ALLERGY:
-                // LivingHurtEvent needs to check damage source and if item is stone, apply more damage
                 return;
         }
     }
@@ -67,34 +64,35 @@ public class WeaknessesUtil {
                 new AxisAlignedBB(entity.getPosition()).grow(5, 5, 5));
 
         if (nearbyChickens.size() > 0) {
-            panic(entity, false);
+            moveToBlock(entity, findRandomBlock((EntityCreature)entity), 2.0D);
         }
     }
 
     private static void handleHydrophobiaBehavior(EntityLiving entity, Nemesis nemesis) {
         if (entity.isWet()) {
-            panic(entity, false);
+            moveToBlock(entity, findRandomBlock((EntityCreature)entity), 2.0D);
         }
     }
 
     private static void handlePyrophobiaBehavior(EntityLiving entity, Nemesis nemesis) {
         if (entity.isBurning()) {
-            panic(entity, true);
+            BlockPos targetPos = findNearbyWater(entity.world, entity, 5, 4);
+            if (targetPos == null) {
+                targetPos = findRandomBlock((EntityCreature)entity);
+            }
+            moveToBlock(entity, targetPos, 2.0D);
         }
     }
 
-    private static void panic(EntityLiving entity, boolean seekWater) {
-        BlockPos randBlock = null;
-        if (seekWater) {
-            randBlock = lookForNearbyWater(entity.world, entity, 5, 4);
-        }
-        if (randBlock == null) {
-            randBlock = new BlockPos(RandomPositionGenerator.findRandomTarget((EntityCreature)entity, 5, 4));
-        }
-        entity.getNavigator().tryMoveToXYZ(randBlock.getX(), randBlock.getY(), randBlock.getZ(), 2.0D);
+    private static boolean moveToBlock(EntityLiving entity, BlockPos randBlock, double speed) {
+        return entity.getNavigator().tryMoveToXYZ(randBlock.getX(), randBlock.getY(), randBlock.getZ(), speed);
     }
 
-    private static BlockPos lookForNearbyWater(World worldIn, Entity entityIn, int horizontalRange, int verticalRange) {
+    private static BlockPos findRandomBlock(EntityCreature entity) {
+        return new BlockPos(RandomPositionGenerator.findRandomTarget(entity, 5, 4));
+    }
+
+    private static BlockPos findNearbyWater(World worldIn, Entity entityIn, int horizontalRange, int verticalRange) {
         BlockPos blockpos = new BlockPos(entityIn);
         int x = blockpos.getX();
         int y = blockpos.getY();
@@ -126,7 +124,7 @@ public class WeaknessesUtil {
 
     private static void handleGluttonyBehavior(EntityLiving entity, Nemesis nemesis) {
         if (isWorshiping(entity)) {
-            if (entity.getEntityData().getInteger(TAG_COOLDOWN) >= 0) {
+            if (entity.getEntityData().getInteger(NBT_COOLDOWN) >= 0) {
                 return;
             }
             stopWorshiping(entity, nemesis);
@@ -145,7 +143,7 @@ public class WeaknessesUtil {
 
     private static void handleGreedyBehavior(EntityLiving entity, Nemesis nemesis) {
         if (isWorshiping(entity)) {
-            if (entity.getEntityData().getInteger(TAG_COOLDOWN) >= 0) {
+            if (entity.getEntityData().getInteger(NBT_COOLDOWN) >= 0) {
                 return;
             }
             stopWorshiping(entity, nemesis);
@@ -189,12 +187,12 @@ public class WeaknessesUtil {
 
     private static void startWorshiping(EntityLiving entity) {
         entity.getTags().add(WeaknessesUtil.TAG_WORSHIPING);
-        entity.getEntityData().setTag(WeaknessesUtil.TAG_COOLDOWN, new NBTTagInt(3));
+        entity.getEntityData().setTag(WeaknessesUtil.NBT_COOLDOWN, new NBTTagInt(3));
         WeaknessesUtil.cancelAllAITasks(entity);
     }
 
     private static void stopWorshiping(EntityLiving entity, Nemesis nemesis) {
-        entity.getEntityData().removeTag(TAG_COOLDOWN);
+        entity.getEntityData().removeTag(NBT_COOLDOWN);
         entity.getTags().remove(TAG_WORSHIPING);
         entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, nemesis.getHandInventory().get(0));
         resumeAITasks(entity);
@@ -224,13 +222,13 @@ public class WeaknessesUtil {
     }
 
     private static boolean isWorshiping(EntityLiving entity) {
-        return entity.getTags().contains(TAG_WORSHIPING) && entity.getEntityData().hasKey(TAG_COOLDOWN);
+        return entity.getTags().contains(TAG_WORSHIPING) && entity.getEntityData().hasKey(NBT_COOLDOWN);
     }
 
     private static void decrementCooldown(Nemesis nemesis, EntityLiving entity) {
-        if (!entity.getEntityData().hasKey(TAG_COOLDOWN)) {
+        if (!entity.getEntityData().hasKey(NBT_COOLDOWN)) {
             return;
         }
-        entity.getEntityData().setTag(TAG_COOLDOWN, new NBTTagInt(entity.getEntityData().getInteger(TAG_COOLDOWN) - 1));
+        entity.getEntityData().setInteger(NBT_COOLDOWN, entity.getEntityData().getInteger(NBT_COOLDOWN) - 1);
     }
 }

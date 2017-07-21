@@ -45,7 +45,7 @@ public class TraitsUtil {
 	public static void handleTraits(Nemesis nemesis, EntityLiving nemesisEntity) {
 		// caching to an array to avoid: java.util.ArrayList$Itr.checkForComodification
 		Trait[] traits = nemesis.getTraits().toArray(new Trait[0]);
-		for (Trait trait : nemesis.getTraits()) {
+		for (Trait trait : traits) {
 			//TODO secondary traits should be used less frequently
 
 			// TODO randomize attack timing

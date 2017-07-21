@@ -6,7 +6,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.torocraft.nemesissystem.NemesisConfig;
-import net.torocraft.nemesissystem.events.EventHandlers;
 import net.torocraft.nemesissystem.events.NemesisEventHandlers;
 import net.torocraft.nemesissystem.handlers.Attack;
 import net.torocraft.nemesissystem.handlers.Death;
@@ -28,7 +27,6 @@ public class CommonProxy {
 	public void preInit(FMLPreInitializationEvent e) {
 		initConfig(e.getSuggestedConfigurationFile());
 		MinecraftForge.EVENT_BUS.register(new NemesisEventHandlers());
-		MinecraftForge.EVENT_BUS.register(new EventHandlers());
 	}
 
 	public void init(FMLInitializationEvent e) {
