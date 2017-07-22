@@ -8,7 +8,6 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.Nemesis;
-import net.torocraft.nemesissystem.registry.Nemesis.Trait;
 
 public class EntityDecorator {
 
@@ -28,11 +27,6 @@ public class EntityDecorator {
 		}
 
 		ItemStack helmet = nemesis.getArmorInventory().get(EntityEquipmentSlot.HEAD.getIndex());
-
-		if(nemesis.getTraits().contains(Trait.HEAT)){
-			// TODO use reflection handler to set immune to fire
-			//entity.isImmuneToFire()
-		}
 
 		entity.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
 		entity.setItemStackToSlot(EntityEquipmentSlot.CHEST, nemesis.getArmorInventory().get(EntityEquipmentSlot.CHEST.getIndex()));

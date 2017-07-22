@@ -9,11 +9,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.util.BehaviorUtil;
-import net.torocraft.nemesissystem.util.TraitsUtil;
 import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.traits.TraitHandler;
+import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.NemesisUtil;
-import net.torocraft.nemesissystem.util.WeaknessesUtil;
 
 public class Update {
 
@@ -93,8 +92,7 @@ public class Update {
 
 		// TODO look for closer target
 
-		TraitsUtil.handleTraits(nemesis, entity);
-		WeaknessesUtil.handleWeaknesses(nemesis, entity);
+		TraitHandler.onUpdate(nemesis, entity);
 	}
 
 }

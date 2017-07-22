@@ -53,7 +53,7 @@ public class DiscoveryUtil {
             return false;
         }
         return discovery.isName() && discovery.isLocation() && discovery.getWeaknesses().size() == nemesis.getWeaknesses().size() &&
-                discovery.getTraits().size() == nemesis.getTraits().size() && discovery.getStrengths().size() == nemesis.getStrengths().size();
+                discovery.getTraits().size() == nemesis.getTraits().size();
     }
 
     public static void setRandomInformation(NemesisDiscovery discovery, Nemesis nemesis) {
@@ -73,12 +73,6 @@ public class DiscoveryUtil {
         if (discovery.getTraits().size() < nemesis.getTraits().size()) {
             if (rand.nextInt(chance) == 0) {
                 setRandomIndex(discovery.getTraits(), nemesis.getTraits());
-                hasAddedInfo = true;
-            }
-        }
-        if (discovery.getStrengths().size() < nemesis.getStrengths().size()) {
-            if (rand.nextInt(chance) == 0) {
-                setRandomIndex(discovery.getStrengths(), nemesis.getStrengths());
                 hasAddedInfo = true;
             }
         }

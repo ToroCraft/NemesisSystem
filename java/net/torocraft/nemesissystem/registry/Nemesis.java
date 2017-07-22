@@ -3,6 +3,7 @@ package net.torocraft.nemesissystem.registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
@@ -10,9 +11,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.torocraft.nemesissystem.traits.Trait;
+import net.torocraft.nemesissystem.traits.Trait.Affect;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
-import scala.tools.nsc.doc.model.Trait;
 
 public class Nemesis {
 
@@ -20,12 +22,6 @@ public class Nemesis {
 	 * the range of the nemesis's domain, setting to 50 would make a 100x100 block domain
 	 */
 	private static final int RANGE = 50;
-
-	public enum Trait {DOUBLE_MELEE, ARROW, SUMMON, REFLECT, HEAT, POTION, TELEPORT, FIREBALL, HEAL}
-
-	public enum Weakness {HYDROPHOBIA, PYROPHOBIA, WOOD_ALLERGY, GOLD_ALLERGY, STONE_ALLERGY, GREEDY, GLUTTONY, CHICKEN } // AMOROUS, DANCE, PLASMOPHOBIA, ICHTHYOPHOBIA, ANIMAL_LOVER
-
-	public enum Strength {}
 
 	/**
 	 * the chunk the entity is in is loaded
@@ -69,12 +65,6 @@ public class Nemesis {
 	@NbtField(genericType = Trait.class)
 	private List<Trait> traits = new ArrayList<>();
 
-	@NbtField(genericType = Strength.class)
-	private List<Strength> strengths = new ArrayList<>();
-
-	@NbtField(genericType = Weakness.class)
-	private List<Weakness> weaknesses = new ArrayList<>();
-
 	@NbtField(genericType = LogEntry.class)
 	private List<LogEntry> history = new ArrayList<>();
 
@@ -101,10 +91,6 @@ public class Nemesis {
 	@Override
 	public String toString() {
 		return getNameAndTitle();
-
-//				name + " the " + title + " (" + (unloaded == null ? "LOADED" : "UNLOADED") + " " + (isSpawned() ? "SPAWNED" : "NOT_SPAWNED")
-//				+ " level:" + level + " loc:" + x + "," + z + ") " + mob + " "
-//				+ traits.get(0);
 	}
 
 	public void readFromNBT(NBTTagCompound c) {
@@ -199,14 +185,6 @@ public class Nemesis {
 		this.traits = traits;
 	}
 
-	public List<Weakness> getWeaknesses() { return weaknesses; }
-
-	public void setWeaknesses(List<Weakness> weaknesses) { this.weaknesses = weaknesses; }
-
-	public List<Strength> getStrengths() { return strengths; }
-
-	public void setStrengths(List<Strength> strengths) { this.strengths = strengths; }
-
 	public String getTitle() {
 		if (title == null) {
 			return "Unknown";
@@ -294,9 +272,27 @@ public class Nemesis {
 		this.lastSpawned = lastSpawned;
 	}
 
-	public int getIsChild() { return isChild; }
+	public List<Trait> getWeaknesses() {
+		return filterTraitByAffect(traits, Affect.WEAKNESS);
+	}
 
-	public boolean isChild() { return isChild == 1; }
+	public List<Trait> getStrengths() {
+		return filterTraitByAffect(traits, Affect.STRENGTH);
+	}
 
-	public void setChild(int child) { isChild = child; }
+	private static List<Trait> filterTraitByAffect(List<Trait> traits, Affect affect) {
+		return traits.stream().filter((Trait t) -> t.type.getAffect().equals(affect)).collect(Collectors.toList());
+	}
+
+	public int getIsChild() {
+		return isChild;
+	}
+
+	public boolean isChild() {
+		return isChild == 1;
+	}
+
+	public void setChild(int child) {
+		isChild = child;
+	}
 }

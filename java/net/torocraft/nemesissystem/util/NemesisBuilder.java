@@ -1,17 +1,17 @@
 package net.torocraft.nemesissystem.util;
 
-import java.util.*;
-
-import net.minecraft.init.Blocks;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.torocraft.nemesissystem.registry.Nemesis;
-import net.torocraft.nemesissystem.registry.Nemesis.Trait;
-import net.torocraft.nemesissystem.registry.Nemesis.Weakness;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.nemesissystem.traits.Trait;
 
 public class NemesisBuilder {
 
@@ -71,11 +71,17 @@ public class NemesisBuilder {
 		nemesis.setDimension(dimension);
 
 		nemesis.setTraits(new ArrayList<>());
-		nemesis.getTraits().add(Trait.values()[rand.nextInt(Trait.values().length)]);
+
+		/*
+		 * add a strength
+		 */
+		nemesis.getTraits().add(new Trait(Trait.STRENGTHS[rand.nextInt(Trait.STRENGTHS.length)], 1));
 		//nemesis.getTraits().add(Trait.TELEPORT);
 
-		nemesis.setWeaknesses(new ArrayList<>());
-		nemesis.getWeaknesses().add(Weakness.values()[rand.nextInt(Weakness.values().length)]);
+		/*
+		 * add a weakness
+		 */
+		nemesis.getTraits().add(new Trait(Trait.WEAKNESSES[rand.nextInt(Trait.WEAKNESSES.length)], 1));
 		//nemesis.getWeaknesses().add(Weakness.GREEDY);
 
 		nemesis.getHandInventory().set(0, new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]));
@@ -89,7 +95,7 @@ public class NemesisBuilder {
 	private static String getUniqueTitle(World world) {
 		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
 		String title = getRandomTitle();
-		while(!isUniqueTitle(title, nemeses)) {
+		while (!isUniqueTitle(title, nemeses)) {
 			title = getRandomTitle();
 		}
 		return title;
@@ -126,12 +132,9 @@ public class NemesisBuilder {
 
 	private static void setOffhandItem(Nemesis nemesis) {
 		ItemStack offhand;
-		switch (nemesis.getTraits().get(0)) {
-		case HEAT:
+		switch (nemesis.getTraits().get(0).type) {
+		case FIRE:
 			offhand = new ItemStack(Items.LAVA_BUCKET);
-			break;
-		case FIREBALL:
-			offhand = new ItemStack(Blocks.TORCH);
 			break;
 		case ARROW:
 			offhand = new ItemStack(Items.BOW);

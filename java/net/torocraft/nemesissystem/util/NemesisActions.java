@@ -19,8 +19,8 @@ import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.events.NemesisEvent;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
-import net.torocraft.nemesissystem.registry.Nemesis.Trait;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.nemesissystem.traits.Trait;
 
 public class NemesisActions {
 
@@ -45,17 +45,17 @@ public class NemesisActions {
 	}
 
 	private static void addAdditionalTrait(Nemesis nemesis) {
-		List<Trait> availableTraits = Arrays.stream(Trait.values())
-				.filter((Trait t) -> !nemesis.getTraits().contains(t))
+		List<Trait.Type> availableTraits = Arrays.stream(Trait.Type.values())
+				.filter((Trait.Type t) -> !nemesis.getTraits().contains(t))
 				.collect(Collectors.toList());
 
 		if (availableTraits.size() < 1) {
 			return;
 		}
 
-		Trait newTrait = availableTraits.get(NemesisUtil.rand.nextInt(availableTraits.size()));
-		nemesis.getTraits().add(newTrait);
-		System.out.println("new trait: " + newTrait);
+		Trait.Type type = availableTraits.get(NemesisUtil.rand.nextInt(availableTraits.size()));
+		nemesis.getTraits().add(new Trait(type, 1));
+		System.out.println("new trait: " + type);
 	}
 
 	private static boolean shouldGainAdditionalTrait(Nemesis nemesis) {

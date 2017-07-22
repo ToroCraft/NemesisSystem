@@ -7,11 +7,8 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionType;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -19,10 +16,8 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
-import net.torocraft.nemesissystem.registry.Nemesis.Trait;
-import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.nemesissystem.traits.TraitHandler;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
@@ -124,47 +119,18 @@ public class Death {
 			drops.add(damageAndDrop(nemesisEntity, stack));
 		}
 
-		for (Trait trait : nemesis.getTraits()) {
-			switch (trait) {
-			case DOUBLE_MELEE:
-
-				break;
-			case ARROW:
-				drops.add(drop(nemesisEntity, new ItemStack(Items.ARROW, rand.nextInt(64))));
-				break;
-			case SUMMON:
-				break;
-			case REFLECT:
-				break;
-			case HEAT:
-				drops.add(drop(nemesisEntity, new ItemStack(Blocks.TORCH, rand.nextInt(64))));
-				if (rand.nextInt(5) == 0) {
-					drops.add(drop(nemesisEntity, new ItemStack(Items.LAVA_BUCKET)));
-				}
-				break;
-			case FIREBALL:
-				drops.add(drop(nemesisEntity, new ItemStack(Items.LAVA_BUCKET)));
-				break;
-			case POTION:
-				drops.add(drop(nemesisEntity,
-						PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionType.REGISTRY.getRandomObject(rand))));
-				break;
-			case TELEPORT:
-				drops.add(drop(nemesisEntity, new ItemStack(Items.ENDER_PEARL, rand.nextInt(16))));
-				break;
-			}
-		}
+		TraitHandler.onDrops(drops, nemesisEntity, nemesis);
 
 	}
 
-	private EntityItem damageAndDrop(EntityCreature entity, ItemStack stack) {
+	private static EntityItem damageAndDrop(EntityCreature entity, ItemStack stack) {
 		if (stack.isItemStackDamageable()) {
 			stack.setItemDamage(stack.getMaxDamage() - entity.getRNG().nextInt(1 + entity.getRNG().nextInt(Math.max(stack.getMaxDamage() - 3, 1))));
 		}
 		return drop(entity, stack);
 	}
 
-	private EntityItem drop(EntityCreature entity, ItemStack stack) {
+	public static EntityItem drop(EntityCreature entity, ItemStack stack) {
 		return new EntityItem(entity.getEntityWorld(), entity.posX, entity.posY, entity.posZ, stack);
 	}
 
