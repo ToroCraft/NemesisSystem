@@ -8,10 +8,14 @@ Shadow of Mordor's Nemesis system adapted to Minecraft
 git clone git@github.com:ToroCraft/NemesisSystem.git
 cd NemesisSystem
 gradle setupDecompWorkspace
+```
+
+To setup an Intellij environment:
+```
 gradle idea
 ```
 
-To create run targets:
+To setup an Eclipse environment:
 ```
-gradle genIntellijRuns
+gradle eclipse
 ```
