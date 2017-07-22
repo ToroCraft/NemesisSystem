@@ -93,7 +93,7 @@ public class NemesisBuilder {
 		return nemesis;
 	}
 
-	private static String getUniqueTitle(World world) {
+	public static String getUniqueTitle(World world) {
 		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
 		String title = getRandomTitle();
 		while (!isUniqueTitle(title, nemeses)) {
@@ -102,7 +102,7 @@ public class NemesisBuilder {
 		return title;
 	}
 
-	private static String getRandomTitle() {
+	public static String getRandomTitle() {
 		return NameBuilder.TITLES[rand.nextInt(NameBuilder.TITLES.length)];
 	}
 
@@ -115,7 +115,7 @@ public class NemesisBuilder {
 		return true;
 	}
 
-	private static String getUniqueName(World world) {
+	public static String getUniqueName(World world) {
 		String name = NameBuilder.build();
 		if (NemesisRegistryProvider.get(world).getByName(name) == null) {
 			return name;

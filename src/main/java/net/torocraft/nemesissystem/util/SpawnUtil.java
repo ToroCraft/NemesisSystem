@@ -40,9 +40,12 @@ public class SpawnUtil {
 		entity.setLocationAndAngles(x, y, z, MathHelper.wrapDegrees(world.rand.nextFloat() * 360.0F), 0.0F);
 		entity.rotationYawHead = entity.rotationYaw;
 		entity.renderYawOffset = entity.rotationYaw;
-		entity.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), null);
 		entity.enablePersistence();
-		findAndSetSuitableSpawnLocation(entity, pos, spawnRadius);
+		entity.setPosition(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+		if (spawnRadius > 1) {
+			findAndSetSuitableSpawnLocation(entity, pos, spawnRadius);
+		}
+		System.out.println("spawning at " + entity.getPosition());
 		world.spawnEntity(entity);
 		entity.playLivingSound();
 		return true;
@@ -61,8 +64,6 @@ public class SpawnUtil {
 		}
 
 		int degrees, distance, x, z;
-
-		BlockPos pos = null;
 
 		for (int attempt = 0; attempt < 10; attempt++) {
 			distance = rand.nextInt(spawnRadius);

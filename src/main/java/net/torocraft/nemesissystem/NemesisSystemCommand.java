@@ -3,6 +3,7 @@ package net.torocraft.nemesissystem;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
@@ -16,7 +17,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -26,6 +26,8 @@ import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.nemesissystem.traits.Trait;
+import net.torocraft.nemesissystem.traits.Type;
 import net.torocraft.nemesissystem.util.EntityDecorator;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisBuilder;
@@ -33,6 +35,8 @@ import net.torocraft.nemesissystem.util.NemesisUtil;
 import net.torocraft.nemesissystem.util.SpawnUtil;
 
 public class NemesisSystemCommand extends CommandBase {
+
+	private static final UUID TEST_ID = UUID.fromString("2027e16a-6edd-11e7-907b-a6006ad3dba0");
 
 	@Override
 	public String getName() {
@@ -64,6 +68,12 @@ public class NemesisSystemCommand extends CommandBase {
 			return;
 		case "spawn":
 			spawn(server, sender, args);
+			return;
+		case "create_test":
+			createTest(server, sender, args);
+			return;
+		case "spawn_test":
+			spawnTest(server, sender, args);
 			return;
 		case "list":
 			list(server, sender, args);
@@ -103,17 +113,69 @@ public class NemesisSystemCommand extends CommandBase {
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);
 		Nemesis nemesis = registry.getByName(args[1]);
 
-		//spawnSimple(player, world, nemesis);
 		Spawn.spawnNemesis(world, player.getPosition(), nemesis);
 	}
 
-	private void spawnSimple(EntityPlayer player, World world, Nemesis nemesis) {
-		Entity entity = SpawnUtil.getEntityFromString(world, nemesis.getMob());
-		if (!(entity instanceof EntityCreature)) {
+	private void spawnTest(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+		if (!(sender instanceof EntityPlayer)) {
 			return;
 		}
+
+		EntityPlayer player = getCommandSenderAsPlayer(sender);
+		World world = player.world;
+		Nemesis nemesis = NemesisRegistryProvider.get(world).getById(TEST_ID);
+
+		if (nemesis == null) {
+			System.out.println("Nemesis is null, run /nemesis_system create_test");
+			return;
+		}
+
+		Entity entity = SpawnUtil.getEntityFromString(world, nemesis.getMob());
+
+		if (entity == null) {
+			return;
+		}
+
 		EntityDecorator.decorate((EntityCreature) entity, nemesis);
-		SpawnUtil.spawnEntityLiving(world, (EntityCreature) entity, player.getPosition(), 10);
+		entity.addTag(NemesisSystem.TAG_SPAWNING);
+		SpawnUtil.spawnEntityLiving(world, (EntityCreature) entity, player.getPosition(), 0);
+	}
+
+
+	private void createTest(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+		if (!(sender instanceof EntityPlayer)) {
+			return;
+		}
+
+		EntityPlayer player = getCommandSenderAsPlayer(sender);
+		World world = player.world;
+		int x = player.getPosition().getX();
+		int z = player.getPosition().getZ();
+
+		Nemesis nemesis = new Nemesis();
+
+		nemesis.setId(TEST_ID);
+		nemesis.setName(NemesisBuilder.getUniqueName(world) + " of Test");
+		nemesis.setTitle(NemesisBuilder.getUniqueTitle(world));
+
+		nemesis.setLevel(10);
+		nemesis.setMob("minecraft:zombie");
+		nemesis.setChild(0);
+		nemesis.setX(x);
+		nemesis.setZ(z);
+		nemesis.setDimension(player.dimension);
+
+		nemesis.setTraits(new ArrayList<>());
+		nemesis.getTraits().add(new Trait(Type.WOOD_ALLERGY, 5));
+
+		INemesisRegistry registry = NemesisRegistryProvider.get(world);
+		if(registry.getById(TEST_ID) == null){
+			registry.register(nemesis);
+			System.out.println("created test nemesis: " + nemesis);
+		} else {
+			registry.update(nemesis);
+			System.out.println("updated test nemesis: " + nemesis);
+		}
 	}
 
 	private void promote(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
@@ -223,7 +285,8 @@ public class NemesisSystemCommand extends CommandBase {
 			dimension = 0;
 		}
 
-		Nemesis nemesis = NemesisBuilder.build(sender.getEntityWorld(), args[1], sender.getEntityWorld().rand.nextBoolean(), dimension, i(args[2]), x, z);
+		Nemesis nemesis = NemesisBuilder
+				.build(sender.getEntityWorld(), args[1], sender.getEntityWorld().rand.nextBoolean(), dimension, i(args[2]), x, z);
 		nemesis.register(server.getWorld(senderDimId(sender)));
 		notifyCommandListener(sender, this, "commands.nemesis_system.success.create", nemesis.toString());
 	}

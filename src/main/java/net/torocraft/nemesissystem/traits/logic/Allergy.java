@@ -39,13 +39,21 @@ public class Allergy {
 		if (!isAllergicToMaterial(nemesis, material)) {
 			return;
 		}
-		
-		entity.addPotionEffect(new PotionEffect(MobEffects.POISON, getPotionDuration(level), 1));
+
+		entity.addPotionEffect(getPotionEffectForAllergy(entity, level));
 		event.setAmount(event.getAmount() * getDamageModifier(level));
 	}
 
+	private static PotionEffect getPotionEffectForAllergy(EntityLivingBase entity, int level) {
+		PotionEffect p = new PotionEffect(MobEffects.POISON, getPotionDuration(level));
+		if (!entity.isPotionApplicable(p)) {
+			p = new PotionEffect(MobEffects.WEAKNESS, getPotionDuration(level));
+		}
+		return p;
+	}
+
 	private static int getPotionDuration(int level) {
-		return ONE_SECOND * level;
+		return ONE_SECOND * level * 2;
 	}
 
 	private static float getDamageModifier(int level) {

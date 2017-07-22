@@ -157,6 +157,5 @@ public class TraitHandler {
 				Allergy.onHurt(event, nemesis, trait.level);
 			}
 		}
-
 	}
 }
