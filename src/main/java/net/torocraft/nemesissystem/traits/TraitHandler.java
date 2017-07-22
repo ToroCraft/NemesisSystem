@@ -16,11 +16,12 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.traits.logic.Allergy;
 import net.torocraft.nemesissystem.traits.logic.Archer;
 import net.torocraft.nemesissystem.traits.logic.Chicken;
-import net.torocraft.nemesissystem.traits.logic.Fire;
+import net.torocraft.nemesissystem.traits.logic.Fireball;
 import net.torocraft.nemesissystem.traits.logic.Gluttony;
 import net.torocraft.nemesissystem.traits.logic.Greedy;
 import net.torocraft.nemesissystem.traits.logic.Heal;
 import net.torocraft.nemesissystem.traits.logic.Hydrophobia;
+import net.torocraft.nemesissystem.traits.logic.Inferno;
 import net.torocraft.nemesissystem.traits.logic.Potion;
 import net.torocraft.nemesissystem.traits.logic.Pyrophobia;
 import net.torocraft.nemesissystem.traits.logic.Reflection;
@@ -52,8 +53,10 @@ public class TraitHandler {
 			// TODO make the nemesis hit twice when attacking
 			return;
 		case FIREBALL:
-			Fire.onUpdate(entity, trait.level);
-			// TODO Fire.handleHeatTraitUpdate(entity, nemesis, trait);
+			Fireball.onUpdate(entity, trait.level);
+			return;
+		case INFERNO:
+			Inferno.onUpdate(entity, trait.level);
 			return;
 		case ARCHER:
 			Archer.onUpdate(entity, trait.level);
@@ -116,7 +119,7 @@ public class TraitHandler {
 					drops.add(Death.drop(nemesisEntity, new ItemStack(Items.LAVA_BUCKET)));
 				}
 				// TODO HEAT:
-				//Fire.handleHeatTraitUpdate(entity, nemesis, trait);
+				//Fireball.handleHeatTraitUpdate(entity, nemesis, trait);
 				break;
 			case POTION:
 				drops.add(Death.drop(nemesisEntity,

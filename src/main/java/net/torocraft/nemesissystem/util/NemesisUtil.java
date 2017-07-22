@@ -130,7 +130,7 @@ public class NemesisUtil {
 	public static List<EntityCreature> findNemesisBodyGuards(World world, UUID id, BlockPos position) {
 		int distance = 100;
 
-		return world.getEntitiesWithinAABB(EntityCreature.class, new AxisAlignedBB(position).grow(distance, distance, distance),
+		return world.getEntitiesWithinAABB(EntityCreature.class, nearByBox(position, distance),
 				(EntityCreature searchEntity) -> isBodyGuard(searchEntity, id)
 		);
 	}
@@ -138,7 +138,7 @@ public class NemesisUtil {
 	public static EntityLiving findNemesisAround(World world, UUID id, BlockPos position) {
 		int distance = 50;
 
-		List<EntityLiving> entities = world.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(position).grow(distance, distance, distance),
+		List<EntityLiving> entities = world.getEntitiesWithinAABB(EntityLiving.class, nearByBox(position, distance),
 				(EntityLiving searchEntity) -> isNemesis(searchEntity, id)
 		);
 
@@ -150,7 +150,11 @@ public class NemesisUtil {
 	}
 
 	public static List<EntityPlayer> findPlayersAround(World world, BlockPos position, int distance) {
-		return world.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(position).grow(distance, distance, distance));
+		return world.getEntitiesWithinAABB(EntityPlayer.class, nearByBox(position, distance));
+	}
+
+	public static AxisAlignedBB nearByBox(BlockPos position, int radius) {
+		return new AxisAlignedBB(position).grow(radius, radius, radius);
 	}
 
 	public static Nemesis loadNemesisFromEntity(Entity nemesisEntity) {

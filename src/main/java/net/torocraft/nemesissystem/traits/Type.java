@@ -15,6 +15,7 @@ public enum Type {
 	TELEPORT(Affect.STRENGTH, 1),
 	HEAL(Affect.STRENGTH, 1),
 	FIREBALL(Affect.STRENGTH, 4),
+	INFERNO(Affect.STRENGTH, 4),
 
 	/*
 	 * weaknesses

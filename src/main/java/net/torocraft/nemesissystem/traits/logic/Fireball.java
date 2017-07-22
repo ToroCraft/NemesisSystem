@@ -14,7 +14,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.torocraft.nemesissystem.registry.Nemesis;
 
-public class Fire {
+public class Fireball {
 
 	public static void onUpdate(EntityLiving entity, int level) {
 		World world = entity.world;
