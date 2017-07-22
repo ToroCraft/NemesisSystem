@@ -7,26 +7,26 @@ public enum Type {
 	/*
 	 * attacks
 	 */
-	DOUBLE_MELEE(Affect.STRENGTH),
-	ARROW(Affect.STRENGTH),
-	SUMMON(Affect.STRENGTH),
-	REFLECT(Affect.STRENGTH),
-	POTION(Affect.STRENGTH),
-	TELEPORT(Affect.STRENGTH),
-	HEAL(Affect.STRENGTH),
-	FIRE(Affect.STRENGTH),
+	DOUBLE_MELEE(Affect.STRENGTH, 1),
+	ARROW(Affect.STRENGTH, 1),
+	SUMMON(Affect.STRENGTH, 1),
+	REFLECT(Affect.STRENGTH, 1),
+	POTION(Affect.STRENGTH, 1),
+	TELEPORT(Affect.STRENGTH, 1),
+	HEAL(Affect.STRENGTH, 1),
+	FIRE(Affect.STRENGTH, 1),
 
 	/*
 	 * weaknesses
 	 */
-	HYDROPHOBIA(Affect.WEAKNESS),
-	PYROPHOBIA(Affect.WEAKNESS),
-	WOOD_ALLERGY(Affect.WEAKNESS),
-	GOLD_ALLERGY(Affect.WEAKNESS),
-	STONE_ALLERGY(Affect.WEAKNESS),
-	GREEDY(Affect.WEAKNESS),
-	GLUTTONY(Affect.WEAKNESS),
-	CHICKEN(Affect.WEAKNESS);
+	HYDROPHOBIA(Affect.WEAKNESS, 1),
+	PYROPHOBIA(Affect.WEAKNESS, 1),
+	WOOD_ALLERGY(Affect.WEAKNESS, 8),
+	GOLD_ALLERGY(Affect.WEAKNESS, 4),
+	STONE_ALLERGY(Affect.WEAKNESS, 5),
+	GREEDY(Affect.WEAKNESS, 1),
+	GLUTTONY(Affect.WEAKNESS, 1),
+	CHICKEN(Affect.WEAKNESS, 1);
 
 	//TODO  AMOROUS, DANCE, PLASMOPHOBIA, ICHTHYOPHOBIA, ANIMAL_LOVER
 
@@ -42,11 +42,13 @@ public enum Type {
 		return Arrays.stream(Type.values()).filter((Type t) -> t.getAffect().equals(affect)).toArray(Type[]::new);
 	}
 
-	Type(Affect affect) {
+	Type(Affect affect, int maxLevel) {
 		this.affect = affect;
+		this.maxLevel = maxLevel;
 	}
 
 	private final Affect affect;
+	private final int maxLevel;
 
 	public Affect getAffect() {
 		return affect;

@@ -6,8 +6,6 @@ import net.torocraft.nemesissystem.util.nbt.NbtField;
 
 public class Trait {
 
-
-
 	public static Random rand = new Random();
 
 	@NbtField
