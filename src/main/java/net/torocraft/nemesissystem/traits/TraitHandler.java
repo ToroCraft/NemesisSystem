@@ -14,6 +14,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.torocraft.nemesissystem.handlers.Death;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.traits.logic.Allergy;
+import net.torocraft.nemesissystem.traits.logic.Archer;
 import net.torocraft.nemesissystem.traits.logic.Chicken;
 import net.torocraft.nemesissystem.traits.logic.Fire;
 import net.torocraft.nemesissystem.traits.logic.Gluttony;
@@ -53,7 +54,7 @@ public class TraitHandler {
 			// TODO Fire.handleHeatTraitUpdate(entity, nemesis, trait);
 			return;
 		case ARROW:
-			//Archer.handleArrowTraitUpdate(entity, nemesis, trait);
+			Archer.onUpdate(entity, trait.level);
 			return;
 		case SUMMON:
 			Summon.onUpdate(entity, nemesis);

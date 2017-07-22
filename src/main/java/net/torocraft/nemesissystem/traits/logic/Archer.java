@@ -8,12 +8,11 @@ import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.util.math.MathHelper;
-import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.traits.Trait;
 
 public class Archer {
 
-	public static void handleArrowTraitUpdate(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, int level) {
 		EntityLivingBase target = entity.getAttackTarget();
 
 		if (target == null) {
@@ -25,6 +24,10 @@ public class Archer {
 		}
 
 		attackWithArrow(entity, target);
+
+		for (int i = 0; i < level; i++) {
+			attackWithArrow(entity, target);
+		}
 	}
 
 	public static void attackWithArrow(EntityLiving archer, EntityLivingBase target) {
