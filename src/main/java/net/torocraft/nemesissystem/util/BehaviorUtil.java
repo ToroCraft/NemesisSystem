@@ -36,8 +36,8 @@ public class BehaviorUtil {
 		return entity.getNavigator().tryMoveToXYZ(randBlock.getX(), randBlock.getY(), randBlock.getZ(), speed);
 	}
 
-	public static BlockPos findRandomBlock(EntityCreature entity) {
-		return new BlockPos(RandomPositionGenerator.findRandomTarget(entity, 5, 4));
+	public static BlockPos findPanicDestination(EntityCreature entity, int level) {
+		return new BlockPos(RandomPositionGenerator.findRandomTarget(entity, 5 + (2 * level), 4));
 	}
 
 	public static boolean pickupItem(EntityLiving entity, List<EntityItem> desiredItems) {

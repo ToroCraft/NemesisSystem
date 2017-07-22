@@ -79,16 +79,16 @@ public class TraitHandler {
 			Greedy.onUpdate(entity, nemesis);
 			return;
 		case CHICKEN:
-			Chicken.onUpdate(entity, nemesis);
+			Chicken.onUpdate(entity, trait.level);
 			return;
 		case GLUTTONY:
 			Gluttony.onUpdate(entity, nemesis);
 			return;
 		case PYROPHOBIA:
-			Pyrophobia.onUpdate(entity, nemesis);
+			Pyrophobia.onUpdate(entity, trait.level);
 			return;
 		case HYDROPHOBIA:
-			Hydrophobia.onUpdate(entity, nemesis);
+			Hydrophobia.onUpdate(entity, trait.level);
 			return;
 		case GOLD_ALLERGY:
 			return;

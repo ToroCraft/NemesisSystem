@@ -20,14 +20,14 @@ public enum Type {
 	/*
 	 * weaknesses
 	 */
-	HYDROPHOBIA(Affect.WEAKNESS, 1),
-	PYROPHOBIA(Affect.WEAKNESS, 1),
+	HYDROPHOBIA(Affect.WEAKNESS, 4),
+	PYROPHOBIA(Affect.WEAKNESS, 4),
 	WOOD_ALLERGY(Affect.WEAKNESS, 8),
 	GOLD_ALLERGY(Affect.WEAKNESS, 4),
 	STONE_ALLERGY(Affect.WEAKNESS, 5),
 	GREEDY(Affect.WEAKNESS, 1),
 	GLUTTONY(Affect.WEAKNESS, 1),
-	CHICKEN(Affect.WEAKNESS, 1);
+	CHICKEN(Affect.WEAKNESS, 4);
 
 	//TODO  AMOROUS, DANCE, PLASMOPHOBIA, ICHTHYOPHOBIA, ANIMAL_LOVER
 
@@ -61,5 +61,9 @@ public enum Type {
 
 	public static boolean isWeakness(Type type) {
 		return Affect.WEAKNESS.equals(type.affect);
+	}
+
+	public int getMaxLevel() {
+		return maxLevel;
 	}
 }

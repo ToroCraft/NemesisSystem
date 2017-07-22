@@ -1,22 +1,22 @@
 package net.torocraft.nemesissystem.traits.logic;
 
-import java.util.List;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.passive.EntityChicken;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
+import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class Chicken {
 
-	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
-		List<EntityChicken> nearbyChickens = entity.world.getEntitiesWithinAABB(EntityChicken.class,
-				new AxisAlignedBB(entity.getPosition()).grow(5, 5, 5));
-
-		if (nearbyChickens.size() > 0) {
-			BehaviorUtil.moveToBlock(entity, BehaviorUtil.findRandomBlock((EntityCreature)entity), 2.0D);
+	public static void onUpdate(EntityLiving entity, int level) {
+		if (chickensNearby(entity)) {
+			entity.setAttackTarget(null);
+			BehaviorUtil.moveToBlock(entity, BehaviorUtil.findPanicDestination((EntityCreature) entity, level), 2.0D);
 		}
+	}
+
+	private static boolean chickensNearby(EntityLiving entity) {
+		return entity.world.getEntitiesWithinAABB(EntityChicken.class, NemesisUtil.nearByBox(entity.getPosition(), 5)).size() > 0;
 	}
 
 }

@@ -11,14 +11,19 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 
 public class Pyrophobia {
-	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, int level) {
 		if (entity.isBurning()) {
-			BlockPos targetPos = findNearbyWater(entity.world, entity, 5, 4);
-			if (targetPos == null) {
-				targetPos = BehaviorUtil.findRandomBlock((EntityCreature)entity);
-			}
-			BehaviorUtil.moveToBlock(entity, targetPos, 2.0D);
+			entity.setAttackTarget(null);
+			BehaviorUtil.moveToBlock(entity, panicTo(entity, level), 2.0D);
 		}
+	}
+
+	private static BlockPos panicTo(EntityLiving entity, int level) {
+		BlockPos targetPos = findNearbyWater(entity.world, entity, 5, 4);
+		if (targetPos == null) {
+			targetPos = BehaviorUtil.findPanicDestination((EntityCreature)entity, level);
+		}
+		return targetPos;
 	}
 
 	private static BlockPos findNearbyWater(World worldIn, Entity entityIn, int horizontalRange, int verticalRange) {
