@@ -154,7 +154,7 @@ public class TraitHandler {
 			case GOLD_ALLERGY:
 			case STONE_ALLERGY:
 			case WOOD_ALLERGY:
-				Allergy.onHurt(event, nemesis);
+				Allergy.onHurt(event, nemesis, trait.level);
 			}
 		}
 

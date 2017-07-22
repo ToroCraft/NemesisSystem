@@ -11,10 +11,8 @@ public enum Type {
 	ARROW(Affect.STRENGTH),
 	SUMMON(Affect.STRENGTH),
 	REFLECT(Affect.STRENGTH),
-	//HEAT(Affect.STRENGTH),
 	POTION(Affect.STRENGTH),
 	TELEPORT(Affect.STRENGTH),
-	//FIREBALL(Affect.STRENGTH),
 	HEAL(Affect.STRENGTH),
 	FIRE(Affect.STRENGTH),
 
