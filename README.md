@@ -10,3 +10,8 @@ cd NemesisSystem
 gradle setupDecompWorkspace
 gradle idea
 ```
+
+To create run targets:
+```
+gradle genIntellijRuns
+```
