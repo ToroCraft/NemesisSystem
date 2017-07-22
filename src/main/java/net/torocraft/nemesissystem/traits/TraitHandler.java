@@ -51,8 +51,8 @@ public class TraitHandler {
 		case DOUBLE_MELEE:
 			// TODO make the nemesis hit twice when attacking
 			return;
-		case FIRE:
-			Fire.onUpdate(entity, nemesis);
+		case FIREBALL:
+			Fire.onUpdate(entity, trait.level);
 			// TODO Fire.handleHeatTraitUpdate(entity, nemesis, trait);
 			return;
 		case ARCHER:
@@ -110,7 +110,7 @@ public class TraitHandler {
 				break;
 			case REFLECT:
 				break;
-			case FIRE:
+			case FIREBALL:
 				drops.add(Death.drop(nemesisEntity, new ItemStack(Blocks.TORCH, rand.nextInt(64))));
 				if (rand.nextInt(5) == 0) {
 					drops.add(Death.drop(nemesisEntity, new ItemStack(Items.LAVA_BUCKET)));
@@ -146,7 +146,7 @@ public class TraitHandler {
 			case REFLECT:
 				Reflection.onHurt(nemesisEntity, nemesis, event.getSource(), event.getAmount());
 				break;
-			case FIRE:
+			case FIREBALL:
 				break;
 			case POTION:
 				break;

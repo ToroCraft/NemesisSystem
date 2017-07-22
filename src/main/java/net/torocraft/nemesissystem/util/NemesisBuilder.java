@@ -134,7 +134,7 @@ public class NemesisBuilder {
 	private static void setOffhandItem(Nemesis nemesis) {
 		ItemStack offhand;
 		switch (nemesis.getTraits().get(0).type) {
-		case FIRE:
+		case FIREBALL:
 			offhand = new ItemStack(Items.LAVA_BUCKET);
 			break;
 		case ARCHER:
