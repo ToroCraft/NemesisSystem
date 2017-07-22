@@ -7,7 +7,7 @@ import net.torocraft.nemesissystem.util.BehaviorUtil;
 
 public class Hydrophobia {
 
-	public static void handleHydrophobiaBehavior(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
 		if (entity.isWet()) {
 			BehaviorUtil.moveToBlock(entity, BehaviorUtil.findRandomBlock((EntityCreature)entity), 2.0D);
 		}

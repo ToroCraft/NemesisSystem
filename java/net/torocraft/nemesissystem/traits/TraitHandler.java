@@ -49,40 +49,40 @@ public class TraitHandler {
 			// TODO make the nemesis hit twice when attacking
 			return;
 		case FIRE:
-			Fire.handleFireballTraitUpdate(entity, nemesis);
+			Fire.onUpdate(entity, nemesis);
 			// TODO Fire.handleHeatTraitUpdate(entity, nemesis, trait);
 			return;
 		case ARROW:
 			//Archer.handleArrowTraitUpdate(entity, nemesis, trait);
 			return;
 		case SUMMON:
-			Summon.handleSummonTraitUpdate(entity, nemesis);
+			Summon.onUpdate(entity, nemesis);
 			return;
 		case REFLECT:
 			return;
 		case POTION:
-			Potion.handlePotionTraitUpdate(entity, nemesis);
+			Potion.onUpdate(entity, nemesis);
 			return;
 		case TELEPORT:
-			Teleport.handleTeleportTraitUpdate(entity, nemesis);
+			Teleport.onUpdate(entity, nemesis);
 			return;
 		case HEAL:
-			Heal.handleHealTraitUpdate(entity, nemesis);
+			Heal.onUpdate(entity, nemesis);
 			return;
 		case GREEDY:
-			Greedy.handleGreedyBehavior(entity, nemesis);
+			Greedy.onUpdate(entity, nemesis);
 			return;
 		case CHICKEN:
-			Chicken.handleChickenBehavior(entity, nemesis);
+			Chicken.onUpdate(entity, nemesis);
 			return;
 		case GLUTTONY:
-			Gluttony.handleGluttonyBehavior(entity, nemesis);
+			Gluttony.onUpdate(entity, nemesis);
 			return;
 		case PYROPHOBIA:
-			Pyrophobia.handlePyrophobiaBehavior(entity, nemesis);
+			Pyrophobia.onUpdate(entity, nemesis);
 			return;
 		case HYDROPHOBIA:
-			Hydrophobia.handleHydrophobiaBehavior(entity, nemesis);
+			Hydrophobia.onUpdate(entity, nemesis);
 			return;
 		case GOLD_ALLERGY:
 			return;
@@ -126,7 +126,7 @@ public class TraitHandler {
 		}
 	}
 
-	public static void onDefend(LivingHurtEvent event) {
+	public static void onHurt(LivingHurtEvent event) {
 		EntityCreature nemesisEntity = (EntityCreature) event.getEntity();
 		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(nemesisEntity);
 		if (nemesis == null) {
@@ -141,7 +141,7 @@ public class TraitHandler {
 			case SUMMON:
 				break;
 			case REFLECT:
-				Reflection.reflectDamage(nemesisEntity, nemesis, event.getSource(), event.getAmount());
+				Reflection.onHurt(nemesisEntity, nemesis, event.getSource(), event.getAmount());
 				break;
 			case FIRE:
 				break;
@@ -154,7 +154,7 @@ public class TraitHandler {
 			case GOLD_ALLERGY:
 			case STONE_ALLERGY:
 			case WOOD_ALLERGY:
-				Allergy.handleAllergy(event, nemesis);
+				Allergy.onHurt(event, nemesis);
 			}
 		}
 

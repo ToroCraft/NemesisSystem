@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 import net.torocraft.nemesissystem.registry.Nemesis;
 
 public class Potion {
-	public static void handlePotionTraitUpdate(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
 		World world = entity.world;
 		Random rand = entity.getRNG();
 

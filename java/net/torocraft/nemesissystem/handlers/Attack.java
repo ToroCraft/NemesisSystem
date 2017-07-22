@@ -15,9 +15,8 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.Nemesis;
-import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.TraitHandler;
-import net.torocraft.nemesissystem.traits.logic.Allergy;
+import net.torocraft.nemesissystem.traits.Type;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
@@ -39,7 +38,7 @@ public class Attack {
 		}
 
 		if (event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
-			TraitHandler.onDefend(event);
+			TraitHandler.onHurt(event);
 			orderGuardsToAttackAggressor((EntityCreature) event.getEntity(), event.getSource().getTrueSource());
 		}
 	}
@@ -57,7 +56,7 @@ public class Attack {
 			return;
 		}
 
-		if (!nemesis.getTraits().contains(Trait.Type.TELEPORT)) {
+		if (!nemesis.hasTrait(Type.TELEPORT)) {
 			return;
 		}
 

@@ -8,7 +8,7 @@ import net.torocraft.nemesissystem.util.NemesisActions;
 
 public class Teleport {
 
-	public static void handleTeleportTraitUpdate(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
 		World world = entity.world;
 
 		if (world.getTotalWorldTime() % 40 != 0) {

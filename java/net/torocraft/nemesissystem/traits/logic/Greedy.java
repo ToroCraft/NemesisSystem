@@ -11,7 +11,7 @@ import net.torocraft.nemesissystem.util.BehaviorUtil;
 public class Greedy {
 	public static final String NBT_COOLDOWN = "nemesissystem_cooldown";
 
-	public static void handleGreedyBehavior(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
 		if (BehaviorUtil.isWorshiping(entity)) {
 			if (entity.getEntityData().getInteger(NBT_COOLDOWN) >= 0) {
 				return;

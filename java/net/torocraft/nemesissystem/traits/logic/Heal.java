@@ -13,7 +13,7 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class Heal {
-	public static void handleHealTraitUpdate(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
 		World world = entity.world;
 		Random rand = entity.getRNG();
 

@@ -12,7 +12,7 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 
 public class Reflection {
 
-	public static void reflectDamage(EntityCreature nemesisEntity, Nemesis nemesis, DamageSource source, float amount) {
+	public static void onHurt(EntityCreature nemesisEntity, Nemesis nemesis, DamageSource source, float amount) {
 		if (nemesisEntity.isEntityInvulnerable(source)) {
 			return;
 		}

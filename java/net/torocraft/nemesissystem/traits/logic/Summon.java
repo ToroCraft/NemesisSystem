@@ -15,7 +15,7 @@ import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.Nemesis;
 
 public class Summon {
-	public static void handleSummonTraitUpdate(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
 		World world = entity.world;
 		Random rand = entity.getRNG();
 

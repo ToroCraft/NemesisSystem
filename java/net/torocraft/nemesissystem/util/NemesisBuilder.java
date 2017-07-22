@@ -12,6 +12,7 @@ import net.minecraft.world.World;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.traits.Trait;
+import net.torocraft.nemesissystem.traits.Type;
 
 public class NemesisBuilder {
 
@@ -75,13 +76,13 @@ public class NemesisBuilder {
 		/*
 		 * add a strength
 		 */
-		nemesis.getTraits().add(new Trait(Trait.STRENGTHS[rand.nextInt(Trait.STRENGTHS.length)], 1));
+		nemesis.getTraits().add(new Trait(Type.STRENGTHS[rand.nextInt(Type.STRENGTHS.length)], 1));
 		//nemesis.getTraits().add(Trait.TELEPORT);
 
 		/*
 		 * add a weakness
 		 */
-		nemesis.getTraits().add(new Trait(Trait.WEAKNESSES[rand.nextInt(Trait.WEAKNESSES.length)], 1));
+		nemesis.getTraits().add(new Trait(Type.WEAKNESSES[rand.nextInt(Type.WEAKNESSES.length)], 1));
 		//nemesis.getWeaknesses().add(Weakness.GREEDY);
 
 		nemesis.getHandInventory().set(0, new ItemStack(MELEE_WEAPONS[rand.nextInt(MELEE_WEAPONS.length)]));

@@ -10,7 +10,7 @@ import net.torocraft.nemesissystem.util.BehaviorUtil;
 
 public class Chicken {
 
-	public static void handleChickenBehavior(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
 		List<EntityChicken> nearbyChickens = entity.world.getEntitiesWithinAABB(EntityChicken.class,
 				new AxisAlignedBB(entity.getPosition()).grow(5, 5, 5));
 

@@ -9,7 +9,7 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 
 public class Gluttony {
-	public static void handleGluttonyBehavior(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
 		if (BehaviorUtil.isWorshiping(entity)) {
 			if (entity.getEntityData().getInteger(Greedy.NBT_COOLDOWN) >= 0) {
 				return;

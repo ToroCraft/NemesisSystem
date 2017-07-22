@@ -13,11 +13,12 @@ import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.traits.Trait;
+import net.torocraft.nemesissystem.traits.Type;
 
 public class Allergy {
 	private static final int ONE_SECOND = 20;
 
-	public static void handleAllergy(LivingHurtEvent event, Nemesis nemesis) {
+	public static void onHurt(LivingHurtEvent event, Nemesis nemesis) {
 		EntityLiving entity = (EntityLiving) event.getEntity();
 		Entity trueSource = event.getSource().getTrueSource();
 		if (!(trueSource instanceof EntityPlayer)) {
@@ -51,18 +52,18 @@ public class Allergy {
 	}
 
 	private static boolean stoneAllergyApplies(Nemesis nemesis, String material) {
-		return hasWeakness(nemesis, Trait.Type.STONE_ALLERGY) && material.equals("STONE");
+		return hasWeakness(nemesis, Type.STONE_ALLERGY) && material.equals("STONE");
 	}
 
 	private static boolean goldAllergyApplies(Nemesis nemesis, String material) {
-		return hasWeakness(nemesis, Trait.Type.GOLD_ALLERGY) && material.equals("GOLD");
+		return hasWeakness(nemesis, Type.GOLD_ALLERGY) && material.equals("GOLD");
 	}
 
 	private static boolean woodAllergyApplies(Nemesis nemesis, String material) {
-		return hasWeakness(nemesis, Trait.Type.WOOD_ALLERGY) && material.equals("WOOD");
+		return hasWeakness(nemesis, Type.WOOD_ALLERGY) && material.equals("WOOD");
 	}
 
-	private static boolean hasWeakness(Nemesis nemesis, Trait.Type weakness) {
+	private static boolean hasWeakness(Nemesis nemesis, Type weakness) {
 		for (Trait t : nemesis.getWeaknesses()) {
 			if (t.type.equals(weakness)) {
 				return true;

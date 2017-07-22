@@ -11,7 +11,7 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 
 public class Pyrophobia {
-	public static void handlePyrophobiaBehavior(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
 		if (entity.isBurning()) {
 			BlockPos targetPos = findNearbyWater(entity.world, entity, 5, 4);
 			if (targetPos == null) {
