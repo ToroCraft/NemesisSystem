@@ -20,6 +20,7 @@ gradle/
 gradlew
 gradlew.bat
 classes/
+logs/
 
 # other
 eclipse
