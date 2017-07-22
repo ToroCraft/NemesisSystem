@@ -137,7 +137,7 @@ public class NemesisBuilder {
 		case FIRE:
 			offhand = new ItemStack(Items.LAVA_BUCKET);
 			break;
-		case ARROW:
+		case ARCHER:
 			offhand = new ItemStack(Items.BOW);
 			break;
 		case POTION:

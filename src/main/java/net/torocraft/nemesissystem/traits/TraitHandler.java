@@ -32,6 +32,8 @@ public class TraitHandler {
 
 	public static final String TAG_WORSHIPING = "nemesissystem_worshiping";
 
+	public static final Random rand = new Random();
+
 	public static void onUpdate(Nemesis nemesis, EntityLiving nemesisEntity) {
 		// caching to an array to avoid: java.util.ArrayList$Itr.checkForComodification
 		//Nemesis.Trait[] traits = nemesis.getTraits().toArray(new Nemesis.Trait[0]);
@@ -53,7 +55,7 @@ public class TraitHandler {
 			Fire.onUpdate(entity, nemesis);
 			// TODO Fire.handleHeatTraitUpdate(entity, nemesis, trait);
 			return;
-		case ARROW:
+		case ARCHER:
 			Archer.onUpdate(entity, trait.level);
 			return;
 		case SUMMON:
@@ -101,8 +103,8 @@ public class TraitHandler {
 			case DOUBLE_MELEE:
 
 				break;
-			case ARROW:
-				drops.add(Death.drop(nemesisEntity, new ItemStack(Items.ARROW, rand.nextInt(64))));
+			case ARCHER:
+				Archer.onDrop(drops, nemesisEntity, trait.level);
 				break;
 			case SUMMON:
 				break;
@@ -137,7 +139,7 @@ public class TraitHandler {
 			switch (trait.type) {
 			case DOUBLE_MELEE:
 				break;
-			case ARROW:
+			case ARCHER:
 				break;
 			case SUMMON:
 				break;

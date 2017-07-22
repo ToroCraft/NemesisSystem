@@ -55,7 +55,7 @@ public class Reflection {
 			}
 
 			for (int i = 0; i < arrowCount; i++) {
-				Archer.attackWithArrow(nemesisEntity, (EntityLivingBase) source.getTrueSource());
+				Archer.attackWithArrow(nemesisEntity, (EntityLivingBase) source.getTrueSource(), 1);
 			}
 		}
 		if (source.getImmediateSource() != null) {

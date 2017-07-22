@@ -1,7 +1,5 @@
 package net.torocraft.nemesissystem.util.nbt;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
@@ -71,7 +69,7 @@ public class NbtSerializerTest {
 		n.setZ(15);
 		n.setTitle("test");
 		n.setId(UUID.randomUUID());
-		n.setTraits(Arrays.asList(new Trait(Type.ARROW, 2), new Trait(Type.DOUBLE_MELEE, 10)));
+		n.setTraits(Arrays.asList(new Trait(Type.ARCHER, 2), new Trait(Type.DOUBLE_MELEE, 10)));
 		n.setHistory(new ArrayList<>());
 		n.getHistory().add(LogEntry.DUEL_WIN("loser"));
 		n.getHistory().get(0).setDate(1001);
@@ -91,7 +89,7 @@ public class NbtSerializerTest {
 		Assert.assertEquals(n.getTitle(), n2.getTitle());
 		Assert.assertEquals(n.getId(), n2.getId());
 		Assert.assertEquals(2, n2.getTraits().size());
-		Assert.assertEquals(Type.ARROW, n2.getTraits().get(0).type);
+		Assert.assertEquals(Type.ARCHER, n2.getTraits().get(0).type);
 		Assert.assertEquals(Type.DOUBLE_MELEE, n2.getTraits().get(1).type);
 
 		Assert.assertEquals(2, n2.getTraits().get(0).level);
