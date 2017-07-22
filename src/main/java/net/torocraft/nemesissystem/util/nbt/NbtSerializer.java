@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagByte;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
@@ -92,6 +93,11 @@ public class NbtSerializer {
 		case "java.lang.Long":
 		case "long":
 			return new NBTTagLong((Long) value);
+
+		case "java.lang.Boolean":
+		case "boolean":
+			return new NBTTagByte((byte) (((Boolean) value) ? 1 : 0));
+
 		case "java.lang.Integer":
 		case "int":
 			return new NBTTagInt((Integer) value);
@@ -150,6 +156,8 @@ public class NbtSerializer {
 			return ((NBTTagInt) value).getInt();
 		case "net.minecraft.nbt.NBTTagLong":
 			return ((NBTTagLong) value).getLong();
+		case "net.minecraft.nbt.NBTTagByte":
+			return ((NBTTagByte) value).getByte() != 0;
 		case "net.minecraft.nbt.NBTTagString":
 			String s = ((NBTTagString) value).getString();
 			if (type.getTypeName().equals("java.util.UUID")) {
