@@ -21,6 +21,7 @@ import net.torocraft.nemesissystem.network.MessageOpenNemesisGuiRequest;
 import net.torocraft.nemesissystem.network.MessageReflectDamageAnimation;
 import net.torocraft.nemesissystem.network.MessageSyncNemesis;
 import net.torocraft.nemesissystem.network.MessageSyncNemesisRequest;
+import net.torocraft.nemesissystem.network.MessageWorshipAnimation;
 
 public class CommonProxy {
 
@@ -58,6 +59,7 @@ public class CommonProxy {
 		MessageSyncNemesis.init(packetId++);
 		MessageSyncNemesisRequest.init(packetId++);
 		MessageReflectDamageAnimation.init(packetId++);
+		MessageWorshipAnimation.init(packetId++);
 	}
 
 }

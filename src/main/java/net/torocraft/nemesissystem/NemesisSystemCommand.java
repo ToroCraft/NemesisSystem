@@ -169,7 +169,9 @@ public class NemesisSystemCommand extends CommandBase {
 		//nemesis.getTraits().add(new Trait(Type.WOOD_ALLERGY, 5));
 		//nemesis.getTraits().add(new Trait(Type.ARCHER, 4));
 		//nemesis.getTraits().add(new Trait(Type.FIREBALL, 4));
-		nemesis.getTraits().add(new Trait(Type.GLUTTONY, 4));
+		nemesis.getTraits().add(new Trait(Type.GLUTTONY, 1));
+		nemesis.getTraits().add(new Trait(Type.GREEDY, 1));
+		nemesis.getTraits().add(new Trait(Type.CHICKEN, 1));
 
 
 

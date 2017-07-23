@@ -7,7 +7,9 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
+import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.network.MessageWorshipAnimation;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.NemesisUtil;
@@ -20,6 +22,8 @@ public class Gluttony {
 	public static void onUpdate(EntityCreature entity, Nemesis nemesis, int level) {
 		if (BehaviorUtil.isWorshiping(entity)) {
 			if (entity.getEntityData().getInteger(NemesisSystem.NBT_WORSHIP_COOLDOWN) >= 0) {
+				TargetPoint point = new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 100);
+				NemesisSystem.NETWORK.sendToAllAround(new MessageWorshipAnimation(entity.getEntityId()), point);
 				return;
 			}
 			BehaviorUtil.stopWorshiping(entity, nemesis);

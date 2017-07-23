@@ -76,6 +76,7 @@ public class BehaviorUtil {
 	}
 
 	public static void cancelAllAITasks(EntityLiving entity) {
+		//TODO replace this by inserting an overriding AI task so that the entity is not "frozen" in place when this is activated
 		entity.setNoAI(true);
 	}
 
