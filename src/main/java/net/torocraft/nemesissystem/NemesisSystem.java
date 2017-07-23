@@ -24,6 +24,7 @@ public class NemesisSystem {
 	public static final String TAG_BODY_GUARD = "nemesis_body_guard";
 	public static final String TAG_SPAWNING = "nemesis_is_spawning";
 	public static final String TAG_SUMMONED_MOB = "nemesis_summoned_mob";
+	public static final String NBT_WORSHIP_COOLDOWN = "nemesissystem_cooldown";
 
 	@Mod.Instance(MODID)
 	public static NemesisSystem INSTANCE;

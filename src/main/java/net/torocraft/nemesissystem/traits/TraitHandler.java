@@ -35,7 +35,7 @@ public class TraitHandler {
 
 	public static final Random rand = new Random();
 
-	public static void onUpdate(Nemesis nemesis, EntityLiving nemesisEntity) {
+	public static void onUpdate(Nemesis nemesis, EntityCreature nemesisEntity) {
 		// caching to an array to avoid: java.util.ArrayList$Itr.checkForComodification
 		//Nemesis.Trait[] traits = nemesis.getTraits().toArray(new Nemesis.Trait[0]);
 		Greedy.decrementCooldown(nemesis, nemesisEntity);
@@ -47,7 +47,7 @@ public class TraitHandler {
 		}
 	}
 
-	private static void onUpdate(EntityLiving entity, Nemesis nemesis, Trait trait) {
+	private static void onUpdate(EntityCreature entity, Nemesis nemesis, Trait trait) {
 		switch (trait.type) {
 		case DOUBLE_MELEE:
 			// TODO make the nemesis hit twice when attacking
@@ -76,13 +76,13 @@ public class TraitHandler {
 			Heal.onUpdate(entity, nemesis);
 			return;
 		case GREEDY:
-			Greedy.onUpdate(entity, nemesis);
+			Greedy.onUpdate(entity, nemesis, trait.level);
 			return;
 		case CHICKEN:
 			Chicken.onUpdate(entity, trait.level);
 			return;
 		case GLUTTONY:
-			Gluttony.onUpdate(entity, nemesis);
+			Gluttony.onUpdate(entity, nemesis, trait.level);
 			return;
 		case PYROPHOBIA:
 			Pyrophobia.onUpdate(entity, trait.level);

@@ -1,48 +1,58 @@
 package net.torocraft.nemesissystem.traits.logic;
 
+import java.util.Arrays;
 import java.util.List;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Items;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.item.Item;
+import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
+import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class Gluttony {
-	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
+
+	private static final Item[] TASTY_THINGS = { Items.BEEF, Items.CHICKEN, Items.MUTTON, Items.PORKCHOP, Items.RABBIT,
+			Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_MUTTON, Items.COOKED_PORKCHOP, Items.COOKED_RABBIT };
+
+	public static void onUpdate(EntityCreature entity, Nemesis nemesis, int level) {
 		if (BehaviorUtil.isWorshiping(entity)) {
-			if (entity.getEntityData().getInteger(Greedy.NBT_COOLDOWN) >= 0) {
+			if (entity.getEntityData().getInteger(NemesisSystem.NBT_WORSHIP_COOLDOWN) >= 0) {
 				return;
 			}
 			BehaviorUtil.stopWorshiping(entity, nemesis);
 		}
 
-		if (BehaviorUtil.pickupItem(entity, getFoodWithinAABB(entity, 1.0D, 0.0D, 1.0D))) {
+		if (BehaviorUtil.stealAndWorshipItem(entity, getFoodWithinAABB(entity, 1), level)) {
 			return;
 		}
+		searchForTastyTreats(entity);
+	}
 
-		int distractDistance = 20;
-		EntityItem food = getVisibleItem(entity, getFoodWithinAABB(entity, distractDistance, distractDistance, distractDistance));
+	private static void searchForTastyTreats(EntityCreature entity) {
+		EntityItem food = lookForANearByTreat(entity);
 		if (food != null) {
+			entity.setAttackTarget(null);
 			BehaviorUtil.moveToItem(entity, food);
 		}
 	}
 
-	private static List<EntityItem> getFoodWithinAABB(EntityLiving entity, double x, double y, double z) {
-		return entity.world.getEntitiesWithinAABB(EntityItem.class, new AxisAlignedBB(entity.getPosition()).grow(x, y, z),
-				item -> item.getItem().getItem().equals(Items.BEEF) || item.getItem().getItem().equals(Items.CHICKEN) ||
-						item.getItem().getItem().equals(Items.MUTTON) || item.getItem().getItem().equals(Items.PORKCHOP) ||
-						item.getItem().getItem().equals(Items.RABBIT));
+	private static EntityItem lookForANearByTreat(EntityCreature entity) {
+		return getFoodWithinAABB(entity, 20)
+				.stream()
+				.filter(e -> BehaviorUtil.canSee(entity, e))
+				.findFirst().orElse(null);
 	}
 
-	public static EntityItem getVisibleItem(EntityLiving entity, List<EntityItem> desiredItems) {
-		for (EntityItem item : desiredItems) {
-			if (entity.getEntitySenses().canSee(item)) {
-				return item;
-			}
-		}
+	private static List<EntityItem> getFoodWithinAABB(EntityLiving entity, int distance) {
+		return entity.world.getEntitiesWithinAABB(EntityItem.class, NemesisUtil.nearByBox(entity.getPosition(), distance),
+				Gluttony::isTasty);
+	}
 
-		return null;
+	private static boolean isTasty(EntityItem item) {
+		return Arrays.stream(TASTY_THINGS).anyMatch(x -> x == item.getItem().getItem());
 	}
 
 }

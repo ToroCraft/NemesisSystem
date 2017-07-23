@@ -169,7 +169,8 @@ public class NemesisSystemCommand extends CommandBase {
 		//nemesis.getTraits().add(new Trait(Type.WOOD_ALLERGY, 5));
 		//nemesis.getTraits().add(new Trait(Type.ARCHER, 4));
 		//nemesis.getTraits().add(new Trait(Type.FIREBALL, 4));
-		//nemesis.getTraits().add(new Trait(Type.PYROPHOBIA, 4));
+		nemesis.getTraits().add(new Trait(Type.GLUTTONY, 4));
+
 
 
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);

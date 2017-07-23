@@ -83,16 +83,10 @@ public class Update {
 
 	private void handleNemesisUpdate(LivingUpdateEvent event) {
 		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
-
-		if (nemesis == null) {
+		if (nemesis == null || !(event.getEntity() instanceof EntityCreature)) {
 			return;
 		}
-
-		EntityLiving entity = (EntityLiving) event.getEntity();
-
-		// TODO look for closer target
-
-		TraitHandler.onUpdate(nemesis, entity);
+		TraitHandler.onUpdate(nemesis, (EntityCreature) event.getEntity());
 	}
 
 }

@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.torocraft.nemesissystem.traits.TraitHandler;
+import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class Inferno {
@@ -45,12 +46,8 @@ public class Inferno {
 
 	private static List<EntityPlayer> getVisiblePlayers(EntityCreature entity, World world, int distance) {
 		return world.getEntitiesWithinAABB(EntityPlayer.class, NemesisUtil.nearByBox(entity.getPosition(), distance),
-				(EntityPlayer p) -> canSee(entity, p)
+				(EntityPlayer p) -> BehaviorUtil.canSee(entity, p)
 		);
-	}
-
-	private static boolean canSee(EntityCreature spectator, Entity subject) {
-		return spectator.getEntitySenses().canSee(subject);
 	}
 
 }
