@@ -26,6 +26,9 @@ import net.torocraft.nemesissystem.traits.Type;
 public class NemesisActions {
 
 	public static void promote(World world, Nemesis nemesis) {
+		if (nemesis.getLevel() >= 10) {
+			return;
+		}
 		nemesis.setLevel(nemesis.getLevel() + 1);
 		NemesisUtil.enchantEquipment(nemesis);
 		if (shouldGainAdditionalTrait(nemesis)) {
@@ -39,7 +42,7 @@ public class NemesisActions {
 		nemesis.setLevel(nemesis.getLevel() - 1);
 		if (nemesis.getLevel() < 1) {
 			kill(world, nemesis, slayerName);
-		}else{
+		} else {
 			NemesisRegistryProvider.get(world).update(nemesis);
 			MinecraftForge.EVENT_BUS.post(new NemesisEvent.Demotion(nemesis, slayerName));
 		}
@@ -65,9 +68,11 @@ public class NemesisActions {
 	public static Nemesis createAndRegisterNemesis(EntityCreature entity, BlockPos nemesisLocation) {
 		boolean isChild = false;
 		if (entity instanceof EntityZombie) {
-			isChild = ((EntityZombie)entity).isChild();
+			isChild = entity.isChild();
 		}
-		Nemesis nemesis = NemesisBuilder.build(entity.getEntityWorld(), NemesisUtil.getEntityType(entity), isChild, entity.dimension, 1, nemesisLocation.getX(), nemesisLocation.getZ());
+		Nemesis nemesis = NemesisBuilder
+				.build(entity.getEntityWorld(), NemesisUtil.getEntityType(entity), isChild, entity.dimension, 1, nemesisLocation.getX(),
+						nemesisLocation.getZ());
 		NemesisRegistryProvider.get(entity.world).register(nemesis);
 		return nemesis;
 	}
@@ -150,27 +155,27 @@ public class NemesisActions {
 		createAndRegisterNemesis(entity, NemesisUtil.getRandomLocationAround(entity));
 	}
 
-    public static void throwPearl(EntityLiving entity, EntityLivingBase target) {
-        World world = entity.getEntityWorld();
-        EntityEnderPearl pearl = new EntityEnderPearl(world, entity);
+	public static void throwPearl(EntityLiving entity, EntityLivingBase target) {
+		World world = entity.getEntityWorld();
+		EntityEnderPearl pearl = new EntityEnderPearl(world, entity);
 
-        double dX = target.posX - entity.posX;
-        double dY = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - pearl.posY;
-        double dZ = target.posZ - entity.posZ;
+		double dX = target.posX - entity.posX;
+		double dY = target.getEntityBoundingBox().minY + (double) (target.height / 3.0F) - pearl.posY;
+		double dZ = target.posZ - entity.posZ;
 
-        double distanceSq = dX * dX + dY * dY + dZ * dZ;
+		double distanceSq = dX * dX + dY * dY + dZ * dZ;
 
-        if (distanceSq < 20) {
-            return;
-        }
+		if (distanceSq < 20) {
+			return;
+		}
 
-        double levelDistance = MathHelper.sqrt(dX * dX + dZ * dZ);
+		double levelDistance = MathHelper.sqrt(dX * dX + dZ * dZ);
 
-        pearl.setThrowableHeading(dX, dY + levelDistance * 0.20000000298023224D, dZ, 1.6F,
-                (float) (14 - world.getDifficulty().getDifficultyId() * 4));
+		pearl.setThrowableHeading(dX, dY + levelDistance * 0.20000000298023224D, dZ, 1.6F,
+				(float) (14 - world.getDifficulty().getDifficultyId() * 4));
 
-        entity.playSound(SoundEvents.ENTITY_ENDERPEARL_THROW, 1.0F, 1.0F / (world.rand.nextFloat() * 0.4F + 0.8F));
+		entity.playSound(SoundEvents.ENTITY_ENDERPEARL_THROW, 1.0F, 1.0F / (world.rand.nextFloat() * 0.4F + 0.8F));
 
-        world.spawnEntity(pearl);
-    }
+		world.spawnEntity(pearl);
+	}
 }
