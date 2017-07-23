@@ -16,8 +16,7 @@ import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class Gluttony {
 
-	private static final Item[] TASTY_THINGS = { Items.BEEF, Items.CHICKEN, Items.MUTTON, Items.PORKCHOP, Items.RABBIT,
-			Items.COOKED_BEEF, Items.COOKED_CHICKEN, Items.COOKED_MUTTON, Items.COOKED_PORKCHOP, Items.COOKED_RABBIT };
+	private static final Item[] TASTY_THINGS = { Items.BEEF, Items.CHICKEN, Items.MUTTON, Items.PORKCHOP, Items.RABBIT };
 
 	public static void onUpdate(EntityCreature entity, Nemesis nemesis, int level) {
 		if (BehaviorUtil.isWorshiping(entity)) {
