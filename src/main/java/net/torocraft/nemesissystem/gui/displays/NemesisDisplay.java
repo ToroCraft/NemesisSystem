@@ -15,9 +15,9 @@ public class NemesisDisplay implements GuiDisplay {
 
 	private static final ResourceLocation SKIN_BASIC = new ResourceLocation(NemesisSystem.MODID, "textures/gui/default_skin_basic.png");
 
-	private static int grey = 0xff404040;
-	private static int lightGrey = 0xff909090;
-	private static int lighterGrey = 0xffc0c0c0;
+	public static int grey = 0xff404040;
+	public static int lightGrey = 0xff909090;
+	public static int lighterGrey = 0xffc0c0c0;
 
 	private final NemesisEntityDisplay entityDisplay = new NemesisEntityDisplay();
 	private final Minecraft mc = Minecraft.getMinecraft();
@@ -32,10 +32,8 @@ public class NemesisDisplay implements GuiDisplay {
 
 	private NemesisDisplayData data;
 	private final FontRenderer fontRenderer = mc.fontRenderer;
-	private final GuiScreen gui;
 
-	public NemesisDisplay(GuiScreen gui) {
-		this.gui = gui;
+	public NemesisDisplay() {
 		entityDisplay.setSize(34);
 	}
 
@@ -99,7 +97,7 @@ public class NemesisDisplay implements GuiDisplay {
 		fontRenderer.drawString(I18n.format("gui.distance") + ": " + data.distance, x, y + 10, grey);
 	}
 
-	private static String romanize(int i) {
+	public static String romanize(int i) {
 		switch (i) {
 		case 1:
 			return "I";

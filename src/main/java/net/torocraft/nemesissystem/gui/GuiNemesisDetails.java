@@ -10,9 +10,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
 import net.torocraft.nemesissystem.gui.displays.NemesisEntityDisplay;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
+import net.torocraft.nemesissystem.registry.Nemesis;
 
 public class GuiNemesisDetails extends GuiScreen {
 
@@ -37,17 +39,13 @@ public class GuiNemesisDetails extends GuiScreen {
 	private final NemesisEntityDisplay entityDisplay = new NemesisEntityDisplay();
 
 	public GuiNemesisDetails() {
-
 		entityDisplay.setSize(60);
 	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
 		hoveredItem = null;
-		GlStateManager.enableAlpha();
-		GlStateManager.color(0xff, 0xff, 0xff, 0xff);
-		mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
-		drawTexturedModalRect(offsetX, offsetY, 0, 0, WIDTH, HEIGHT);
+		drawBackground();
 
 		// TODO health display (using hearts)
 
@@ -55,16 +53,47 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		// TODO show armor defense?  attack speed?
 
-		if (nemesisData != null && nemesisData.nemesis != null) {
-			drawNemesisArmor(mouseX, mouseY);
-			drawNemesisItems(mouseX, mouseY);
-		}
+		// TODO back button
+
+		drawInventory(mouseX, mouseY);
+		entityDisplay.draw(mouseX, mouseY);
+		drawNemesisInfo();
 
 		if (hoveredItem != null) {
 			renderToolTip(hoveredItem, mouseX, mouseY);
 		}
+	}
 
-		entityDisplay.draw(mouseX, mouseY);
+	private void drawNemesisInfo() {
+		if (nemesisData.nemesis != null) {
+			Nemesis n = nemesisData.nemesis;
+			int x = offsetX + 105;
+			int y = offsetY + 6;
+
+			fontRenderer.drawString(n.getNameAndTitle() + " (" + NemesisDisplay.romanize(n.getLevel()) + ")", x, y, 0x0);
+			y += 10;
+			fontRenderer.drawString(I18n.format("gui.distance") + ": " + nemesisData.distance, x, y, NemesisDisplay.grey);
+			y += 10;
+			fontRenderer.drawString(I18n.format("gui.health") + ": " + "?", x, y, NemesisDisplay.grey);
+			y += 10;
+			fontRenderer.drawString(I18n.format("gui.location") + ": " + "?", x, y, NemesisDisplay.grey);
+
+		}
+	}
+
+
+	private void drawBackground() {
+		GlStateManager.enableAlpha();
+		GlStateManager.color(0xff, 0xff, 0xff, 0xff);
+		mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
+		drawTexturedModalRect(offsetX, offsetY, 0, 0, WIDTH, HEIGHT);
+	}
+
+	private void drawInventory(int mouseX, int mouseY) {
+		if (nemesisData != null && nemesisData.nemesis != null) {
+			drawNemesisArmor(mouseX, mouseY);
+			drawNemesisItems(mouseX, mouseY);
+		}
 	}
 
 	private void drawNemesisArmor(int mouseX, int mouseY) {

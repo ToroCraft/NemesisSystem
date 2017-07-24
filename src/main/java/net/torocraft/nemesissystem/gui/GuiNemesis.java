@@ -47,7 +47,7 @@ public class GuiNemesis extends GuiScreen {
 
 	public GuiNemesis() {
 		for (int i = 0; i < 4; i++) {
-			NemesisDisplay display = new NemesisDisplay(this);
+			NemesisDisplay display = new NemesisDisplay();
 			display.setPosition(5, 5 + (48 * i));
 			itemDisplays.add(display);
 		}
