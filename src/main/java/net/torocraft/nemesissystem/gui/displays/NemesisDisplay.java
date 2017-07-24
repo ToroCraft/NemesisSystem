@@ -1,20 +1,15 @@
 package net.torocraft.nemesissystem.gui.displays;
 
-import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.util.ResourceLocation;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGuiRequest;
-import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.Nemesis;
-import net.torocraft.nemesissystem.util.EntityDecorator;
-import net.torocraft.nemesissystem.util.SpawnUtil;
 
 public class NemesisDisplay implements GuiDisplay {
 
@@ -24,7 +19,7 @@ public class NemesisDisplay implements GuiDisplay {
 	private static int lightGrey = 0xff909090;
 	private static int lighterGrey = 0xffc0c0c0;
 
-	private final EntityDisplay entityDisplay = new EntityDisplay();
+	private final NemesisEntityDisplay entityDisplay = new NemesisEntityDisplay();
 	private final Minecraft mc = Minecraft.getMinecraft();
 
 	private int x;
@@ -41,38 +36,19 @@ public class NemesisDisplay implements GuiDisplay {
 
 	public NemesisDisplay(GuiScreen gui) {
 		this.gui = gui;
+		entityDisplay.setSize(34);
 	}
 
 	public void setData(NemesisDisplayData data) {
 		this.data = data;
-		if (data == null || data.nemesis == null) {
-			entityDisplay.setEntity(null);
-			return;
-		}
-
-		EntityCreature entity = createEntity(data.nemesis);
-		if (entity == null) {
-			return;
-		}
-
-		EntityDecorator.decorate(entity, data.nemesis);
-		entityDisplay.setEntity(entity);
-	}
-
-	private EntityCreature createEntity(Nemesis nemesis) {
-		try {
-			return SpawnUtil.getEntityFromString(mc.world, nemesis.getMob());
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+		entityDisplay.setNemesis(data);
 	}
 
 	@Override
 	public void setPosition(int x, int y) {
 		this.x = x;
 		this.y = y;
-		entityDisplay.setPosition(x, y + 4);
+		entityDisplay.setPosition(x + 6, y + 7);
 	}
 
 	@Override

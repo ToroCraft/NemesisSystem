@@ -1,26 +1,22 @@
 package net.torocraft.nemesissystem.gui;
 
-import static java.util.stream.Collectors.toList;
-
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.gui.displays.GuiDisplay;
-import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
-import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
+import net.torocraft.nemesissystem.gui.displays.NemesisEntityDisplay;
+import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 
 public class GuiNemesisDetails extends GuiScreen {
 
+	private static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation(NemesisSystem.MODID, "textures/gui/nemesis_details_gui.png");
 	private static final int HEIGHT = 230;
 	private static final int WIDTH = 256;
 
@@ -31,37 +27,27 @@ public class GuiNemesisDetails extends GuiScreen {
 	private GuiButton buttonNext;
 	private GuiButton buttonPrevious;
 	private GuiButton buttonClose;
-	private String currentPage = "";
-	private int page = 0;
-	private int lastPage;
 
-	private List<NemesisDisplayData> nemeses;
+	private NemesisDisplayData nemesisData;
+
+	private ItemStack hoveredItem;
 
 	private final Minecraft mc = Minecraft.getMinecraft();
 
-	private final List<NemesisDisplay> itemDisplays = new ArrayList<>(6);
+	private final NemesisEntityDisplay entityDisplay = new NemesisEntityDisplay();
 
 	public GuiNemesisDetails() {
-		for (int i = 0; i < 4; i++) {
-			NemesisDisplay display = new NemesisDisplay(this);
-			display.setPosition(5, 5 + (48 * i));
-			itemDisplays.add(display);
-		}
-	}
 
-	public static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation(NemesisSystem.MODID, "textures/gui/nemesis_details_gui.png");
+		entityDisplay.setSize(60);
+	}
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		//drawRect(0, 0, width, height, 0xd0000000);
-		GlStateManager.translate(offsetX, offsetY, 0);
-
-		//drawRect(0, 0, WIDTH, HEIGHT, 0xd0ffffff);
-
+		hoveredItem = null;
 		GlStateManager.enableAlpha();
 		GlStateManager.color(0xff, 0xff, 0xff, 0xff);
-		this.mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
-		drawTexturedModalRect(0, 0, 0, 0, WIDTH, HEIGHT);
+		mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
+		drawTexturedModalRect(offsetX, offsetY, 0, 0, WIDTH, HEIGHT);
 
 		// TODO health display (using hearts)
 
@@ -69,6 +55,49 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		// TODO show armor defense?  attack speed?
 
+		if (nemesisData != null && nemesisData.nemesis != null) {
+			drawNemesisArmor(mouseX, mouseY);
+			drawNemesisItems(mouseX, mouseY);
+		}
+
+		if (hoveredItem != null) {
+			renderToolTip(hoveredItem, mouseX, mouseY);
+		}
+
+		entityDisplay.draw(mouseX, mouseY);
+	}
+
+	private void drawNemesisArmor(int mouseX, int mouseY) {
+		if (nemesisData.nemesis.getArmorInventory() == null) {
+			return;
+		}
+		NonNullList<ItemStack> armorSet = nemesisData.nemesis.getArmorInventory();
+		for (int i = 0; i < Math.min(4, armorSet.size()); i++) {
+			drawItemStack(armorSet.get(i), 84, 62 - (i * 18), mouseX, mouseY);
+		}
+	}
+
+	private void drawNemesisItems(int mouseX, int mouseY) {
+		if (nemesisData.nemesis.getArmorInventory() == null) {
+			return;
+		}
+		NonNullList<ItemStack> items = nemesisData.nemesis.getHandInventory();
+		for (int i = 0; i < Math.min(4, items.size()); i++) {
+			drawItemStack(items.get(i), 8 + (i * 18), 84, mouseX, mouseY);
+		}
+	}
+
+	private void drawItemStack(ItemStack stack, int x, int y, int mouseX, int mouseY) {
+		GlStateManager.translate(0.0F, 0.0F, 32.0F);
+		zLevel = 200.0F;
+		itemRender.zLevel = 200.0F;
+		itemRender.renderItemAndEffectIntoGUI(stack, x + offsetX, y + offsetY);
+		zLevel = 0.0F;
+		itemRender.zLevel = 0.0F;
+
+		if (isPointInRegion(x + offsetX, y + offsetY, mouseX, mouseY)) {
+			hoveredItem = stack;
+		}
 	}
 
 	@Override
@@ -78,10 +107,21 @@ public class GuiNemesisDetails extends GuiScreen {
 
 	@Override
 	public void initGui() {
-		System.out.println("INIT GUI");
+
+		if (nemesisData == null) {
+			if (MessageOpenNemesisDetailsGui.NEMESIS == null) {
+				return;
+			}
+			nemesisData = new NemesisDisplayData(MessageOpenNemesisDetailsGui.NEMESIS);
+		}
+
+		entityDisplay.setNemesis(nemesisData);
+
 		offsetX = (width - WIDTH) / 2;
 		offsetY = (height - HEIGHT) / 2;
 		buttonY = offsetY + HEIGHT - 25;
+
+		entityDisplay.setPosition(offsetX + 12, offsetY + 15);
 
 		buttonClose = new GuiButton(0, 5 + offsetX, buttonY, 60, 20, I18n.format("gui.close"));
 		buttonNext = new GuiButton(0, (WIDTH - 65) + offsetX, buttonY, 60, 20, I18n.format("gui.next"));
@@ -90,12 +130,6 @@ public class GuiNemesisDetails extends GuiScreen {
 		buttonList.add(buttonClose);
 		buttonList.add(buttonNext);
 		buttonList.add(buttonPrevious);
-	}
-
-	private void updatePager() {
-		currentPage = (page + 1) + "/" + (lastPage + 1);
-		buttonPrevious.enabled = page != 0;
-		buttonNext.enabled = page < lastPage;
 	}
 
 	@Override
@@ -114,6 +148,10 @@ public class GuiNemesisDetails extends GuiScreen {
 		if (mc.currentScreen == null) {
 			mc.setIngameFocus();
 		}
+	}
+
+	protected boolean isPointInRegion(int rectX, int rectY, int pointX, int pointY) {
+		return pointX >= rectX - 1 && pointX < rectX + 16 + 1 && pointY >= rectY - 1 && pointY < rectY + 16 + 1;
 	}
 
 }
