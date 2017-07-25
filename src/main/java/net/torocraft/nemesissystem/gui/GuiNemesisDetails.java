@@ -55,6 +55,11 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		// TODO back button
 
+		if (nemesisData == null || nemesisData.nemesis == null) {
+			return;
+		}
+
+		drawTitle();
 		drawInventory(mouseX, mouseY);
 		entityDisplay.draw(mouseX, mouseY);
 		drawNemesisInfo();
@@ -64,23 +69,21 @@ public class GuiNemesisDetails extends GuiScreen {
 		}
 	}
 
-	private void drawNemesisInfo() {
-		if (nemesisData.nemesis != null) {
-			Nemesis n = nemesisData.nemesis;
-			int x = offsetX + 105;
-			int y = offsetY + 6;
-
-			fontRenderer.drawString(n.getNameAndTitle() + " (" + NemesisDisplay.romanize(n.getLevel()) + ")", x, y, 0x0);
-			y += 10;
-			fontRenderer.drawString(I18n.format("gui.distance") + ": " + nemesisData.distance, x, y, NemesisDisplay.grey);
-			y += 10;
-			fontRenderer.drawString(I18n.format("gui.health") + ": " + "?", x, y, NemesisDisplay.grey);
-			y += 10;
-			fontRenderer.drawString(I18n.format("gui.location") + ": " + "?", x, y, NemesisDisplay.grey);
-
-		}
+	private void drawTitle() {
+		Nemesis n = nemesisData.nemesis;
+		drawCenteredString(fontRenderer, n.getNameAndTitle() + " (" + NemesisDisplay.romanize(n.getLevel()) + ")", width / 2, 10 + offsetY, 0xffffff);
 	}
 
+	private void drawNemesisInfo() {
+		int x = offsetX + 109;
+		int y = offsetY + 30;
+
+		fontRenderer.drawString(I18n.format("gui.distance") + ": " + nemesisData.distance, x, y, NemesisDisplay.grey);
+		y += 10;
+		fontRenderer.drawString(I18n.format("gui.health") + ": " + "?", x, y, NemesisDisplay.grey);
+		y += 10;
+		fontRenderer.drawString(I18n.format("gui.location") + ": " + "?", x, y, NemesisDisplay.grey);
+	}
 
 	private void drawBackground() {
 		GlStateManager.enableAlpha();
@@ -102,7 +105,7 @@ public class GuiNemesisDetails extends GuiScreen {
 		}
 		NonNullList<ItemStack> armorSet = nemesisData.nemesis.getArmorInventory();
 		for (int i = 0; i < Math.min(4, armorSet.size()); i++) {
-			drawItemStack(armorSet.get(i), 84, 62 - (i * 18), mouseX, mouseY);
+			drawItemStack(armorSet.get(i), 86, 84 - (i * 18), mouseX, mouseY);
 		}
 	}
 
@@ -112,7 +115,7 @@ public class GuiNemesisDetails extends GuiScreen {
 		}
 		NonNullList<ItemStack> items = nemesisData.nemesis.getHandInventory();
 		for (int i = 0; i < Math.min(4, items.size()); i++) {
-			drawItemStack(items.get(i), 8 + (i * 18), 84, mouseX, mouseY);
+			drawItemStack(items.get(i), 10 + (i * 18), 106, mouseX, mouseY);
 		}
 	}
 
@@ -150,7 +153,7 @@ public class GuiNemesisDetails extends GuiScreen {
 		offsetY = (height - HEIGHT) / 2;
 		buttonY = offsetY + HEIGHT - 25;
 
-		entityDisplay.setPosition(offsetX + 12, offsetY + 15);
+		entityDisplay.setPosition(offsetX + 14, offsetY + 36);
 
 		buttonClose = new GuiButton(0, 5 + offsetX, buttonY, 60, 20, I18n.format("gui.close"));
 		buttonNext = new GuiButton(0, (WIDTH - 65) + offsetX, buttonY, 60, 20, I18n.format("gui.next"));

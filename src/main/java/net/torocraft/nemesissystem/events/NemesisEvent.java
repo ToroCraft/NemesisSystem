@@ -36,6 +36,7 @@ public class NemesisEvent extends Event {
 		public Duel(final Nemesis winner, final Nemesis loser) {
 			super(winner);
 			this.loser = loser;
+
 		}
 
 		public Nemesis getWinner() {
