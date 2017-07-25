@@ -1,5 +1,6 @@
 package net.torocraft.nemesissystem.discovery;
 
+import jline.internal.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
@@ -11,7 +12,7 @@ import java.util.UUID;
 public class NemesisDiscovery {
 
     @NbtField
-    private final UUID nemesisId;
+    private UUID nemesisId;
 
     @NbtField
     private boolean name;
@@ -19,16 +20,16 @@ public class NemesisDiscovery {
     @NbtField
     private boolean location;
 
-    @NbtField
+    @NbtField(genericType = Integer.class)
     private List<Integer> traits = new ArrayList<>();
 
-    @NbtField
+    @NbtField(genericType = Integer.class)
     private List<Integer> strengths = new ArrayList<>();
 
-    @NbtField
+    @NbtField(genericType = Integer.class)
     private List<Integer> weaknesses = new ArrayList<>();
 
-    public NemesisDiscovery(final UUID nemesisId) {
+    public NemesisDiscovery(@Nullable UUID nemesisId) {
         this.nemesisId = nemesisId;
     }
 
@@ -36,9 +37,9 @@ public class NemesisDiscovery {
         NbtSerializer.read(c, this);
     }
 
-    public void writeToNBT(NBTTagCompound c) {
-        NbtSerializer.write(c, this);
-    }
+    public void writeToNBT(NBTTagCompound c) { NbtSerializer.write(c, this); }
+
+    public void setNemesisId(UUID nemesisId) { this.nemesisId = nemesisId; }
 
     public UUID getNemesisId() { return nemesisId; }
 

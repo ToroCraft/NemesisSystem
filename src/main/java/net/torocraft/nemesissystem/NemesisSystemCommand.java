@@ -13,13 +13,18 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemWrittenBook;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
 import net.torocraft.nemesissystem.handlers.Spawn;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
@@ -28,11 +33,9 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.Type;
-import net.torocraft.nemesissystem.util.EntityDecorator;
-import net.torocraft.nemesissystem.util.NemesisActions;
-import net.torocraft.nemesissystem.util.NemesisBuilder;
-import net.torocraft.nemesissystem.util.NemesisUtil;
-import net.torocraft.nemesissystem.util.SpawnUtil;
+import net.torocraft.nemesissystem.util.*;
+
+import static net.torocraft.nemesissystem.util.DiscoveryUtil.NBT_DISCOVERY;
 
 public class NemesisSystemCommand extends CommandBase {
 
@@ -93,9 +96,32 @@ public class NemesisSystemCommand extends CommandBase {
 		case "promote":
 			promote(server, sender, args);
 			return;
+		case "give_book":
+			giveBook(server, sender, args);
 		default:
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
+	}
+
+	private void giveBook(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+		if (!(sender instanceof EntityPlayer)) {
+			return;
+		}
+
+		EntityPlayer player = getCommandSenderAsPlayer(sender);
+		World world = player.world;
+
+		ItemStack stack = new ItemStack(Items.WRITTEN_BOOK, 1);
+		NBTTagCompound discTag = new NBTTagCompound();
+		NemesisDiscovery discovery = DiscoveryUtil.buildRandomDiscovery(world);
+		discovery.writeToNBT(discTag);
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setTag(NBT_DISCOVERY, discTag);
+		stack.setTagCompound(tag);
+
+		EntityItem entity = new EntityItem(world, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), stack);
+
+		world.spawnEntity(entity);
 	}
 
 	private void spawn(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {

@@ -7,12 +7,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.events.NemesisEventHandlers;
-import net.torocraft.nemesissystem.handlers.Attack;
-import net.torocraft.nemesissystem.handlers.Death;
-import net.torocraft.nemesissystem.handlers.Reaper;
-import net.torocraft.nemesissystem.handlers.SetAttackTarget;
-import net.torocraft.nemesissystem.handlers.Spawn;
-import net.torocraft.nemesissystem.handlers.Update;
+import net.torocraft.nemesissystem.handlers.*;
 import net.torocraft.nemesissystem.network.MessageHealAnimation;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGuiRequest;
@@ -36,6 +31,7 @@ public class CommonProxy {
 		Attack.init();
 		Reaper.init();
 		Death.init();
+		Discovery.init();
 		SetAttackTarget.init();
 		initPackets();
 	}
