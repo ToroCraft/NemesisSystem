@@ -10,6 +10,8 @@ import net.minecraft.util.ResourceLocation;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGuiRequest;
 import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.traits.Affect;
+import net.torocraft.nemesissystem.traits.Trait;
 
 public class NemesisDisplay implements GuiDisplay {
 
@@ -131,10 +133,22 @@ public class NemesisDisplay implements GuiDisplay {
 		int x = this.x + 51;
 		int y = this.y + 24;
 
+		boolean first = true;
+
 		for (int i = 0; i < n.getTraits().size(); i++) {
-			String s = I18n.format("trait." + n.getTraits().get(i));
-			fontRenderer.drawString(s, x, y, grey);
-			x += fontRenderer.getStringWidth(s) + 3;
+			Trait trait = n.getTraits().get(i);
+			if (trait.type.getAffect().equals(Affect.STRENGTH)) {
+				if (first) {
+					first = false;
+				}else {
+					fontRenderer.drawString(". . .", x, y, grey);
+					return;
+				}
+				String s = I18n.format("trait." + n.getTraits().get(i).type);
+				s += " (" + romanize(trait.level) + ")";
+				fontRenderer.drawString(s, x, y, grey);
+				x += fontRenderer.getStringWidth(s) + 3;
+			}
 		}
 	}
 

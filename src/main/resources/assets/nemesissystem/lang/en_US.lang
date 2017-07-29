@@ -16,6 +16,24 @@ trait.HEAT=Heat
 trait.POTION=Potion
 trait.TELEPORT=Teleportation
 
+trait.DOUBLE_MELEE=DoubleMelee
+trait.ARCHER=Archer
+trait.SUMMON=Summoner
+trait.REFLECT=Reflection
+trait.POTION=Brew Master
+trait.TELEPORT=Teleportor
+trait.HEAL=Medic
+trait.FIREBALL=Fireball
+trait.INFERNO=Inferno
+trait.HYDROPHOBIA=Hydrophobia
+trait.PYROPHOBIA=Pyrophobia
+trait.WOOD_ALLERGY=Wood Allergy
+trait.GOLD_ALLERGY=Gold Allergy
+trait.STONE_ALLERGY=Stone Allergy
+trait.GREEDY=Greedy
+trait.GLUTTONY=Gluttonous
+trait.CHICKEN=Chicken
+
 notifications.promotion=%s has been promoted to level %s
 notifications.duel=%s defeated %s in a fight to the death!
 notifications.register=%s has established rule of a new domain

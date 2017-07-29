@@ -23,6 +23,7 @@ import net.torocraft.nemesissystem.events.PromotionEvent;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.nemesissystem.traits.Affect;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.Type;
 
@@ -36,19 +37,15 @@ public class NemesisActions {
 		NemesisUtil.enchantEquipment(nemesis);
 		if (shouldGainAdditionalTrait(nemesis)) {
 			addAdditionalTrait(nemesis);
+		} else {
+			upgradeTrait(nemesis);
 		}
 		NemesisRegistryProvider.get(world).update(nemesis);
 		MinecraftForge.EVENT_BUS.post(new PromotionEvent(nemesis));
 	}
 
-	public static void demote(World world, Nemesis nemesis, String slayerName) {
-		nemesis.setLevel(nemesis.getLevel() - 1);
-		if (nemesis.getLevel() < 1) {
-			kill(world, nemesis, slayerName);
-		} else {
-			NemesisRegistryProvider.get(world).update(nemesis);
-			MinecraftForge.EVENT_BUS.post(new DemotionEvent(nemesis, slayerName));
-		}
+	private static boolean shouldGainAdditionalTrait(Nemesis nemesis) {
+		return NemesisUtil.rand.nextInt(10 * nemesis.getTraits().size()) == 0;
 	}
 
 	private static void addAdditionalTrait(Nemesis nemesis) {
@@ -64,8 +61,36 @@ public class NemesisActions {
 		nemesis.getTraits().add(new Trait(type, 1));
 	}
 
-	private static boolean shouldGainAdditionalTrait(Nemesis nemesis) {
-		return NemesisUtil.rand.nextInt(10 * nemesis.getTraits().size()) == 0;
+	private static void upgradeTrait(Nemesis nemesis) {
+		for (Trait trait : nemesis.getTraits()) {
+			if (isStrength(trait) && upgradeTrait(trait)) {
+				return;
+			}
+		}
+	}
+
+	private static boolean isStrength(Trait t) {
+		return t.type.getAffect().equals(Affect.STRENGTH);
+	}
+
+	private static boolean upgradeTrait(Trait t) {
+		int max = t.type.getMaxLevel();
+		if (t.level >= max) {
+			return false;
+		}
+		System.out.println("upgraded trait" + t.type);
+		t.level++;
+		return true;
+	}
+
+	public static void demote(World world, Nemesis nemesis, String slayerName) {
+		nemesis.setLevel(nemesis.getLevel() - 1);
+		if (nemesis.getLevel() < 1) {
+			kill(world, nemesis, slayerName);
+		} else {
+			NemesisRegistryProvider.get(world).update(nemesis);
+			MinecraftForge.EVENT_BUS.post(new DemotionEvent(nemesis, slayerName));
+		}
 	}
 
 	public static Nemesis createAndRegisterNemesis(EntityCreature entity, BlockPos nemesisLocation) {

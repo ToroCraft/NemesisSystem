@@ -25,6 +25,8 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 
 public class GuiNemesis extends GuiScreen {
 
+	public static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation(NemesisSystem.MODID, "textures/gui/nemeses_gui.png");
+
 	private static final int HEIGHT = 230;
 	private static final int WIDTH = 256;
 
@@ -40,10 +42,10 @@ public class GuiNemesis extends GuiScreen {
 	private int lastPage;
 
 	private List<NemesisDisplayData> nemeses;
-
 	private final Minecraft mc = Minecraft.getMinecraft();
-
 	private final List<NemesisDisplay> itemDisplays = new ArrayList<>(4);
+
+
 
 	public GuiNemesis() {
 		for (int i = 0; i < 4; i++) {
@@ -83,8 +85,6 @@ public class GuiNemesis extends GuiScreen {
 			lastPage++;
 		}
 	}
-
-	public static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation(NemesisSystem.MODID, "textures/gui/nemeses_gui.png");
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
