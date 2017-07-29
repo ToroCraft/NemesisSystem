@@ -78,7 +78,6 @@ public class NemesisActions {
 		if (t.level >= max) {
 			return false;
 		}
-		System.out.println("upgraded trait" + t.type);
 		t.level++;
 		return true;
 	}

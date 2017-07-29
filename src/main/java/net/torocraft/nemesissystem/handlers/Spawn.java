@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -33,7 +34,7 @@ import net.torocraft.nemesissystem.util.SpawnUtil;
 
 public class Spawn {
 
-	private static final int SPAWN_CHANCE = 7;
+	private static final int SPAWN_CHANCE = 2;
 
 	public static final int SPAWN_COOLDOWN_PERIOD = 16000;
 
@@ -210,7 +211,7 @@ public class Spawn {
 
 	private static Nemesis getNemesisForSpawn(EntityEvent event) {
 
-		if (!(event.getEntity() instanceof EntityZombie)) {
+		if (!(event.getEntity() instanceof EntityMob)) {
 			return null;
 		}
 
@@ -221,16 +222,11 @@ public class Spawn {
 			return null;
 		}
 
-		if (otherNemesisNearby(entity, world)) {
-			return null;
-		}
-
 		if (world.rand.nextInt(SPAWN_CHANCE) != 0) {
 			return null;
 		}
 
 		List<Nemesis> nemeses = NemesisRegistryProvider.get(event.getEntity().world).list();
-
 		nemeses.removeIf(Nemesis::isSpawned);
 		nemeses.removeIf(Nemesis::isDead);
 		nemeses.removeIf((Nemesis n) -> notReadyToSpawn(world, n));
@@ -256,7 +252,11 @@ public class Spawn {
 	}
 
 	private static boolean notReadyToSpawn(World world, Nemesis n) {
-		return n.getLastSpawned() != null && world.getTotalWorldTime() - n.getLastSpawned() > SPAWN_COOLDOWN_PERIOD;
+		if (n.getLastSpawned() == null) {
+			return false;
+		}
+		long delay = (n.getLastSpawned() + SPAWN_COOLDOWN_PERIOD) - world.getTotalWorldTime();
+		return delay > 0;
 	}
 
 	private static boolean otherNemesisNearby(EntityLiving entity, World world) {
@@ -264,7 +264,7 @@ public class Spawn {
 		List<EntityLiving> entities = world
 				.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));
 		for (EntityLiving e : entities) {
-			if (e.getTags().contains(NemesisSystem.TAG_NEMESIS)) {
+			if (e.getTags().contains(NemesisSystem.TAG_NEMESIS) && !e.isDead) {
 				return true;
 			}
 		}

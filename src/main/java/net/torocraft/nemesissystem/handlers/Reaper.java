@@ -43,6 +43,7 @@ public class Reaper {
 		Entity entity = world.getEntityByID(nemesis.getSpawned());
 		if (entity != null) {
 			entity.setDead();
+			world.removeEntity(entity);
 		}
 		nemesis.setSpawned(null);
 		registry.update(nemesis);
