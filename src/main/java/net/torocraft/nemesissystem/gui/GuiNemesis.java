@@ -5,13 +5,11 @@ import static java.util.stream.Collectors.toList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.torocraft.nemesissystem.NemesisConfig;
@@ -19,9 +17,7 @@ import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.gui.displays.GuiDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
-import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGuiRequest;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
-import net.torocraft.nemesissystem.registry.Nemesis;
 
 public class GuiNemesis extends GuiScreen {
 
@@ -44,8 +40,6 @@ public class GuiNemesis extends GuiScreen {
 	private List<NemesisDisplayData> nemeses;
 	private final Minecraft mc = Minecraft.getMinecraft();
 	private final List<NemesisDisplay> itemDisplays = new ArrayList<>(4);
-
-
 
 	public GuiNemesis() {
 		for (int i = 0; i < 4; i++) {

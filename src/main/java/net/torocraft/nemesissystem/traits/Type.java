@@ -55,6 +55,14 @@ public enum Type {
 		return affect;
 	}
 
+	public boolean isStrength () {
+		return isStrength(this);
+	}
+
+	public boolean isWeakness () {
+		return isWeakness(this);
+	}
+
 	public static boolean isStrength(Type type) {
 		return Affect.STRENGTH.equals(type.affect);
 	}

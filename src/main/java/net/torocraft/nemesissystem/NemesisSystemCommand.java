@@ -100,6 +100,9 @@ public class NemesisSystemCommand extends CommandBase {
 		case "promote":
 			promote(server, sender, args);
 			return;
+		case "demote":
+			demote(server, sender, args);
+			return;
 		case "give_book":
 			giveBook(server, sender, args);
 		default:
@@ -210,6 +213,20 @@ public class NemesisSystemCommand extends CommandBase {
 			registry.update(nemesis);
 			System.out.println("updated test nemesis: " + nemesis);
 		}
+	}
+
+	private void demote(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+		if (args.length != 2) {
+			throw new WrongUsageException("commands.nemesis_system.usage");
+		}
+		World world = server.getWorld(senderDimId(sender));
+		INemesisRegistry registry = NemesisRegistryProvider.get(world);
+		Nemesis nemesis = registry.getByName(args[1]);
+		if (nemesis == null) {
+			return;
+		}
+		NemesisActions.demote(world, nemesis, "Server Command");
+		registry.markDirty();
 	}
 
 	private void promote(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
@@ -366,13 +383,14 @@ public class NemesisSystemCommand extends CommandBase {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
 		if (args.length == 1) {
-			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui", "duelIfCrowded", "promote", "spawn");
+			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui", "duelIfCrowded", "promote", "spawn", "demote");
 		}
 		String command = args[0];
 		switch (command) {
 		case "create":
 			return tabCompletionsForCreate(server, args);
 		case "promote":
+		case "demote":
 		case "spawn":
 		case "gui":
 			return tabCompletionsForName(server, sender, args);

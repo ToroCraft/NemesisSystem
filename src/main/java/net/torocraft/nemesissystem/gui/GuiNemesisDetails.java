@@ -14,7 +14,10 @@ import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
 import net.torocraft.nemesissystem.gui.displays.NemesisEntityDisplay;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
+import net.torocraft.nemesissystem.network.MessageOpenNemesisGuiRequest;
 import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.traits.Trait;
+import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class GuiNemesisDetails extends GuiScreen {
 
@@ -26,8 +29,7 @@ public class GuiNemesisDetails extends GuiScreen {
 	private int offsetY;
 	private int buttonY;
 
-	private GuiButton buttonNext;
-	private GuiButton buttonPrevious;
+	private GuiButton buttonBack;
 	private GuiButton buttonClose;
 
 	private NemesisDisplayData nemesisData;
@@ -67,22 +69,48 @@ public class GuiNemesisDetails extends GuiScreen {
 		if (hoveredItem != null) {
 			renderToolTip(hoveredItem, mouseX, mouseY);
 		}
+
+		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 
 	private void drawTitle() {
 		Nemesis n = nemesisData.nemesis;
-		drawCenteredString(fontRenderer, n.getNameAndTitle() + " (" + NemesisDisplay.romanize(n.getLevel()) + ")", width / 2, 10 + offsetY, 0xffffff);
+		drawCenteredString(fontRenderer, n.getNameAndTitle() + " (" + NemesisUtil.romanize(n.getLevel()) + ")", width / 2, 10 + offsetY, 0xffffff);
 	}
 
 	private void drawNemesisInfo() {
 		int x = offsetX + 109;
 		int y = offsetY + 30;
 
-		fontRenderer.drawString(I18n.format("gui.distance") + ": " + nemesisData.distance, x, y, NemesisDisplay.grey);
+		Nemesis nemesis = nemesisData.nemesis;
+
+		fontRenderer.drawString(I18n.format("gui.distance") + ": " + nemesisData.distance + "m", x, y, NemesisDisplay.grey);
 		y += 10;
-		fontRenderer.drawString(I18n.format("gui.health") + ": " + "?", x, y, NemesisDisplay.grey);
+		//fontRenderer.drawString(I18n.format("gui.health") + ": " + "?", x, y, NemesisDisplay.grey);
+		//
+		fontRenderer.drawString(I18n.format("gui.location", nemesis.getX(), nemesis.getZ()), x, y, NemesisDisplay.grey);
+		y += 14;
+
+
+		fontRenderer.drawString(I18n.format("gui.strengths", nemesis.getX(), nemesis.getZ()), x, y, NemesisDisplay.grey);
 		y += 10;
-		fontRenderer.drawString(I18n.format("gui.location") + ": " + "?", x, y, NemesisDisplay.grey);
+		for (Trait trait : nemesis.getTraits()) {
+			if (trait.type.isStrength()) {
+				fontRenderer.drawString("* " + I18n.format("trait." + trait.type) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y, NemesisDisplay.grey);
+				y += 10;
+			}
+		}
+
+		y += 4;
+
+		fontRenderer.drawString(I18n.format("gui.weaknesses", nemesis.getX(), nemesis.getZ()), x, y, NemesisDisplay.grey);
+		y += 10;
+		for (Trait trait : nemesis.getTraits()) {
+			if (trait.type.isWeakness()) {
+				fontRenderer.drawString("* " + I18n.format("trait." + trait.type) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y, NemesisDisplay.grey);
+				y += 10;
+			}
+		}
 	}
 
 	private void drawBackground() {
@@ -156,22 +184,18 @@ public class GuiNemesisDetails extends GuiScreen {
 		entityDisplay.setPosition(offsetX + 14, offsetY + 36);
 
 		buttonClose = new GuiButton(0, 5 + offsetX, buttonY, 60, 20, I18n.format("gui.close"));
-		buttonNext = new GuiButton(0, (WIDTH - 65) + offsetX, buttonY, 60, 20, I18n.format("gui.next"));
-		buttonPrevious = new GuiButton(0, (WIDTH - 150) + offsetX, buttonY, 60, 20, I18n.format("gui.previous"));
+		buttonBack = new GuiButton(0, (WIDTH - 65) + offsetX, buttonY, 60, 20, I18n.format("gui.back"));
 
 		buttonList.add(buttonClose);
-		buttonList.add(buttonNext);
-		buttonList.add(buttonPrevious);
+		buttonList.add(buttonBack);
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton button) throws IOException {
 		if (button == buttonClose) {
 			closeGui();
-		} else if (button == buttonNext) {
-
-		} else if (button == buttonPrevious) {
-
+		} else if (button == buttonBack) {
+			NemesisSystem.NETWORK.sendToServer(new MessageOpenNemesisGuiRequest());
 		}
 	}
 

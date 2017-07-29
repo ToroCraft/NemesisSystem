@@ -5,8 +5,11 @@ commands.nemesis_system.success.create=Created: %s
 gui.next=Next
 gui.previous=Previous
 gui.close=Close
-gui.location=Location: %d,%d (%dm)
+gui.back=Back
+gui.location=Location: %d,%d
 gui.distance=Distance
+gui.weaknesses=Weaknesses
+gui.strengths=Strengths
 
 trait.DOUBLE_MELEE=Double Melee
 trait.ARROW=Arrow

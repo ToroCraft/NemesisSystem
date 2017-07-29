@@ -23,7 +23,6 @@ import net.torocraft.nemesissystem.events.PromotionEvent;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
-import net.torocraft.nemesissystem.traits.Affect;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.Type;
 
@@ -36,7 +35,7 @@ public class NemesisActions {
 		nemesis.setLevel(nemesis.getLevel() + 1);
 		NemesisUtil.enchantEquipment(nemesis);
 		if (shouldGainAdditionalTrait(nemesis)) {
-			addAdditionalTrait(nemesis);
+			addAdditionalStrength(nemesis);
 		} else {
 			upgradeTrait(nemesis);
 		}
@@ -48,9 +47,10 @@ public class NemesisActions {
 		return NemesisUtil.rand.nextInt(10 * nemesis.getTraits().size()) == 0;
 	}
 
-	private static void addAdditionalTrait(Nemesis nemesis) {
+	private static void addAdditionalStrength(Nemesis nemesis) {
 		List<Type> availableTraits = Arrays.stream(Type.values())
-				.filter((Type t) -> !nemesis.hasTrait(t))
+				.filter(t -> !nemesis.hasTrait(t))
+				.filter(t -> t.isStrength())
 				.collect(Collectors.toList());
 
 		if (availableTraits.size() < 1) {
@@ -63,14 +63,18 @@ public class NemesisActions {
 
 	private static void upgradeTrait(Nemesis nemesis) {
 		for (Trait trait : nemesis.getTraits()) {
-			if (isStrength(trait) && upgradeTrait(trait)) {
+			if (trait.type.isStrength() && upgradeTrait(trait)) {
 				return;
 			}
 		}
 	}
 
-	private static boolean isStrength(Trait t) {
-		return t.type.getAffect().equals(Affect.STRENGTH);
+	private static void intensifyWeakness(Nemesis nemesis) {
+		for (Trait trait : nemesis.getTraits()) {
+			if (trait.type.isWeakness() && upgradeTrait(trait)) {
+				return;
+			}
+		}
 	}
 
 	private static boolean upgradeTrait(Trait t) {
@@ -87,6 +91,9 @@ public class NemesisActions {
 		if (nemesis.getLevel() < 1) {
 			kill(world, nemesis, slayerName);
 		} else {
+			if (NemesisUtil.rand.nextInt(4) == 0) {
+				intensifyWeakness(nemesis);
+			}
 			NemesisRegistryProvider.get(world).update(nemesis);
 			MinecraftForge.EVENT_BUS.post(new DemotionEvent(nemesis, slayerName));
 		}
