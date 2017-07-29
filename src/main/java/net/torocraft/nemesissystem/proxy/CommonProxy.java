@@ -6,7 +6,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.torocraft.nemesissystem.NemesisConfig;
-import net.torocraft.nemesissystem.events.NemesisEventHandlers;
+import net.torocraft.nemesissystem.handlers.Nemesis;
 import net.torocraft.nemesissystem.handlers.*;
 import net.torocraft.nemesissystem.network.MessageHealAnimation;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
@@ -22,7 +22,7 @@ public class CommonProxy {
 
 	public void preInit(FMLPreInitializationEvent e) {
 		initConfig(e.getSuggestedConfigurationFile());
-		MinecraftForge.EVENT_BUS.register(new NemesisEventHandlers());
+		MinecraftForge.EVENT_BUS.register(new Nemesis());
 	}
 
 	public void init(FMLInitializationEvent e) {

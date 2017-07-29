@@ -16,7 +16,10 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.torocraft.nemesissystem.NemesisConfig;
-import net.torocraft.nemesissystem.events.NemesisEvent;
+import net.torocraft.nemesissystem.events.DeathEvent;
+import net.torocraft.nemesissystem.events.DemotionEvent;
+import net.torocraft.nemesissystem.events.DuelEvent;
+import net.torocraft.nemesissystem.events.PromotionEvent;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
@@ -35,7 +38,7 @@ public class NemesisActions {
 			addAdditionalTrait(nemesis);
 		}
 		NemesisRegistryProvider.get(world).update(nemesis);
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Promotion(nemesis));
+		MinecraftForge.EVENT_BUS.post(new PromotionEvent(nemesis));
 	}
 
 	public static void demote(World world, Nemesis nemesis, String slayerName) {
@@ -44,7 +47,7 @@ public class NemesisActions {
 			kill(world, nemesis, slayerName);
 		} else {
 			NemesisRegistryProvider.get(world).update(nemesis);
-			MinecraftForge.EVENT_BUS.post(new NemesisEvent.Demotion(nemesis, slayerName));
+			MinecraftForge.EVENT_BUS.post(new DemotionEvent(nemesis, slayerName));
 		}
 	}
 
@@ -81,7 +84,7 @@ public class NemesisActions {
 		nemesis.setSpawned(null);
 		nemesis.setDead(true);
 		NemesisRegistryProvider.get(world).update(nemesis);
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Death(nemesis, slayerName));
+		MinecraftForge.EVENT_BUS.post(new DeathEvent(nemesis, slayerName));
 	}
 
 	public static void duel(World world, Nemesis opponentOne, Nemesis opponentTwo) {
@@ -106,7 +109,7 @@ public class NemesisActions {
 
 		kill(world, loser, victor.getName());
 		promote(world, victor);
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Duel(victor, loser));
+		MinecraftForge.EVENT_BUS.post(new DuelEvent(victor, loser));
 	}
 
 	public static void duelIfCrowded(World world, Nemesis exclude, boolean onlyIfCrowded) {

@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
-import net.minecraft.entity.EntityCreature;
 import net.minecraftforge.common.MinecraftForge;
-import net.torocraft.nemesissystem.events.NemesisEvent;
-import net.torocraft.nemesissystem.util.NemesisUtil;
+import net.torocraft.nemesissystem.events.RegisterEvent;
 
 public class NemesisRegistry extends NemesisWorldSaveData implements INemesisRegistry {
 
@@ -69,7 +67,7 @@ public class NemesisRegistry extends NemesisWorldSaveData implements INemesisReg
 	public void register(Nemesis nemesis) {
 		nemeses.add(nemesis);
 		markDirty();
-		MinecraftForge.EVENT_BUS.post(new NemesisEvent.Register(nemesis));
+		MinecraftForge.EVENT_BUS.post(new RegisterEvent(nemesis));
 		System.out.println(nemesis.getNameAndTitle() + " has established rule of " + nemesis.getX() + "," + nemesis.getZ());
 	}
 

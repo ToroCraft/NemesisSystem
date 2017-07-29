@@ -19,6 +19,8 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.events.DemotionEvent;
+import net.torocraft.nemesissystem.events.SpawnEvent;
 import net.torocraft.nemesissystem.network.MessageSyncNemesis;
 import net.torocraft.nemesissystem.network.MessageSyncNemesisRequest;
 import net.torocraft.nemesissystem.registry.Nemesis;
@@ -68,10 +70,9 @@ public class Spawn {
 			return;
 		}
 
-		// TODO add event, log and notification of for a nemesis spawn
-		System.out.println(nemesis.getNameAndTitle() + " has been spawned at " + event.getEntity().getPosition());
-
 		replaceEntityWithNemesis((EntityCreature) event.getEntity(), nemesis);
+
+		MinecraftForge.EVENT_BUS.post(new SpawnEvent(nemesis, (EntityCreature) event.getEntity()));
 	}
 
 	private void requestNemesisDataFromServer(EntityJoinWorldEvent event) {

@@ -11,62 +11,6 @@ public class NemesisEvent extends Event {
 		this.nemesis = nemesis;
 	}
 
-	public static class Promotion extends NemesisEvent {
-		public Promotion(final Nemesis nemesis) {
-			super(nemesis);
-		}
-	}
-
-	public static class Demotion extends NemesisEvent {
-		protected final String slayerName;
-
-		public Demotion(final Nemesis nemesis, final String slayerName) {
-			super(nemesis);
-			this.slayerName = slayerName;
-		}
-
-		public Object getSlayerName() {
-			return slayerName;
-		}
-	}
-
-	public static class Duel extends NemesisEvent {
-		protected final Nemesis loser;
-
-		public Duel(final Nemesis winner, final Nemesis loser) {
-			super(winner);
-			this.loser = loser;
-
-		}
-
-		public Nemesis getWinner() {
-			return getNemesis();
-		}
-
-		public Nemesis getLoser() {
-			return loser;
-		}
-	}
-
-	public static class Register extends NemesisEvent {
-		public Register(final Nemesis nemesis) {
-			super(nemesis);
-		}
-	}
-
-	public static class Death extends NemesisEvent {
-		protected final String slayerName;
-
-		public Death(final Nemesis nemesis, final String slayerName) {
-			super(nemesis);
-			this.slayerName = slayerName;
-		}
-
-		public String getSlayerName() {
-			return slayerName;
-		}
-	}
-
 	public Nemesis getNemesis() {
 		return nemesis;
 	}

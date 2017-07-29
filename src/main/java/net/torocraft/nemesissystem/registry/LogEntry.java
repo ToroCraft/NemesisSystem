@@ -2,6 +2,7 @@ package net.torocraft.nemesissystem.registry;
 
 import java.util.HashMap;
 import java.util.Map;
+import net.minecraft.entity.EntityCreature;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 
@@ -27,7 +28,7 @@ public class LogEntry {
 	}
 
 	public enum LogType {
-		KILLED, DIED, DUEL_WIN, DUEL_LOSS, PROMOTION, CREATION, FLED
+		KILLED, DIED, DUEL_WIN, DUEL_LOSS, PROMOTION, CREATION, FLED, SPAWNED
 	}
 
 	public static LogEntry KILLED(String victimName) {
@@ -71,6 +72,11 @@ public class LogEntry {
 		Map<String, String> details = new HashMap<>();
 		details.put("opponent", lastPlayerName);
 		return new LogEntry(LogType.FLED, details);
+	}
+
+	public static LogEntry SPAWNED() {
+		Map<String, String> details = new HashMap<>();
+		return new LogEntry(LogType.SPAWNED, details);
 	}
 
 	public LogType getType() {
