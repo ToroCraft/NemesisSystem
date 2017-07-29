@@ -1,7 +1,6 @@
 package net.torocraft.nemesissystem.handlers;
 
 import java.util.List;
-import java.util.Random;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
@@ -32,7 +31,9 @@ import net.torocraft.nemesissystem.util.SpawnUtil;
 
 public class Spawn {
 
-	private static final int SPAWN_CHANCE = 1;
+	private static final int SPAWN_CHANCE = 7;
+
+	public static final int SPAWN_COOLDOWN_PERIOD = 16000;
 
 	public static void init() {
 		MinecraftForge.EVENT_BUS.register(new Spawn());
@@ -149,6 +150,7 @@ public class Spawn {
 		nemesisAnnounceEffects(nemesisEntity);
 
 		nemesis.setSpawned(nemesisEntity.getEntityId());
+		nemesis.setLastSpawned(world.getTotalWorldTime());
 		nemesis.setEntityUuid(nemesisEntity.getPersistentID());
 		nemesis.setUnloaded(null);
 		NemesisRegistryProvider.get(world).update(nemesis);
@@ -213,7 +215,6 @@ public class Spawn {
 
 		EntityLiving entity = (EntityLiving) event.getEntity();
 		World world = entity.world;
-		Random rand = entity.getRNG();
 
 		if (!playerInRange(entity, world)) {
 			return null;
@@ -254,7 +255,7 @@ public class Spawn {
 	}
 
 	private static boolean notReadyToSpawn(World world, Nemesis n) {
-		return n.getLastSpawned() == null || world.getTotalWorldTime() - n.getLastSpawned() > 16000;
+		return n.getLastSpawned() != null && world.getTotalWorldTime() - n.getLastSpawned() > SPAWN_COOLDOWN_PERIOD;
 	}
 
 	private static boolean otherNemesisNearby(EntityLiving entity, World world) {

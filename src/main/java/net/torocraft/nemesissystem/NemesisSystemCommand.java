@@ -1,5 +1,7 @@
 package net.torocraft.nemesissystem;
 
+import static net.torocraft.nemesissystem.util.DiscoveryUtil.NBT_DISCOVERY;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -19,7 +21,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemWrittenBook;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -33,9 +34,12 @@ import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.Type;
-import net.torocraft.nemesissystem.util.*;
-
-import static net.torocraft.nemesissystem.util.DiscoveryUtil.NBT_DISCOVERY;
+import net.torocraft.nemesissystem.util.DiscoveryUtil;
+import net.torocraft.nemesissystem.util.EntityDecorator;
+import net.torocraft.nemesissystem.util.NemesisActions;
+import net.torocraft.nemesissystem.util.NemesisBuilder;
+import net.torocraft.nemesissystem.util.NemesisUtil;
+import net.torocraft.nemesissystem.util.SpawnUtil;
 
 public class NemesisSystemCommand extends CommandBase {
 
@@ -167,7 +171,6 @@ public class NemesisSystemCommand extends CommandBase {
 		SpawnUtil.spawnEntityLiving(world, (EntityCreature) entity, player.getPosition(), 0);
 	}
 
-
 	private void createTest(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof EntityPlayer)) {
 			return;
@@ -199,10 +202,8 @@ public class NemesisSystemCommand extends CommandBase {
 		nemesis.getTraits().add(new Trait(Type.GREEDY, 1));
 		nemesis.getTraits().add(new Trait(Type.CHICKEN, 1));
 
-
-
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);
-		if(registry.getById(TEST_ID) == null){
+		if (registry.getById(TEST_ID) == null) {
 			registry.register(nemesis);
 			System.out.println("created test nemesis: " + nemesis);
 		} else {
@@ -293,8 +294,22 @@ public class NemesisSystemCommand extends CommandBase {
 			if (nemesis.isDead()) {
 				s.append(" DEAD ");
 			}
+			if (nemesis.isSpawned()) {
+				s.append(" SPAWNED ");
+			}
 			s.append(nemesis);
 			s.append(" ").append(nemesis.getX()).append(",").append(nemesis.getZ());
+
+			long now = server.getWorld(0).getTotalWorldTime();
+			long lastSpawned = nemesis.getLastSpawned() == null ? 0 : nemesis.getLastSpawned();
+			long spawnDelay = (lastSpawned + Spawn.SPAWN_COOLDOWN_PERIOD) - now;
+
+			if (spawnDelay > 0) {
+				s.append(" spawnDelay[").append(spawnDelay).append("] ");
+			}
+
+			s.append(" level[").append(nemesis.getLevel()).append("] ");
+
 			s.append("\n");
 		}
 		notifyCommandListener(sender, this, "commands.nemesis_system.success.list", s.toString());
