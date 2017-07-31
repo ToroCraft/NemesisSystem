@@ -25,7 +25,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
+import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.handlers.Spawn;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
@@ -120,7 +120,7 @@ public class NemesisSystemCommand extends CommandBase {
 
 		ItemStack stack = new ItemStack(Items.WRITTEN_BOOK, 1);
 		NBTTagCompound discTag = new NBTTagCompound();
-		NemesisDiscovery discovery = DiscoveryUtil.buildRandomDiscovery(world);
+		NemesisKnowledge discovery = DiscoveryUtil.buildRandomDiscovery(world);
 		discovery.writeToNBT(discTag);
 		NBTTagCompound tag = new NBTTagCompound();
 		tag.setTag(NBT_DISCOVERY, discTag);

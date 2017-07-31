@@ -6,7 +6,8 @@ import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
-import net.torocraft.nemesissystem.discovery.PlayerDiscoveries;
+import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
+import net.torocraft.nemesissystem.discovery.PlayerKnowledgeBase;
 import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
@@ -19,20 +20,22 @@ public class DiscoveryUtil {
 
 	private static int chance = 5;
 
-	public static NemesisDiscovery getDiscoveriesFor(EntityPlayer player, UUID nemesisId) {
-		return PlayerDiscoveries.get(player).getDiscovery(nemesisId);
+	public static NemesisKnowledge getDiscoveriesFor(EntityPlayer player, UUID nemesisId) {
+		return PlayerKnowledgeBase.get(player).getDiscovery(nemesisId);
 	}
 
 	public static void newDiscovery(EntityPlayer player, NemesisDiscovery discovery) {
-		PlayerDiscoveries discoveries = PlayerDiscoveries.get(player);
-		discoveries.add(discovery);
+		PlayerKnowledgeBase discoveries = PlayerKnowledgeBase.get(player);
+		// TODO implement
+		//discoveries.add(discovery);
 		discoveries.writeToPlayer(player);
 	}
 
-	public static NemesisDiscovery buildRandomDiscovery(World world) {
+	// TODO change to discovery
+	public static NemesisKnowledge buildRandomDiscovery(World world) {
 		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
 		Nemesis nemesis = getRandomNemesis(nemeses);
-		NemesisDiscovery discovery = new NemesisDiscovery(nemesis.getId());
+		NemesisKnowledge discovery = new NemesisKnowledge(nemesis.getId());
 		setRandomInformation(discovery, nemesis);
 		return discovery;
 	}
@@ -41,7 +44,8 @@ public class DiscoveryUtil {
 		return nemeses.get(rand.nextInt(nemeses.size()));
 	}
 
-	public static void setRandomInformation(NemesisDiscovery discovery, Nemesis nemesis) {
+	// TODO change to discovery
+	public static void setRandomInformation(NemesisKnowledge discovery, Nemesis nemesis) {
 		boolean hasAddedInfo = false;
 
 		if (!discovery.isName()) {

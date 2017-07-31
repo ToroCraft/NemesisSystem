@@ -1,22 +1,15 @@
 package net.torocraft.nemesissystem.handlers;
 
 import static net.torocraft.nemesissystem.util.DiscoveryUtil.NBT_DISCOVERY;
-import static net.torocraft.nemesissystem.util.DiscoveryUtil.NBT_PLAYER_DISCOVERIES;
 
-import com.google.common.collect.Streams;
-import java.util.List;
-import java.util.stream.Collectors;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
+import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.util.DiscoveryUtil;
 
 public class Discovery {
@@ -42,14 +35,14 @@ public class Discovery {
 		}
 	}
 
-	private NemesisDiscovery getDiscoveryFromBook(ItemStack item) {
-		NemesisDiscovery discovery = new NemesisDiscovery(null);
+	private NemesisKnowledge getDiscoveryFromBook(ItemStack item) {
+		NemesisKnowledge discovery = new NemesisKnowledge(null);
 		discovery.readFromNBT(item.getTagCompound().getCompoundTag(NBT_DISCOVERY));
 		return discovery;
 	}
 
-	private NemesisDiscovery map(NBTBase tag) {
-		NemesisDiscovery d = new NemesisDiscovery(null);
+	private NemesisKnowledge map(NBTBase tag) {
+		NemesisKnowledge d = new NemesisKnowledge(null);
 		d.readFromNBT((NBTTagCompound) tag);
 		return d;
 	}

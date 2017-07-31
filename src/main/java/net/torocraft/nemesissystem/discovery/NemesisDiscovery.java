@@ -1,69 +1,21 @@
 package net.torocraft.nemesissystem.discovery;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
-import jline.internal.Nullable;
-import net.minecraft.nbt.NBTTagCompound;
-import net.torocraft.nemesissystem.util.nbt.NbtField;
-import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
 
+/**
+ * This class represents a piece of information that has been discovered about an nemesis.
+ */
 public class NemesisDiscovery {
 
-	@NbtField
-	private UUID nemesisId;
+	public enum Type {NAME, LOCATION, TRAIT}
 
-	@NbtField
-	private boolean name;
+	public UUID nemesisId;
 
-	@NbtField
-	private boolean location;
+	public Type type;
 
-	@NbtField(genericType = Integer.class)
-	public Set<Integer> traits = new HashSet<>();
+	/**
+	 * this field is used to hold the index of the discovered trait (type=TRAIT)
+	 */
+	public int index;
 
-	public NemesisDiscovery(@Nullable UUID nemesisId) {
-		this.nemesisId = nemesisId;
-	}
-
-	public void readFromNBT(NBTTagCompound c) {
-		NbtSerializer.read(c, this);
-	}
-
-	public void writeToNBT(NBTTagCompound c) {
-		NbtSerializer.write(c, this);
-	}
-
-	public void setNemesisId(UUID nemesisId) {
-		this.nemesisId = nemesisId;
-	}
-
-	public UUID getNemesisId() {
-		return nemesisId;
-	}
-
-	public boolean isName() {
-		return name;
-	}
-
-	public void setName(boolean name) {
-		this.name = name;
-	}
-
-	public boolean isLocation() {
-		return location;
-	}
-
-	public void setLocation(boolean location) {
-		this.location = location;
-	}
-
-	public Set<Integer> getTraits() {
-		return traits;
-	}
-
-	public void setTraits(Set<Integer> traits) {
-		this.traits = traits;
-	}
 }
-
