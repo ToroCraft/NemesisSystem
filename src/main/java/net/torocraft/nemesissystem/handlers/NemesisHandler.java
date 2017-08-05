@@ -18,6 +18,8 @@ public class NemesisHandler {
 		//send("discovery", title(ev), ev.nemesis.getLevel());
 		//ev.nemesis.addToHistory(LogEntry.PROMOTION(ev.nemesis.getLevel()));
 
+		// ⴰ
+
 		System.out.println("Nemesis Discovery found: " + ev.discovery);
 	}
 	
