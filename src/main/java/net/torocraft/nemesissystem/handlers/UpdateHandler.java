@@ -9,15 +9,15 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.traits.TraitHandler;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
-public class Update {
+public class UpdateHandler {
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new Update());
+		MinecraftForge.EVENT_BUS.register(new UpdateHandler());
 	}
 
 	@SubscribeEvent
@@ -49,7 +49,7 @@ public class Update {
 		}
 
 		EntityCreature bodyGuard = (EntityCreature) event.getEntity();
-		if (bodyGuard.getTags().contains(Death.TAG_RONIN)) {
+		if (bodyGuard.getTags().contains(DeathHandler.TAG_RONIN)) {
 			flee(bodyGuard);
 			return;
 		}
@@ -82,7 +82,7 @@ public class Update {
 	}
 
 	private void handleNemesisUpdate(LivingUpdateEvent event) {
-		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
+		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
 		if (nemesis == null || !(event.getEntity() instanceof EntityCreature)) {
 			return;
 		}

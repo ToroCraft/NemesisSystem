@@ -11,11 +11,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.gui.NemesisSystemGuiHandler;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 
 public class MessageOpenNemesisDetailsGui implements IMessage {
 
-	public static Nemesis NEMESIS;
+	public static NemesisEntry NEMESIS;
 
 	private NBTTagCompound nemesisCompound;
 
@@ -27,7 +27,7 @@ public class MessageOpenNemesisDetailsGui implements IMessage {
 
 	}
 
-	public MessageOpenNemesisDetailsGui(Nemesis nemesis) {
+	public MessageOpenNemesisDetailsGui(NemesisEntry nemesis) {
 		NBTTagCompound c = new NBTTagCompound();
 		nemesis.writeToNBT(c);
 		this.nemesisCompound = c;
@@ -52,7 +52,7 @@ public class MessageOpenNemesisDetailsGui implements IMessage {
 	}
 
 	public static void work(MessageOpenNemesisDetailsGui message) {
-		NEMESIS = new Nemesis();
+		NEMESIS = new NemesisEntry();
 		NEMESIS.readFromNBT(message.nemesisCompound);
 		EntityPlayer player = Minecraft.getMinecraft().player;
 		player.openGui(NemesisSystem.INSTANCE, NemesisSystemGuiHandler.NEMESIS_DETAILS_GUI, player.world, (int) player.posX, (int) player.posY,

@@ -7,7 +7,7 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 
 public class EntityDecorator {
 
@@ -17,7 +17,7 @@ public class EntityDecorator {
 	 * @param entity the entity to be converted into a nemesis
 	 * @param nemesis the nemesis to create
 	 */
-	public static void decorate(EntityLiving entity, Nemesis nemesis) {
+	public static void decorate(EntityLiving entity, NemesisEntry nemesis) {
 		entity.addTag(NemesisSystem.TAG_NEMESIS);
 		entity.getEntityData().setUniqueId(NemesisSystem.NBT_NEMESIS_ID, nemesis.getId());
 		entity.setCustomNameTag(nemesis.getNameAndTitle());

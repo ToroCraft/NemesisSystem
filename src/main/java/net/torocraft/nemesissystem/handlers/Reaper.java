@@ -6,7 +6,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
@@ -27,7 +27,7 @@ public class Reaper {
 	}
 
 	private void despawnLogic(WorldTickEvent event, INemesisRegistry registry) {
-		registry.list().forEach((Nemesis nemesis) -> {
+		registry.list().forEach((NemesisEntry nemesis) -> {
 			if (nemesis.isSpawned()) {
 				if (shouldBeDespawned(event.world, nemesis)) {
 					despawnNemesis(event.world, registry, nemesis);
@@ -38,8 +38,8 @@ public class Reaper {
 		});
 	}
 
-	private void despawnNemesis(World world, INemesisRegistry registry, Nemesis nemesis) {
-		// TODO increase Nemesis level every time they spawn but are not killed
+	private void despawnNemesis(World world, INemesisRegistry registry, NemesisEntry nemesis) {
+		// TODO increase NemesisEntry level every time they spawn but are not killed
 		Entity entity = world.getEntityByID(nemesis.getSpawned());
 		if (entity != null) {
 			entity.setDead();
@@ -49,14 +49,14 @@ public class Reaper {
 		registry.update(nemesis);
 	}
 
-	private boolean shouldBeDespawned(World world, Nemesis nemesis) {
+	private boolean shouldBeDespawned(World world, NemesisEntry nemesis) {
 		if (nemesis.isLoaded()) {
 			return false;
 		}
 		return (world.getTotalWorldTime() - nemesis.getUnloaded()) > MAX_UNLOAD_TIME;
 	}
 
-	private void unloadNemesis(World world, INemesisRegistry registry, Nemesis nemesis) {
+	private void unloadNemesis(World world, INemesisRegistry registry, NemesisEntry nemesis) {
 		Entity entity = world.getEntityByID(nemesis.getSpawned());
 
 		if (nemesis.isLoaded() && entity == null) {

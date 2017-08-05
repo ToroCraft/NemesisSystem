@@ -4,20 +4,19 @@ import static net.torocraft.nemesissystem.util.DiscoveryUtil.NBT_DISCOVERY;
 
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTBase;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
+import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
+import net.torocraft.nemesissystem.events.DiscoveryEvent;
+import net.torocraft.nemesissystem.registry.*;
 import net.torocraft.nemesissystem.util.DiscoveryUtil;
 
-public class Discovery {
+public class DiscoveryHandler {
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new Discovery());
+		MinecraftForge.EVENT_BUS.register(new DiscoveryHandler());
 	}
-
 
 	// TODO write valid signed book NBT
 
@@ -29,22 +28,38 @@ public class Discovery {
 
 	@SubscribeEvent
 	public void readBook(PlayerInteractEvent event) {
+		if (event.getWorld().isRemote) {
+			return;
+		}
 		ItemStack item = event.getItemStack();
 		if (isDiscoveryBook(item)) {
-			DiscoveryUtil.newDiscovery(event.getEntityPlayer(), getDiscoveryFromBook(item));
+			NemesisDiscovery discovery = getDiscoveryFromBook(item);
+
+			if (discovery == null) {
+				System.out.println("No discovery found in book");
+				return;
+			}
+
+			DiscoveryUtil.newDiscovery(event.getEntityPlayer(), discovery);
+			NemesisEntry nemesis = NemesisRegistryProvider.get(event.getWorld()).getById(discovery.nemesisId);
+
+
+
+			if (nemesis == null) {
+				System.out.println("Nemesis not found");
+				return;
+			}
+
+			System.out.println("Reading DiscoveryHandler: " + discovery);
+
+			MinecraftForge.EVENT_BUS.post(new DiscoveryEvent(nemesis, discovery));
 		}
 	}
 
-	private NemesisKnowledge getDiscoveryFromBook(ItemStack item) {
-		NemesisKnowledge discovery = new NemesisKnowledge(null);
+	private NemesisDiscovery getDiscoveryFromBook(ItemStack item) {
+		NemesisDiscovery discovery = new NemesisDiscovery();
 		discovery.readFromNBT(item.getTagCompound().getCompoundTag(NBT_DISCOVERY));
 		return discovery;
-	}
-
-	private NemesisKnowledge map(NBTBase tag) {
-		NemesisKnowledge d = new NemesisKnowledge(null);
-		d.readFromNBT((NBTTagCompound) tag);
-		return d;
 	}
 
 	private boolean isDiscoveryBook(ItemStack item) {

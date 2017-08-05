@@ -8,11 +8,11 @@ import net.minecraft.util.EntityDamageSourceIndirect;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.network.MessageReflectDamageAnimation;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 
 public class Reflection {
 
-	public static void onHurt(EntityCreature nemesisEntity, Nemesis nemesis, DamageSource source, float amount) {
+	public static void onHurt(EntityCreature nemesisEntity, NemesisEntry nemesis, DamageSource source, float amount) {
 		if (nemesisEntity.isEntityInvulnerable(source)) {
 			return;
 		}
@@ -24,7 +24,7 @@ public class Reflection {
 		}
 	}
 
-	private static void reflectMeleeAttack(Nemesis nemesis, EntityCreature nemesisEntity, DamageSource source, float amount) {
+	private static void reflectMeleeAttack(NemesisEntry nemesis, EntityCreature nemesisEntity, DamageSource source, float amount) {
 		Entity attacker = source.getTrueSource();
 
 		if (attacker == null) {
@@ -40,7 +40,7 @@ public class Reflection {
 		NemesisSystem.NETWORK.sendToAllAround(new MessageReflectDamageAnimation(attacker.getEntityId()), point);
 	}
 
-	private static void reflectArrowAtAttacker(Nemesis nemesis, EntityCreature nemesisEntity, DamageSource source) {
+	private static void reflectArrowAtAttacker(NemesisEntry nemesis, EntityCreature nemesisEntity, DamageSource source) {
 		if (!"arrow".equals(source.getDamageType())) {
 			return;
 		}

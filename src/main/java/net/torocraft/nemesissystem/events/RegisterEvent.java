@@ -1,9 +1,9 @@
 package net.torocraft.nemesissystem.events;
 
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 
 public class RegisterEvent extends NemesisEvent {
-	public RegisterEvent(final Nemesis nemesis) {
+	public RegisterEvent(final NemesisEntry nemesis) {
 		super(nemesis);
 	}
 }

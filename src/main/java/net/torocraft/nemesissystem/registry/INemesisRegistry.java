@@ -2,22 +2,21 @@ package net.torocraft.nemesissystem.registry;
 
 import java.util.List;
 import java.util.UUID;
-import net.minecraft.entity.EntityCreature;
 
 public interface INemesisRegistry {
 
-	void register(Nemesis nemesis);
+	void register(NemesisEntry nemesis);
 
 	/**
 	 * To remove a nemesis, update it with setDead(true)
 	 */
-	void update(Nemesis nemesis);
+	void update(NemesisEntry nemesis);
 
-	Nemesis getById(UUID id);
+	NemesisEntry getById(UUID id);
 
-	Nemesis getByName(String name);
+	NemesisEntry getByName(String name);
 
-	List<Nemesis> list();
+	List<NemesisEntry> list();
 
 	void clear();
 
@@ -31,7 +30,7 @@ public interface INemesisRegistry {
 
 	void promote(UUID id);
 
-	void duelIfCrowded(Nemesis opponentOne, Nemesis opponentTwo);
+	void duelIfCrowded(NemesisEntry opponentOne, NemesisEntry opponentTwo);
 
 	void setDead(UUID id, String slayerName);
 

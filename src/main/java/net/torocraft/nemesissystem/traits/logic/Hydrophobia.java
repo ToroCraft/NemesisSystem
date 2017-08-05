@@ -2,7 +2,6 @@ package net.torocraft.nemesissystem.traits.logic;
 
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
-import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 
 public class Hydrophobia {

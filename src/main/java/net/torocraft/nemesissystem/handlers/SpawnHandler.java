@@ -20,11 +20,10 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.events.DemotionEvent;
 import net.torocraft.nemesissystem.events.SpawnEvent;
 import net.torocraft.nemesissystem.network.MessageSyncNemesis;
 import net.torocraft.nemesissystem.network.MessageSyncNemesisRequest;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.EntityDecorator;
@@ -32,14 +31,14 @@ import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 import net.torocraft.nemesissystem.util.SpawnUtil;
 
-public class Spawn {
+public class SpawnHandler {
 
 	private static final int SPAWN_CHANCE = 2;
 
 	public static final int SPAWN_COOLDOWN_PERIOD = 16000;
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new Spawn());
+		MinecraftForge.EVENT_BUS.register(new SpawnHandler());
 	}
 
 	@SubscribeEvent
@@ -65,7 +64,7 @@ public class Spawn {
 			return;
 		}
 
-		Nemesis nemesis = getNemesisForSpawn(event);
+		NemesisEntry nemesis = getNemesisForSpawn(event);
 
 		if (nemesis == null) {
 			return;
@@ -84,14 +83,14 @@ public class Spawn {
 		}
 	}
 
-	private void replaceEntityWithNemesis(EntityCreature entity, Nemesis nemesis) {
+	private void replaceEntityWithNemesis(EntityCreature entity, NemesisEntry nemesis) {
 		entity.setDead();
 		spawnNemesis(entity.world, entity.getPosition(), nemesis);
 	}
 
 	private void handleRespawnOfNemesis(EntityJoinWorldEvent event) {
 		Entity entity = event.getEntity();
-		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
+		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
 		if (nemesis == null) {
 			/*
 			 * missing nemesis data
@@ -130,7 +129,7 @@ public class Spawn {
 		}
 	}
 
-	public static void spawnNemesis(World world, BlockPos pos, Nemesis nemesis) {
+	public static void spawnNemesis(World world, BlockPos pos, NemesisEntry nemesis) {
 		if (nemesis.isDead()) {
 			return;
 		}
@@ -160,7 +159,7 @@ public class Spawn {
 		sendNemesisDataToClient(nemesis);
 	}
 
-	private static void sendNemesisDataToClient(Nemesis nemesis) {
+	private static void sendNemesisDataToClient(NemesisEntry nemesis) {
 		NemesisSystem.NETWORK.sendToAll(new MessageSyncNemesis(nemesis));
 	}
 
@@ -178,7 +177,7 @@ public class Spawn {
 		return e.world.canSeeSky(new BlockPos(e.posX, e.posY + (double) e.getEyeHeight(), e.posZ));
 	}
 
-	private static void spawnBodyGuard(EntityLiving entity, Nemesis nemesis) {
+	private static void spawnBodyGuard(EntityLiving entity, NemesisEntry nemesis) {
 
 		// TODO use nemesis colors
 
@@ -209,7 +208,7 @@ public class Spawn {
 		return stack;
 	}
 
-	private static Nemesis getNemesisForSpawn(EntityEvent event) {
+	private static NemesisEntry getNemesisForSpawn(EntityEvent event) {
 
 		if (!(event.getEntity() instanceof EntityMob)) {
 			return null;
@@ -226,11 +225,11 @@ public class Spawn {
 			return null;
 		}
 
-		List<Nemesis> nemeses = NemesisRegistryProvider.get(event.getEntity().world).list();
-		nemeses.removeIf(Nemesis::isSpawned);
-		nemeses.removeIf(Nemesis::isDead);
-		nemeses.removeIf((Nemesis n) -> notReadyToSpawn(world, n));
-		nemeses.removeIf((Nemesis n) -> !inRage(entity, n));
+		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(event.getEntity().world).list();
+		nemeses.removeIf(NemesisEntry::isSpawned);
+		nemeses.removeIf(NemesisEntry::isDead);
+		nemeses.removeIf((NemesisEntry n) -> notReadyToSpawn(world, n));
+		nemeses.removeIf((NemesisEntry n) -> !inRage(entity, n));
 
 		if (nemeses.size() < 1) {
 			return null;
@@ -239,7 +238,7 @@ public class Spawn {
 		return nemeses.get(event.getEntity().world.rand.nextInt(nemeses.size()));
 	}
 
-	private static boolean inRage(Entity entity, Nemesis nemesis) {
+	private static boolean inRage(Entity entity, NemesisEntry nemesis) {
 		int x = (int) entity.posX;
 		int z = (int) entity.posZ;
 
@@ -251,7 +250,7 @@ public class Spawn {
 		return x < nx + r && x > nx - r && z < nz + r && z > nz - r;
 	}
 
-	private static boolean notReadyToSpawn(World world, Nemesis n) {
+	private static boolean notReadyToSpawn(World world, NemesisEntry n) {
 		if (n.getLastSpawned() == null) {
 			return false;
 		}

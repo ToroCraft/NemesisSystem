@@ -12,12 +12,12 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class MessageSyncNemesis implements IMessage {
 
-	private Nemesis nemesis;
+	private NemesisEntry nemesis;
 
 	public static void init(int packetId) {
 		NemesisSystem.NETWORK.registerMessage(MessageSyncNemesis.Handler.class, MessageSyncNemesis.class, packetId, Side.CLIENT);
@@ -27,18 +27,18 @@ public class MessageSyncNemesis implements IMessage {
 
 	}
 
-	public MessageSyncNemesis(Nemesis nemesis) {
+	public MessageSyncNemesis(NemesisEntry nemesis) {
 		this.nemesis = nemesis;
 	}
 
 	public MessageSyncNemesis(EntityPlayer player) {
-		List<Nemesis> nemeses = NemesisRegistryProvider.get(player.getEntityWorld()).list();
-		nemeses.removeIf(Nemesis::isDead);
+		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(player.getEntityWorld()).list();
+		nemeses.removeIf(NemesisEntry::isDead);
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		nemesis = new Nemesis();
+		nemesis = new NemesisEntry();
 		nemesis.readFromNBT(ByteBufUtils.readTag(buf));
 	}
 
@@ -58,7 +58,7 @@ public class MessageSyncNemesis implements IMessage {
 	}
 
 	public static void work(MessageSyncNemesis message) {
-		Nemesis nemesis = message.nemesis;
+		NemesisEntry nemesis = message.nemesis;
 
 		if (nemesis == null) {
 			return;

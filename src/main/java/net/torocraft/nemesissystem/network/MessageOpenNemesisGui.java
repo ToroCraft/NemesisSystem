@@ -11,13 +11,13 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class MessageOpenNemesisGui implements IMessage {
 
-	public static List<Nemesis> NEMESES;
+	public static List<NemesisEntry> NEMESES;
 
 	private NBTTagCompound nemeses;
 
@@ -29,13 +29,13 @@ public class MessageOpenNemesisGui implements IMessage {
 
 	}
 
-	public MessageOpenNemesisGui(List<Nemesis> nemeses) {
+	public MessageOpenNemesisGui(List<NemesisEntry> nemeses) {
 		setNemeses(nemeses);
 	}
 
 	public MessageOpenNemesisGui(EntityPlayer player) {
-		List<Nemesis> nemeses = NemesisRegistryProvider.get(player.getEntityWorld()).list();
-		nemeses.removeIf(Nemesis::isDead);
+		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(player.getEntityWorld()).list();
+		nemeses.removeIf(NemesisEntry::isDead);
 		setNemeses(nemeses);
 	}
 
@@ -63,14 +63,14 @@ public class MessageOpenNemesisGui implements IMessage {
 		player.openGui(NemesisSystem.INSTANCE, 0, player.world, (int) player.posX, (int) player.posY, (int) player.posZ);
 	}
 
-	public List<Nemesis> getNemeses() {
+	public List<NemesisEntry> getNemeses() {
 		if(nemeses == null){
 			return null;
 		}
 		return NemesisRegistry.readNemesesFromNBT(nemeses);
 	}
 
-	public void setNemeses(List<Nemesis> nemeses) {
+	public void setNemeses(List<NemesisEntry> nemeses) {
 		this.nemeses = new NBTTagCompound();
 		NemesisRegistry.writeNemesesToNBT(this.nemeses, nemeses);
 	}

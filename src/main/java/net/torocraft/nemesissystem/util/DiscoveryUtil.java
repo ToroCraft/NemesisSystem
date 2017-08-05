@@ -4,11 +4,15 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
+import net.torocraft.nemesissystem.discovery.NemesisDiscovery.Type;
 import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.discovery.PlayerKnowledgeBase;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class DiscoveryUtil {
@@ -18,61 +22,71 @@ public class DiscoveryUtil {
 
 	private static Random rand = new Random();
 
-	private static int chance = 5;
-
-	public static NemesisKnowledge getDiscoveriesFor(EntityPlayer player, UUID nemesisId) {
-		return PlayerKnowledgeBase.get(player).getDiscovery(nemesisId);
+	public static NemesisKnowledge getGetPlayerKnowledgeOfNemesis(EntityPlayer player, UUID nemesisId) {
+		return PlayerKnowledgeBase.get(player).getKnowledgeOfNemesis(nemesisId);
 	}
 
 	public static void newDiscovery(EntityPlayer player, NemesisDiscovery discovery) {
-		PlayerKnowledgeBase discoveries = PlayerKnowledgeBase.get(player);
-		// TODO implement
-		//discoveries.add(discovery);
-		discoveries.writeToPlayer(player);
+		PlayerKnowledgeBase knowledgeBase = PlayerKnowledgeBase.get(player);
+		knowledgeBase.add(discovery);
+		knowledgeBase.save(player);
 	}
 
-	// TODO change to discovery
-	public static NemesisKnowledge buildRandomDiscovery(World world) {
-		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
-		Nemesis nemesis = getRandomNemesis(nemeses);
-		NemesisKnowledge discovery = new NemesisKnowledge(nemesis.getId());
-		setRandomInformation(discovery, nemesis);
-		return discovery;
+	public static ItemStack getRandomDiscoveryBook(EntityPlayer player) {
+		return buildDiscoveryBook(DiscoveryUtil.getRandomDiscovery(player.world));
 	}
 
-	private static Nemesis getRandomNemesis(List<Nemesis> nemeses) {
+	public static ItemStack buildDiscoveryBook(NemesisDiscovery discovery) {
+		ItemStack book = new ItemStack(Items.WRITTEN_BOOK, 1);
+		NBTTagCompound discoveryNbt = new NBTTagCompound();
+		discovery.writeToNBT(discoveryNbt);
+
+		NBTTagCompound bookNbt = new NBTTagCompound();
+		bookNbt.setTag(NBT_DISCOVERY, discoveryNbt);
+		book.setTagCompound(bookNbt);
+
+		return book;
+	}
+
+	/**
+	 * Get a random discovery for a random nemesis
+	 */
+	public static NemesisDiscovery getRandomDiscovery(World world) {
+		return getRandomDiscovery(getRandomNemesis(world));
+	}
+
+	private static NemesisEntry getRandomNemesis(World world) {
+		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(world).list();
 		return nemeses.get(rand.nextInt(nemeses.size()));
 	}
 
-	// TODO change to discovery
-	public static void setRandomInformation(NemesisKnowledge discovery, Nemesis nemesis) {
-		boolean hasAddedInfo = false;
+	/**
+	 * Get a random discovery about the given nemesis
+	 */
+	public static NemesisDiscovery getRandomDiscovery(NemesisEntry nemesis) {
+		NemesisDiscovery discovery = new NemesisDiscovery();
+		discovery.nemesisId = nemesis.getId();
 
-		if (!discovery.isName()) {
-			if (rand.nextInt(chance) == 0) {
-				discovery.setName(true);
-				hasAddedInfo = true;
-			}
-		}
-		if (!discovery.isLocation()) {
-			if (rand.nextInt(chance) == 0) {
-				discovery.setLocation(true);
-				hasAddedInfo = true;
-			}
-		}
-		if (discovery.getTraits().size() < nemesis.getTraits().size()) {
-			if (rand.nextInt(chance) == 0) {
-				discovery.getTraits().add(getRandomTraitIndex(nemesis));
-				hasAddedInfo = true;
-			}
+		int infoCount = 2 + nemesis.getTraits().size();
+
+		int roll = rand.nextInt(infoCount);
+
+		if (roll == 0) {
+			discovery.type = Type.NAME;
+			return discovery;
 		}
 
-		if (!hasAddedInfo) {
-			setRandomInformation(discovery, nemesis);
+		if (roll == 1) {
+			discovery.type = Type.LOCATION;
+			return discovery;
 		}
+
+		discovery.type = Type.TRAIT;
+		discovery.index = roll - 2;
+		return discovery;
 	}
 
-	private static int getRandomTraitIndex(Nemesis nemesis) {
+	private static int getRandomTraitIndex(NemesisEntry nemesis) {
 		return rand.nextInt(nemesis.getTraits().size());
 	}
 

@@ -14,16 +14,16 @@ import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.traits.TraitHandler;
 import net.torocraft.nemesissystem.traits.Type;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
-public class Attack {
+public class AttackHandler {
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new Attack());
+		MinecraftForge.EVENT_BUS.register(new AttackHandler());
 	}
 
 	@SubscribeEvent
@@ -51,7 +51,7 @@ public class Attack {
 		}
 
 		EntityLiving entity = (EntityLiving) event.getEntityLiving();
-		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(entity);
+		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(entity);
 		if (nemesis == null) {
 			return;
 		}
@@ -84,12 +84,12 @@ public class Attack {
 				}
 
 				System.out.println("Data: " + event.getEntity().getEntityData());
-				Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
+				NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
 				NBTTagCompound c = new NBTTagCompound();
 				if (nemesis != null) {
 					nemesis.writeToNBT(c);
 				}
-				System.out.println("Nemesis: " + (nemesis == null ? "null" : c));
+				System.out.println("NemesisEntry: " + (nemesis == null ? "null" : c));
 				System.out.println("-------------------------------------");
 			}
 		} catch (Exception e) {

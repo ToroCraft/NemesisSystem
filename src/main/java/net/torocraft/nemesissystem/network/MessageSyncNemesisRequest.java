@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class MessageSyncNemesisRequest implements IMessage {
@@ -57,9 +57,9 @@ public class MessageSyncNemesisRequest implements IMessage {
 			return;
 		}
 
-		List<Nemesis> nemeses = NemesisRegistryProvider.get(player.world).list();
+		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(player.world).list();
 
-		for (Nemesis nemesis : nemeses) {
+		for (NemesisEntry nemesis : nemeses) {
 			if (entityUuid.equals(nemesis.getEntityUuid())) {
 				sendPacketToClient(player, nemesis);
 				return;
@@ -67,12 +67,12 @@ public class MessageSyncNemesisRequest implements IMessage {
 		}
 	}
 
-	private static void sendPacketToClient(EntityPlayerMP player, Nemesis nemesis) {
+	private static void sendPacketToClient(EntityPlayerMP player, NemesisEntry nemesis) {
 		updateNameTag(player, nemesis);
 		NemesisSystem.NETWORK.sendTo(new MessageSyncNemesis(nemesis), player);
 	}
 
-	private static void updateNameTag(EntityPlayerMP player, Nemesis nemesis) {
+	private static void updateNameTag(EntityPlayerMP player, NemesisEntry nemesis) {
 		Entity entity = player.world.getEntityByID(nemesis.getSpawned());
 		if (entity != null) {
 			entity.setCustomNameTag(nemesis.getNameAndTitle());

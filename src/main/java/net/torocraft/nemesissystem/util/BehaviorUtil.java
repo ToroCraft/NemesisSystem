@@ -13,7 +13,7 @@ import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.traits.TraitHandler;
 
 public class BehaviorUtil {
@@ -53,7 +53,7 @@ public class BehaviorUtil {
 		return false;
 	}
 
-	public static void stopWorshiping(EntityLiving entity, Nemesis nemesis) {
+	public static void stopWorshiping(EntityLiving entity, NemesisEntry nemesis) {
 		entity.getEntityData().removeTag(NemesisSystem.NBT_WORSHIP_COOLDOWN);
 		entity.getTags().remove(TraitHandler.TAG_WORSHIPING);
 		entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, nemesis.getHandInventory().get(0));

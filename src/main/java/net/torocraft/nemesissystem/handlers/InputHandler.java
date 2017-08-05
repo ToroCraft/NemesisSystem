@@ -12,10 +12,10 @@ import net.torocraft.nemesissystem.network.MessageOpenNemesisGuiRequest;
 import net.torocraft.nemesissystem.proxy.ClientProxy;
 
 @SideOnly(Side.CLIENT)
-public class Input {
+public class InputHandler {
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new Input());
+		MinecraftForge.EVENT_BUS.register(new InputHandler());
 	}
 
 	@SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)

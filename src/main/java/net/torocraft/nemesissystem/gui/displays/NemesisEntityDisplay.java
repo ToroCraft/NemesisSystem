@@ -2,7 +2,7 @@ package net.torocraft.nemesissystem.gui.displays;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityCreature;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.util.EntityDecorator;
 import net.torocraft.nemesissystem.util.SpawnUtil;
 
@@ -18,7 +18,7 @@ public class NemesisEntityDisplay extends EntityDisplay implements GuiDisplay {
 		}
 	}
 
-	public void setNemesis(Nemesis nemesis) {
+	public void setNemesis(NemesisEntry nemesis) {
 		if (nemesis == null) {
 			setEntity(null);
 			return;
@@ -31,7 +31,7 @@ public class NemesisEntityDisplay extends EntityDisplay implements GuiDisplay {
 		setEntity(entity);
 	}
 
-	private EntityCreature createEntity(Nemesis nemesis) {
+	private EntityCreature createEntity(NemesisEntry nemesis) {
 		try {
 			return SpawnUtil.getEntityFromString(mc.world, nemesis.getMob());
 		} catch (Exception e) {

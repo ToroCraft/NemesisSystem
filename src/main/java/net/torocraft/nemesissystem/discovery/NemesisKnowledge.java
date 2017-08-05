@@ -9,7 +9,7 @@ import net.torocraft.nemesissystem.util.nbt.NbtField;
 import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
 
 /**
- * This class holds information on what discoveries have been
+ * This class holds information on what knowledgeMap have been
  * made for a given nemesis.
  */
 public class NemesisKnowledge {
@@ -36,48 +36,5 @@ public class NemesisKnowledge {
 	@NbtField(genericType = Integer.class)
 	public Set<Integer> traits = new HashSet<>();
 
-	public NemesisKnowledge(@Nullable UUID nemesisId) {
-		this.nemesisId = nemesisId;
-	}
-
-	public void readFromNBT(NBTTagCompound c) {
-		NbtSerializer.read(c, this);
-	}
-
-	public void writeToNBT(NBTTagCompound c) {
-		NbtSerializer.write(c, this);
-	}
-
-	public void setNemesisId(UUID nemesisId) {
-		this.nemesisId = nemesisId;
-	}
-
-	public UUID getNemesisId() {
-		return nemesisId;
-	}
-
-	public boolean isName() {
-		return name;
-	}
-
-	public void setName(boolean name) {
-		this.name = name;
-	}
-
-	public boolean isLocation() {
-		return location;
-	}
-
-	public void setLocation(boolean location) {
-		this.location = location;
-	}
-
-	public Set<Integer> getTraits() {
-		return traits;
-	}
-
-	public void setTraits(Set<Integer> traits) {
-		this.traits = traits;
-	}
 }
 

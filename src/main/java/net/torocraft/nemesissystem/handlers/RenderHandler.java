@@ -7,9 +7,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 
-public class Render {
+public class RenderHandler {
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new Render());
+		MinecraftForge.EVENT_BUS.register(new RenderHandler());
 	}
 
 	@SubscribeEvent

@@ -12,10 +12,10 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 
 public class Summon {
-	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, NemesisEntry nemesis) {
 		World world = entity.world;
 		Random rand = entity.getRNG();
 

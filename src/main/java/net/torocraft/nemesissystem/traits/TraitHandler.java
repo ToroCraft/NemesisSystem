@@ -3,7 +3,6 @@ package net.torocraft.nemesissystem.traits;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -11,8 +10,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.torocraft.nemesissystem.handlers.Death;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.handlers.DeathHandler;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.traits.logic.Allergy;
 import net.torocraft.nemesissystem.traits.logic.Archer;
 import net.torocraft.nemesissystem.traits.logic.Chicken;
@@ -35,9 +34,9 @@ public class TraitHandler {
 
 	public static final Random rand = new Random();
 
-	public static void onUpdate(Nemesis nemesis, EntityCreature nemesisEntity) {
+	public static void onUpdate(NemesisEntry nemesis, EntityCreature nemesisEntity) {
 		// caching to an array to avoid: java.util.ArrayList$Itr.checkForComodification
-		//Nemesis.Trait[] traits = nemesis.getTraits().toArray(new Nemesis.Trait[0]);
+		//NemesisEntry.Trait[] traits = nemesis.getTraits().toArray(new NemesisEntry.Trait[0]);
 		Greedy.decrementCooldown(nemesis, nemesisEntity);
 		for (Trait trait : nemesis.getTraits()) {
 			//TODO secondary traits should be used less frequently
@@ -47,7 +46,7 @@ public class TraitHandler {
 		}
 	}
 
-	private static void onUpdate(EntityCreature entity, Nemesis nemesis, Trait trait) {
+	private static void onUpdate(EntityCreature entity, NemesisEntry nemesis, Trait trait) {
 		switch (trait.type) {
 		case DOUBLE_MELEE:
 			// TODO make the nemesis hit twice when attacking
@@ -99,7 +98,7 @@ public class TraitHandler {
 		}
 	}
 
-	public static void onDrops(List<EntityItem> drops, EntityCreature nemesisEntity, Nemesis nemesis) {
+	public static void onDrops(List<EntityItem> drops, EntityCreature nemesisEntity, NemesisEntry nemesis) {
 		Random rand = nemesisEntity.getRNG();
 		for (Trait trait : nemesis.getTraits()) {
 			switch (trait.type) {
@@ -114,19 +113,19 @@ public class TraitHandler {
 			case REFLECT:
 				break;
 			case FIREBALL:
-				drops.add(Death.drop(nemesisEntity, new ItemStack(Blocks.TORCH, rand.nextInt(64))));
+				drops.add(DeathHandler.drop(nemesisEntity, new ItemStack(Blocks.TORCH, rand.nextInt(64))));
 				if (rand.nextInt(5) == 0) {
-					drops.add(Death.drop(nemesisEntity, new ItemStack(Items.LAVA_BUCKET)));
+					drops.add(DeathHandler.drop(nemesisEntity, new ItemStack(Items.LAVA_BUCKET)));
 				}
 				// TODO HEAT:
 				//Fireball.handleHeatTraitUpdate(entity, nemesis, trait);
 				break;
 			case POTION:
-				drops.add(Death.drop(nemesisEntity,
+				drops.add(DeathHandler.drop(nemesisEntity,
 						PotionUtils.addPotionToItemStack(new ItemStack(Items.POTIONITEM), PotionType.REGISTRY.getRandomObject(rand))));
 				break;
 			case TELEPORT:
-				drops.add(Death.drop(nemesisEntity, new ItemStack(Items.ENDER_PEARL, rand.nextInt(16))));
+				drops.add(DeathHandler.drop(nemesisEntity, new ItemStack(Items.ENDER_PEARL, rand.nextInt(16))));
 				break;
 			}
 		}
@@ -134,7 +133,7 @@ public class TraitHandler {
 
 	public static void onHurt(LivingHurtEvent event) {
 		EntityCreature nemesisEntity = (EntityCreature) event.getEntity();
-		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(nemesisEntity);
+		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(nemesisEntity);
 		if (nemesis == null) {
 			return;
 		}

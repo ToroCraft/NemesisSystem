@@ -13,10 +13,10 @@ import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 
 public class Potion {
-	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, NemesisEntry nemesis) {
 		World world = entity.world;
 		Random rand = entity.getRNG();
 

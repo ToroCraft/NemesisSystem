@@ -17,7 +17,7 @@ import net.torocraft.nemesissystem.traits.Type;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
 
-public class Nemesis {
+public class NemesisEntry {
 
 	/**
 	 * the range of the nemesis's domain, setting to 50 would make a 100x100 block domain

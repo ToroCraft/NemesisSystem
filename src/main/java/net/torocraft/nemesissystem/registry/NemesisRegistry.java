@@ -20,11 +20,11 @@ public class NemesisRegistry extends NemesisWorldSaveData implements INemesisReg
 	}
 
 	@Override
-	public Nemesis getById(UUID id) {
+	public NemesisEntry getById(UUID id) {
 		if (id == null) {
 			return null;
 		}
-		for (Nemesis nemesis : nemeses) {
+		for (NemesisEntry nemesis : nemeses) {
 			if (id.equals(nemesis.getId())) {
 				return nemesis;
 			}
@@ -33,9 +33,9 @@ public class NemesisRegistry extends NemesisWorldSaveData implements INemesisReg
 	}
 
 	@Override
-	public Nemesis getByName(String name) {
+	public NemesisEntry getByName(String name) {
 		name = name.trim().toLowerCase();
-		for (Nemesis nemesis : nemeses) {
+		for (NemesisEntry nemesis : nemeses) {
 			if (name.equals(nemesis.getName().trim().toLowerCase())) {
 				return nemesis;
 			}
@@ -44,12 +44,12 @@ public class NemesisRegistry extends NemesisWorldSaveData implements INemesisReg
 	}
 
 	@Override
-	public void update(Nemesis nemesis) {
+	public void update(NemesisEntry nemesis) {
 		if (nemesis == null) {
 			return;
 		}
 
-		Nemesis oldNemesis = getById(nemesis.getId());
+		NemesisEntry oldNemesis = getById(nemesis.getId());
 
 		if(oldNemesis == null){
 			return;
@@ -64,7 +64,7 @@ public class NemesisRegistry extends NemesisWorldSaveData implements INemesisReg
 	}
 
 	@Override
-	public void register(Nemesis nemesis) {
+	public void register(NemesisEntry nemesis) {
 		nemeses.add(nemesis);
 		markDirty();
 		MinecraftForge.EVENT_BUS.post(new RegisterEvent(nemesis));
@@ -72,7 +72,7 @@ public class NemesisRegistry extends NemesisWorldSaveData implements INemesisReg
 	}
 
 	@Override
-	public List<Nemesis> list() {
+	public List<NemesisEntry> list() {
 		return new ArrayList<>(nemeses);
 	}
 

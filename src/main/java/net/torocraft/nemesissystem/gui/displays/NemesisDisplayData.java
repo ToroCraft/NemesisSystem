@@ -5,14 +5,14 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 
 @SideOnly(Side.CLIENT)
 public class NemesisDisplayData {
-	public Nemesis nemesis;
+	public NemesisEntry nemesis;
 	public int distance;
 
-	public NemesisDisplayData(Nemesis nemesis) {
+	public NemesisDisplayData(NemesisEntry nemesis) {
 		this.nemesis = nemesis;
 		computeDistance();
 	}

@@ -4,9 +4,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import net.minecraft.item.ItemStack;
@@ -113,7 +115,7 @@ public class NbtSerializer {
 
 		if (value instanceof ItemStack) {
 			NBTTagCompound nbttagcompound = new NBTTagCompound();
-			((ItemStack)value).writeToNBT(nbttagcompound);
+			((ItemStack) value).writeToNBT(nbttagcompound);
 			return nbttagcompound;
 		}
 
@@ -127,12 +129,20 @@ public class NbtSerializer {
 		}
 
 		if (value instanceof List) {
-			// TODO only support array lists
 			List<?> list = (List<?>) value;
 			NBTTagList nbttaglist = new NBTTagList();
 			for (int i = 0; i < list.size(); ++i) {
 				NBTBase nbt = toCompound(list.get(i));
-				// TODO is slot needed for itemStacks? nbttagcompound.setByte("Slot", (byte) i);
+				nbttaglist.appendTag(nbt);
+			}
+			return nbttaglist;
+		}
+
+		if (value instanceof Set) {
+			Set<?> set = (Set<?>) value;
+			NBTTagList nbttaglist = new NBTTagList();
+			for (Object o : set) {
+				NBTBase nbt = toCompound(o);
 				nbttaglist.appendTag(nbt);
 			}
 			return nbttaglist;
@@ -168,27 +178,37 @@ public class NbtSerializer {
 			return s;
 		case "net.minecraft.nbt.NBTTagList":
 			NBTTagList nbtList = (NBTTagList) value;
-			List<Object> list;
 			genericType = f.getAnnotation(NbtField.class).genericType();
 
+			if (Set.class.isAssignableFrom(type)) {
+				Set<Object> set = new HashSet<>();
+				for (int i = 0; i < nbtList.tagCount(); i++) {
+					if (genericType.isAssignableFrom(ItemStack.class)) {
+						set.add(new ItemStack((NBTTagCompound) nbtList.get(i)));
+					} else {
+						set.add(fromCompound(f, genericType, nbtList.get(i)));
+					}
+				}
+				return set;
+			}
+
+
+			List<Object> list;
 			if (NonNullList.class.isAssignableFrom(type)) {
 				list = NonNullList.withSize(nbtList.tagCount(), ItemStack.EMPTY);
 			} else {
 				list = new ArrayList<>();
-				for(int i = 0; i < nbtList.tagCount(); i++){
+				for (int i = 0; i < nbtList.tagCount(); i++) {
 					list.add(null);
 				}
 			}
 
 			for (int i = 0; i < nbtList.tagCount(); i++) {
-
 				if (genericType.isAssignableFrom(ItemStack.class)) {
-					list.set(i, new ItemStack((NBTTagCompound)nbtList.get(i)));
+					list.set(i, new ItemStack((NBTTagCompound) nbtList.get(i)));
 				} else {
 					list.set(i, fromCompound(f, genericType, nbtList.get(i)));
 				}
-
-
 			}
 
 			return list;
@@ -219,7 +239,6 @@ public class NbtSerializer {
 		System.out.println("NBT serializer error Field[" + f.getName() + "] Object[" + o.getClass().getName() + "]");
 		e.printStackTrace();
 	}
-
 
 	private static void logUnsupportedValue(Field f, Object value) {
 		System.out.println("Unsupported Type[" + f.getType().getName() + "] Field[" + f + "] Value[" + value + "]");

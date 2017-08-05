@@ -1,21 +1,21 @@
 package net.torocraft.nemesissystem.events;
 
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 
 public class DuelEvent extends NemesisEvent {
-	protected final Nemesis loser;
+	public final NemesisEntry loser;
 
-	public DuelEvent(final Nemesis winner, final Nemesis loser) {
+	public DuelEvent(final NemesisEntry winner, final NemesisEntry loser) {
 		super(winner);
 		this.loser = loser;
 
 	}
 
-	public Nemesis getWinner() {
-		return getNemesis();
+	public NemesisEntry getWinner() {
+		return nemesis;
 	}
 
-	public Nemesis getLoser() {
+	public NemesisEntry getLoser() {
 		return loser;
 	}
 }

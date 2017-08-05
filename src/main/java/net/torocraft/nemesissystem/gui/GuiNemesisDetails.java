@@ -15,7 +15,7 @@ import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
 import net.torocraft.nemesissystem.gui.displays.NemesisEntityDisplay;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGuiRequest;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
@@ -74,7 +74,7 @@ public class GuiNemesisDetails extends GuiScreen {
 	}
 
 	private void drawTitle() {
-		Nemesis n = nemesisData.nemesis;
+		NemesisEntry n = nemesisData.nemesis;
 		drawCenteredString(fontRenderer, n.getNameAndTitle() + " (" + NemesisUtil.romanize(n.getLevel()) + ")", width / 2, 10 + offsetY, 0xffffff);
 	}
 
@@ -82,7 +82,7 @@ public class GuiNemesisDetails extends GuiScreen {
 		int x = offsetX + 109;
 		int y = offsetY + 30;
 
-		Nemesis nemesis = nemesisData.nemesis;
+		NemesisEntry nemesis = nemesisData.nemesis;
 
 		fontRenderer.drawString(I18n.format("gui.distance") + ": " + nemesisData.distance + "m", x, y, NemesisDisplay.grey);
 		y += 10;

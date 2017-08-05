@@ -16,7 +16,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.math.MathHelper;
-import net.torocraft.nemesissystem.handlers.Death;
+import net.torocraft.nemesissystem.handlers.DeathHandler;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.TraitHandler;
 
@@ -26,11 +26,11 @@ public class Archer {
 	private static String[] DROP_TYPES = { "harming", "poison", "weakness", "slowness"};
 
 	public static void onDrop(List<EntityItem> drops, EntityCreature nemesisEntity, int level) {
-		drops.add(Death.drop(nemesisEntity, new ItemStack(Items.ARROW, TraitHandler.rand.nextInt(64))));
+		drops.add(DeathHandler.drop(nemesisEntity, new ItemStack(Items.ARROW, TraitHandler.rand.nextInt(64))));
 		if (level > 3) {
 			ItemStack arrows = new ItemStack(Items.TIPPED_ARROW, TraitHandler.rand.nextInt(64));
 			PotionUtils.addPotionToItemStack(arrows, PotionType.getPotionTypeForName(DROP_TYPES[TraitHandler.rand.nextInt(DROP_TYPES.length)]));
-			drops.add(Death.drop(nemesisEntity, arrows));
+			drops.add(DeathHandler.drop(nemesisEntity, arrows));
 		}
 	}
 

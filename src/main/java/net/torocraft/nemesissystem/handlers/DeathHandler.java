@@ -16,15 +16,15 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.traits.TraitHandler;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
-public class Death {
+public class DeathHandler {
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new Death());
+		MinecraftForge.EVENT_BUS.register(new DeathHandler());
 	}
 
 	public static final String TAG_RONIN = "nemesissystem_ronin";
@@ -73,7 +73,7 @@ public class Death {
 			return;
 		}
 
-		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
+		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
 		if (nemesis == null) {
 			return;
 		}
@@ -85,11 +85,11 @@ public class Death {
 		if (slayer == null) {
 			return;
 		}
-		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(slayer);
+		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(slayer);
 
 		if (nemesis == null) {
 			if (NemesisUtil.isNemesisClassEntity(slayer)) {
-				Nemesis newNemesis = NemesisActions.createAndRegisterNemesis(slayer, slayer.getPosition());
+				NemesisEntry newNemesis = NemesisActions.createAndRegisterNemesis(slayer, slayer.getPosition());
 				nemesisDuelIfCrowed(slayer.world, newNemesis);
 			}
 		} else {
@@ -97,12 +97,12 @@ public class Death {
 		}
 	}
 
-	private void nemesisDuelIfCrowed(World world, Nemesis exclude) {
+	private void nemesisDuelIfCrowed(World world, NemesisEntry exclude) {
 		NemesisActions.duelIfCrowded(world, exclude, true);
 	}
 
 	private void handleNemesisDrops(List<EntityItem> drops, EntityCreature nemesisEntity) {
-		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(nemesisEntity);
+		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(nemesisEntity);
 		Random rand = nemesisEntity.getRNG();
 
 		if (nemesis == null) {
@@ -135,7 +135,7 @@ public class Death {
 	}
 
 	private static void handleNemesisDeath(EntityCreature nemesisEntity, Entity attacker) {
-		Nemesis nemesis = NemesisUtil.loadNemesisFromEntity(nemesisEntity);
+		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(nemesisEntity);
 
 		if (nemesis == null) {
 			return;

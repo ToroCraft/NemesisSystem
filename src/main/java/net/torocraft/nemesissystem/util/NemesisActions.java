@@ -21,14 +21,14 @@ import net.torocraft.nemesissystem.events.DemotionEvent;
 import net.torocraft.nemesissystem.events.DuelEvent;
 import net.torocraft.nemesissystem.events.PromotionEvent;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.Type;
 
 public class NemesisActions {
 
-	public static void promote(World world, Nemesis nemesis) {
+	public static void promote(World world, NemesisEntry nemesis) {
 		if (nemesis.getLevel() >= 10) {
 			return;
 		}
@@ -43,11 +43,11 @@ public class NemesisActions {
 		MinecraftForge.EVENT_BUS.post(new PromotionEvent(nemesis));
 	}
 
-	private static boolean shouldGainAdditionalTrait(Nemesis nemesis) {
+	private static boolean shouldGainAdditionalTrait(NemesisEntry nemesis) {
 		return NemesisUtil.rand.nextInt(10 * nemesis.getTraits().size()) == 0;
 	}
 
-	private static void addAdditionalStrength(Nemesis nemesis) {
+	private static void addAdditionalStrength(NemesisEntry nemesis) {
 		List<Type> availableTraits = Arrays.stream(Type.values())
 				.filter(t -> !nemesis.hasTrait(t))
 				.filter(t -> t.isStrength())
@@ -61,7 +61,7 @@ public class NemesisActions {
 		nemesis.getTraits().add(new Trait(type, 1));
 	}
 
-	private static void upgradeTrait(Nemesis nemesis) {
+	private static void upgradeTrait(NemesisEntry nemesis) {
 		for (Trait trait : nemesis.getTraits()) {
 			if (trait.type.isStrength() && upgradeTrait(trait)) {
 				return;
@@ -69,7 +69,7 @@ public class NemesisActions {
 		}
 	}
 
-	private static void intensifyWeakness(Nemesis nemesis) {
+	private static void intensifyWeakness(NemesisEntry nemesis) {
 		for (Trait trait : nemesis.getTraits()) {
 			if (trait.type.isWeakness() && upgradeTrait(trait)) {
 				return;
@@ -86,7 +86,7 @@ public class NemesisActions {
 		return true;
 	}
 
-	public static void demote(World world, Nemesis nemesis, String slayerName) {
+	public static void demote(World world, NemesisEntry nemesis, String slayerName) {
 		nemesis.setLevel(nemesis.getLevel() - 1);
 		if (nemesis.getLevel() < 1) {
 			kill(world, nemesis, slayerName);
@@ -99,28 +99,28 @@ public class NemesisActions {
 		}
 	}
 
-	public static Nemesis createAndRegisterNemesis(EntityCreature entity, BlockPos nemesisLocation) {
+	public static NemesisEntry createAndRegisterNemesis(EntityCreature entity, BlockPos nemesisLocation) {
 		boolean isChild = false;
 		if (entity instanceof EntityZombie) {
 			isChild = entity.isChild();
 		}
-		Nemesis nemesis = NemesisBuilder
+		NemesisEntry nemesis = NemesisBuilder
 				.build(entity.getEntityWorld(), NemesisUtil.getEntityType(entity), isChild, entity.dimension, 1, nemesisLocation.getX(),
 						nemesisLocation.getZ());
 		NemesisRegistryProvider.get(entity.world).register(nemesis);
 		return nemesis;
 	}
 
-	public static void kill(World world, Nemesis nemesis, String slayerName) {
+	public static void kill(World world, NemesisEntry nemesis, String slayerName) {
 		nemesis.setSpawned(null);
 		nemesis.setDead(true);
 		NemesisRegistryProvider.get(world).update(nemesis);
 		MinecraftForge.EVENT_BUS.post(new DeathEvent(nemesis, slayerName));
 	}
 
-	public static void duel(World world, Nemesis opponentOne, Nemesis opponentTwo) {
-		Nemesis victor;
-		Nemesis loser;
+	public static void duel(World world, NemesisEntry opponentOne, NemesisEntry opponentTwo) {
+		NemesisEntry victor;
+		NemesisEntry loser;
 
 		int attack1 = 0;
 		int attack2 = 0;
@@ -143,17 +143,17 @@ public class NemesisActions {
 		MinecraftForge.EVENT_BUS.post(new DuelEvent(victor, loser));
 	}
 
-	public static void duelIfCrowded(World world, Nemesis exclude, boolean onlyIfCrowded) {
-		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
-		nemeses.removeIf(Nemesis::isDead);
+	public static void duelIfCrowded(World world, NemesisEntry exclude, boolean onlyIfCrowded) {
+		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(world).list();
+		nemeses.removeIf(NemesisEntry::isDead);
 
 		if (onlyIfCrowded && nemeses.size() < NemesisConfig.NEMESIS_LIMIT) {
 			return;
 		}
 
-		nemeses.removeIf(Nemesis::isLoaded);
+		nemeses.removeIf(NemesisEntry::isLoaded);
 		if (exclude != null) {
-			nemeses.removeIf((Nemesis n) -> n.getId().equals(exclude.getId()));
+			nemeses.removeIf((NemesisEntry n) -> n.getId().equals(exclude.getId()));
 		}
 
 		if (nemeses.size() < 2) {
@@ -164,11 +164,11 @@ public class NemesisActions {
 
 		// get the weaklings
 		Collections.shuffle(nemeses);
-		nemeses.sort(Comparator.comparingInt(Nemesis::getLevel));
+		nemeses.sort(Comparator.comparingInt(NemesisEntry::getLevel));
 		duel(world, nemeses.get(0), nemeses.get(1));
 	}
 
-	public static void promoteRandomNemesis(EntityCreature entity, INemesisRegistry registry, List<Nemesis> nemeses) {
+	public static void promoteRandomNemesis(EntityCreature entity, INemesisRegistry registry, List<NemesisEntry> nemeses) {
 		if (nemeses == null || nemeses.size() < 1) {
 			return;
 		}
@@ -178,8 +178,8 @@ public class NemesisActions {
 	public static void handleRandomPromotions(World world, EntityCreature entity) {
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);
 
-		List<Nemesis> nemeses = registry.list();
-		nemeses.removeIf(Nemesis::isDead);
+		List<NemesisEntry> nemeses = registry.list();
+		nemeses.removeIf(NemesisEntry::isDead);
 
 		if (nemeses.size() >= (NemesisConfig.NEMESIS_LIMIT / 2)) {
 			return;

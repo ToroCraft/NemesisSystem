@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class NemesisUtil {
@@ -51,7 +51,7 @@ public class NemesisUtil {
 		return new BlockPos(here.getX() + x, here.getY(), here.getZ() + z);
 	}
 
-	public static void enchantEquipment(Nemesis nemesis) {
+	public static void enchantEquipment(NemesisEntry nemesis) {
 		if (nemesis == null) {
 			return;
 		}
@@ -157,7 +157,7 @@ public class NemesisUtil {
 		return new AxisAlignedBB(position).grow(radius, radius, radius);
 	}
 
-	public static Nemesis loadNemesisFromEntity(Entity nemesisEntity) {
+	public static NemesisEntry loadNemesisFromEntity(Entity nemesisEntity) {
 		if (nemesisEntity == null) {
 			return null;
 		}

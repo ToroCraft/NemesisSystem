@@ -8,10 +8,10 @@ import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 
-public class SetAttackTarget {
+public class SetAttackTargetHandler {
 
 	public static void init() {
-		MinecraftForge.EVENT_BUS.register(new SetAttackTarget());
+		MinecraftForge.EVENT_BUS.register(new SetAttackTargetHandler());
 	}
 
 	@SubscribeEvent

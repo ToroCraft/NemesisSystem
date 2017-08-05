@@ -2,12 +2,14 @@ package net.torocraft.nemesissystem.util.nbt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.torocraft.nemesissystem.registry.LogEntry;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.Type;
 import org.junit.Assert;
@@ -52,8 +54,28 @@ public class NbtSerializerTest {
 	}
 
 	@Test
+	public void testSetNull() {
+		t1.set1 = null;
+		readWrite();
+		Assert.assertEquals(t1.set1, t2.set1);
+	}
+
+	@Test
+	public void testSet() {
+		t1.set1 = new HashSet<>();
+		t1.set1.add(1);
+		t1.set1.add(10);
+		t1.set1.add(13);
+		readWrite();
+		Assert.assertEquals(3, t2.set1.size());
+		Assert.assertTrue(t2.set1.contains(1));
+		Assert.assertTrue(t2.set1.contains(10));
+		Assert.assertTrue(t2.set1.contains(13));
+	}
+
+	@Test
 	public void serialize() throws Exception {
-		Nemesis n = new Nemesis();
+		NemesisEntry n = new NemesisEntry();
 
 		NBTTagCompound c = new NBTTagCompound();
 
@@ -82,7 +104,7 @@ public class NbtSerializerTest {
 		Assert.assertEquals(15, c.getInteger("z"));
 		Assert.assertEquals("test", c.getString("title"));
 
-		Nemesis n2 = new Nemesis();
+		NemesisEntry n2 = new NemesisEntry();
 		NbtSerializer.read(c, n2);
 		Assert.assertEquals(n.getSpawned(), n2.getSpawned());
 		Assert.assertEquals(n.getZ(), n2.getZ());
@@ -125,6 +147,9 @@ public class NbtSerializerTest {
 
 		@NbtField
 		Boolean bool2;
+
+		@NbtField(genericType = Integer.class)
+		Set<Integer> set1;
 	}
 
 }

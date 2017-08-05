@@ -3,12 +3,12 @@ package net.torocraft.nemesissystem.traits.logic;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.World;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.util.NemesisActions;
 
 public class Teleport {
 
-	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, NemesisEntry nemesis) {
 		World world = entity.world;
 
 		if (world.getTotalWorldTime() % 40 != 0) {

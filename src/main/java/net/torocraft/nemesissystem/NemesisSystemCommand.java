@@ -1,12 +1,11 @@
 package net.torocraft.nemesissystem;
 
-import static net.torocraft.nemesissystem.util.DiscoveryUtil.NBT_DISCOVERY;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -19,18 +18,15 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
-import net.torocraft.nemesissystem.handlers.Spawn;
+import net.torocraft.nemesissystem.handlers.SpawnHandler;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.Type;
@@ -46,12 +42,14 @@ public class NemesisSystemCommand extends CommandBase {
 	private static final UUID TEST_ID = UUID.fromString("2027e16a-6edd-11e7-907b-a6006ad3dba0");
 
 	@Override
+	@Nonnull
 	public String getName() {
 		return "nemesis_system";
 	}
 
 	@Override
-	public String getUsage(ICommandSender sender) {
+	@Nonnull
+	public String getUsage(@Nullable ICommandSender sender) {
 		return "commands.nemesis_system.usage";
 	}
 
@@ -61,7 +59,7 @@ public class NemesisSystemCommand extends CommandBase {
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(@Nonnull MinecraftServer server, @Nonnull ICommandSender sender, @Nonnull String[] args) throws CommandException {
 
 		if (args.length < 1) {
 			throw new WrongUsageException("commands.nemesis_system.usage");
@@ -74,28 +72,28 @@ public class NemesisSystemCommand extends CommandBase {
 			create(server, sender, args);
 			return;
 		case "spawn":
-			spawn(server, sender, args);
+			spawn(sender, args);
 			return;
 		case "create_test":
-			createTest(server, sender, args);
+			createTest(sender);
 			return;
 		case "spawn_test":
-			spawnTest(server, sender, args);
+			spawnTest(sender);
 			return;
 		case "list":
-			list(server, sender, args);
+			list(server, sender);
 			return;
 		case "clear":
-			clear(server, sender, args);
+			clear(server);
 			return;
 		case "duelIfCrowded":
-			duel(server, sender, args);
+			duel(sender);
 			return;
 		case "gui":
-			gui(server, sender, args);
+			gui(sender, args);
 			return;
 		case "enchant":
-			enchant(server, sender, args);
+			enchant(sender);
 			return;
 		case "promote":
 			promote(server, sender, args);
@@ -104,13 +102,14 @@ public class NemesisSystemCommand extends CommandBase {
 			demote(server, sender, args);
 			return;
 		case "give_book":
-			giveBook(server, sender, args);
+			giveBook(sender);
+			return;
 		default:
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
 	}
 
-	private void giveBook(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	private void giveBook(ICommandSender sender) throws CommandException {
 		if (!(sender instanceof EntityPlayer)) {
 			return;
 		}
@@ -118,20 +117,12 @@ public class NemesisSystemCommand extends CommandBase {
 		EntityPlayer player = getCommandSenderAsPlayer(sender);
 		World world = player.world;
 
-		ItemStack stack = new ItemStack(Items.WRITTEN_BOOK, 1);
-		NBTTagCompound discTag = new NBTTagCompound();
-		NemesisKnowledge discovery = DiscoveryUtil.buildRandomDiscovery(world);
-		discovery.writeToNBT(discTag);
-		NBTTagCompound tag = new NBTTagCompound();
-		tag.setTag(NBT_DISCOVERY, discTag);
-		stack.setTagCompound(tag);
-
-		EntityItem entity = new EntityItem(world, player.getPosition().getX(), player.getPosition().getY(), player.getPosition().getZ(), stack);
-
-		world.spawnEntity(entity);
+		ItemStack book = DiscoveryUtil.getRandomDiscoveryBook(player);
+		EntityItem bookEntity = new EntityItem(world, player.posX, player.posY, player.posZ, book);
+		world.spawnEntity(bookEntity);
 	}
 
-	private void spawn(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	private void spawn(ICommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof EntityPlayer)) {
 			return;
 		}
@@ -144,22 +135,22 @@ public class NemesisSystemCommand extends CommandBase {
 		World world = player.world;
 
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);
-		Nemesis nemesis = registry.getByName(args[1]);
+		NemesisEntry nemesis = registry.getByName(args[1]);
 
-		Spawn.spawnNemesis(world, player.getPosition(), nemesis);
+		SpawnHandler.spawnNemesis(world, player.getPosition(), nemesis);
 	}
 
-	private void spawnTest(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	private void spawnTest(ICommandSender sender) throws CommandException {
 		if (!(sender instanceof EntityPlayer)) {
 			return;
 		}
 
 		EntityPlayer player = getCommandSenderAsPlayer(sender);
 		World world = player.world;
-		Nemesis nemesis = NemesisRegistryProvider.get(world).getById(TEST_ID);
+		NemesisEntry nemesis = NemesisRegistryProvider.get(world).getById(TEST_ID);
 
 		if (nemesis == null) {
-			System.out.println("Nemesis is null, run /nemesis_system create_test");
+			System.out.println("NemesisEntry is null, run /nemesis_system create_test");
 			return;
 		}
 
@@ -174,7 +165,7 @@ public class NemesisSystemCommand extends CommandBase {
 		SpawnUtil.spawnEntityLiving(world, (EntityCreature) entity, player.getPosition(), 0);
 	}
 
-	private void createTest(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	private void createTest(ICommandSender sender) throws CommandException {
 		if (!(sender instanceof EntityPlayer)) {
 			return;
 		}
@@ -184,7 +175,7 @@ public class NemesisSystemCommand extends CommandBase {
 		int x = player.getPosition().getX();
 		int z = player.getPosition().getZ();
 
-		Nemesis nemesis = new Nemesis();
+		NemesisEntry nemesis = new NemesisEntry();
 
 		nemesis.setId(TEST_ID);
 		nemesis.setName(NemesisBuilder.getUniqueName(world) + " of Test");
@@ -221,7 +212,7 @@ public class NemesisSystemCommand extends CommandBase {
 		}
 		World world = server.getWorld(senderDimId(sender));
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);
-		Nemesis nemesis = registry.getByName(args[1]);
+		NemesisEntry nemesis = registry.getByName(args[1]);
 		if (nemesis == null) {
 			return;
 		}
@@ -235,7 +226,7 @@ public class NemesisSystemCommand extends CommandBase {
 		}
 		World world = server.getWorld(senderDimId(sender));
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);
-		Nemesis nemesis = registry.getByName(args[1]);
+		NemesisEntry nemesis = registry.getByName(args[1]);
 		if (nemesis == null) {
 			return;
 		}
@@ -243,7 +234,7 @@ public class NemesisSystemCommand extends CommandBase {
 		registry.markDirty();
 	}
 
-	private void enchant(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	private void enchant(ICommandSender sender) throws CommandException {
 		if (sender instanceof EntityPlayer) {
 			NemesisUtil.enchantItems(getHotBarItems(getCommandSenderAsPlayer(sender)));
 			logHotBarItems(getCommandSenderAsPlayer(sender));
@@ -271,13 +262,13 @@ public class NemesisSystemCommand extends CommandBase {
 		return items;
 	}
 
-	private void duel(MinecraftServer server, ICommandSender sender, String[] args) {
+	private void duel(ICommandSender sender) {
 		if (sender instanceof EntityPlayer) {
 			NemesisActions.duelIfCrowded(sender.getEntityWorld(), null, false);
 		}
 	}
 
-	private void gui(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	private void gui(ICommandSender sender, String[] args) throws CommandException {
 
 		if (!(sender instanceof EntityPlayer)) {
 			return;
@@ -291,7 +282,7 @@ public class NemesisSystemCommand extends CommandBase {
 		}
 
 		if (args.length == 2) {
-			Nemesis nemesis = NemesisRegistryProvider.get(player.world).getByName(args[1]);
+			NemesisEntry nemesis = NemesisRegistryProvider.get(player.world).getByName(args[1]);
 			NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis), player);
 			return;
 		}
@@ -299,14 +290,14 @@ public class NemesisSystemCommand extends CommandBase {
 		throw new WrongUsageException("commands.nemesis_system.usage");
 	}
 
-	private void clear(MinecraftServer server, ICommandSender sender, String[] args) {
+	private void clear(MinecraftServer server) {
 		NemesisRegistryProvider.get(server.getWorld(0)).clear();
 	}
 
-	private void list(MinecraftServer server, ICommandSender sender, String[] args) {
-		List<Nemesis> l = NemesisRegistryProvider.get(server.getWorld(0)).list();
+	private void list(MinecraftServer server, ICommandSender sender) {
+		List<NemesisEntry> l = NemesisRegistryProvider.get(server.getWorld(0)).list();
 		StringBuilder s = new StringBuilder();
-		for (Nemesis nemesis : l) {
+		for (NemesisEntry nemesis : l) {
 			s.append(" * ");
 			if (nemesis.isDead()) {
 				s.append(" DEAD ");
@@ -319,7 +310,7 @@ public class NemesisSystemCommand extends CommandBase {
 
 			long now = server.getWorld(0).getTotalWorldTime();
 			long lastSpawned = nemesis.getLastSpawned() == null ? 0 : nemesis.getLastSpawned();
-			long spawnDelay = (lastSpawned + Spawn.SPAWN_COOLDOWN_PERIOD) - now;
+			long spawnDelay = (lastSpawned + SpawnHandler.SPAWN_COOLDOWN_PERIOD) - now;
 
 			if (spawnDelay > 0) {
 				s.append(" spawnDelay[").append(spawnDelay).append("] ");
@@ -350,7 +341,7 @@ public class NemesisSystemCommand extends CommandBase {
 			dimension = 0;
 		}
 
-		Nemesis nemesis = NemesisBuilder
+		NemesisEntry nemesis = NemesisBuilder
 				.build(sender.getEntityWorld(), args[1], sender.getEntityWorld().rand.nextBoolean(), dimension, i(args[2]), x, z);
 		nemesis.register(server.getWorld(senderDimId(sender)));
 		notifyCommandListener(sender, this, "commands.nemesis_system.success.create", nemesis.toString());
@@ -364,14 +355,6 @@ public class NemesisSystemCommand extends CommandBase {
 		}
 	}
 
-	private BlockPos senderPos(ICommandSender sender) {
-		try {
-			return getCommandSenderAsPlayer(sender).getPosition();
-		} catch (Exception e) {
-			return BlockPos.ORIGIN;
-		}
-	}
-
 	private int i(String s) {
 		try {
 			return Integer.parseInt(s);
@@ -381,14 +364,16 @@ public class NemesisSystemCommand extends CommandBase {
 	}
 
 	@Override
+	@Nonnull
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos) {
 		if (args.length == 1) {
-			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui", "duelIfCrowded", "promote", "spawn", "demote", "give_book");
+			return getListOfStringsMatchingLastWord(args, "create", "list", "clear", "gui", "duelIfCrowded", "promote", "spawn", "demote",
+					"give_book");
 		}
 		String command = args[0];
 		switch (command) {
 		case "create":
-			return tabCompletionsForCreate(server, args);
+			return tabCompletionsForCreate(args);
 		case "promote":
 		case "demote":
 		case "spawn":
@@ -406,14 +391,7 @@ public class NemesisSystemCommand extends CommandBase {
 		return Collections.emptyList();
 	}
 
-	private List<String> tabCompletionsForSpawn(MinecraftServer server, ICommandSender sender, String[] args) {
-		if (args.length == 2) {
-			return getListOfStringsMatchingLastWord(args, getNemesisNames(server, sender));
-		}
-		return Collections.emptyList();
-	}
-
-	private List<String> tabCompletionsForCreate(MinecraftServer server, String[] args) {
+	private List<String> tabCompletionsForCreate(String[] args) {
 
 		if (args.length == 2) {
 			return getListOfStringsMatchingLastWord(args, EntityList.getEntityNameList());
@@ -431,8 +409,8 @@ public class NemesisSystemCommand extends CommandBase {
 	}
 
 	private List<String> getNemesisNames(MinecraftServer server, ICommandSender sender) {
-		List<Nemesis> nemeses = NemesisRegistryProvider.get(server.getWorld(senderDimId(sender))).list();
-		return nemeses.stream().map(Nemesis::getName).collect(Collectors.toList());
+		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(server.getWorld(senderDimId(sender))).list();
+		return nemeses.stream().map(NemesisEntry::getName).collect(Collectors.toList());
 	}
 
 }

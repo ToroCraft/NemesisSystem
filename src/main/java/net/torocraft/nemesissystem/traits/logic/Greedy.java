@@ -8,12 +8,12 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.network.MessageWorshipAnimation;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 
 public class Greedy {
 
-	public static void onUpdate(EntityLiving entity, Nemesis nemesis, int level) {
+	public static void onUpdate(EntityLiving entity, NemesisEntry nemesis, int level) {
 		if (BehaviorUtil.isWorshiping(entity)) {
 			if (entity.getEntityData().getInteger(NemesisSystem.NBT_WORSHIP_COOLDOWN) >= 0) {
 				TargetPoint point = new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 100);
@@ -42,7 +42,7 @@ public class Greedy {
 						.getItem().equals(Items.DIAMOND));
 	}
 
-	public static void decrementCooldown(Nemesis nemesis, EntityLiving entity) {
+	public static void decrementCooldown(NemesisEntry nemesis, EntityLiving entity) {
 		if (!entity.getEntityData().hasKey(NemesisSystem.NBT_WORSHIP_COOLDOWN)) {
 			return;
 		}

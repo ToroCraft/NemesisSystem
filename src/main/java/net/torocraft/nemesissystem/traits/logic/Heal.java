@@ -9,11 +9,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.network.MessageHealAnimation;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class Heal {
-	public static void onUpdate(EntityLiving entity, Nemesis nemesis) {
+	public static void onUpdate(EntityLiving entity, NemesisEntry nemesis) {
 		World world = entity.world;
 		Random rand = entity.getRNG();
 

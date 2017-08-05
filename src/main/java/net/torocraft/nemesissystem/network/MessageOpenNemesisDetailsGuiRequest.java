@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class MessageOpenNemesisDetailsGuiRequest implements IMessage {
@@ -49,7 +49,7 @@ public class MessageOpenNemesisDetailsGuiRequest implements IMessage {
 	}
 
 	private static void sendResponse(MessageOpenNemesisDetailsGuiRequest message, EntityPlayerMP player) {
-		Nemesis nemesis = NemesisRegistryProvider.get(player.world).getById(message.nemesisId);
+		NemesisEntry nemesis = NemesisRegistryProvider.get(player.world).getById(message.nemesisId);
 		System.out.println("MessageOpenNemesisDetailsGuiRequest.handle: " + nemesis);
 		NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis), player);
 	}

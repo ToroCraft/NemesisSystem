@@ -10,13 +10,13 @@ import net.minecraft.item.ItemTool;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.EnumHand;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.traits.Type;
 
 public class Allergy {
 	private static final int ONE_SECOND = 20;
 
-	public static void onHurt(LivingHurtEvent event, Nemesis nemesis, int level) {
+	public static void onHurt(LivingHurtEvent event, NemesisEntry nemesis, int level) {
 		EntityLiving entity = (EntityLiving) event.getEntity();
 		EntityLivingBase attacker = getAttacker(event);
 
@@ -78,19 +78,19 @@ public class Allergy {
 		return null;
 	}
 
-	private static boolean isAllergicToMaterial(Nemesis nemesis, String material) {
+	private static boolean isAllergicToMaterial(NemesisEntry nemesis, String material) {
 		return woodAllergyApplies(nemesis, material) || goldAllergyApplies(nemesis, material) || stoneAllergyApplies(nemesis, material);
 	}
 
-	private static boolean stoneAllergyApplies(Nemesis nemesis, String material) {
+	private static boolean stoneAllergyApplies(NemesisEntry nemesis, String material) {
 		return nemesis.hasTrait(Type.STONE_ALLERGY) && material.equals("STONE");
 	}
 
-	private static boolean goldAllergyApplies(Nemesis nemesis, String material) {
+	private static boolean goldAllergyApplies(NemesisEntry nemesis, String material) {
 		return nemesis.hasTrait(Type.GOLD_ALLERGY) && material.equals("GOLD");
 	}
 
-	private static boolean woodAllergyApplies(Nemesis nemesis, String material) {
+	private static boolean woodAllergyApplies(NemesisEntry nemesis, String material) {
 		return nemesis.hasTrait(Type.WOOD_ALLERGY) && material.equals("WOOD");
 	}
 

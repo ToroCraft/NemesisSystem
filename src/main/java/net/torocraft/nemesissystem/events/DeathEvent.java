@@ -1,11 +1,11 @@
 package net.torocraft.nemesissystem.events;
 
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 
 public class DeathEvent extends NemesisEvent {
-	protected final String slayerName;
+	public final String slayerName;
 
-	public DeathEvent(final Nemesis nemesis, final String slayerName) {
+	public DeathEvent(final NemesisEntry nemesis, final String slayerName) {
 		super(nemesis);
 		this.slayerName = slayerName;
 	}

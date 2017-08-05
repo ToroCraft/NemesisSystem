@@ -12,7 +12,7 @@ public class NemesisWorldSaveData extends WorldSavedData {
 
 	private static final String NBT_NEMESES = "nemeses";
 
-	protected List<Nemesis> nemeses = new ArrayList<>();
+	protected List<NemesisEntry> nemeses = new ArrayList<>();
 
 	public NemesisWorldSaveData() {
 		super(NAME);
@@ -27,11 +27,11 @@ public class NemesisWorldSaveData extends WorldSavedData {
 		nemeses = readNemesesFromNBT(c);
 	}
 
-	public static List<Nemesis> readNemesesFromNBT(NBTTagCompound c) {
+	public static List<NemesisEntry> readNemesesFromNBT(NBTTagCompound c) {
 		NBTTagList nbtNemeses = loadNbtList(c);
-		ArrayList<Nemesis> nemeses = new ArrayList<>();
+		ArrayList<NemesisEntry> nemeses = new ArrayList<>();
 		for (int i = 0; i < nbtNemeses.tagCount(); i++) {
-			Nemesis nemesis = new Nemesis();
+			NemesisEntry nemesis = new NemesisEntry();
 			nemesis.readFromNBT(nbtNemeses.getCompoundTagAt(i));
 			nemeses.add(nemesis);
 		}
@@ -57,9 +57,9 @@ public class NemesisWorldSaveData extends WorldSavedData {
 		return c;
 	}
 
-	public static void writeNemesesToNBT(NBTTagCompound c, List<Nemesis> nemeses) {
+	public static void writeNemesesToNBT(NBTTagCompound c, List<NemesisEntry> nemeses) {
 		NBTTagList nbtNemeses = new NBTTagList();
-		for (Nemesis nemesis : nemeses) {
+		for (NemesisEntry nemesis : nemeses) {
 			if (!nemesis.isDead()) {
 				NBTTagCompound compound = new NBTTagCompound();
 				nemesis.writeToNBT(compound);

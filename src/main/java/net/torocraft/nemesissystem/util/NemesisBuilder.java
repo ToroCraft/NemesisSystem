@@ -9,7 +9,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.Type;
@@ -57,8 +57,8 @@ public class NemesisBuilder {
 			Items.CHAINMAIL_BOOTS
 	};
 
-	public static Nemesis build(World world, String mob, boolean isChild, int dimension, int level, int x, int z) {
-		Nemesis nemesis = new Nemesis();
+	public static NemesisEntry build(World world, String mob, boolean isChild, int dimension, int level, int x, int z) {
+		NemesisEntry nemesis = new NemesisEntry();
 
 		nemesis.setId(UUID.randomUUID());
 		nemesis.setName(getUniqueName(world));
@@ -94,7 +94,7 @@ public class NemesisBuilder {
 	}
 
 	public static String getUniqueTitle(World world) {
-		List<Nemesis> nemeses = NemesisRegistryProvider.get(world).list();
+		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(world).list();
 		String title = getRandomTitle();
 		while (!isUniqueTitle(title, nemeses)) {
 			title = getRandomTitle();
@@ -106,8 +106,8 @@ public class NemesisBuilder {
 		return NameBuilder.TITLES[rand.nextInt(NameBuilder.TITLES.length)];
 	}
 
-	private static boolean isUniqueTitle(String title, List<Nemesis> nemeses) {
-		for (Nemesis nemesis : nemeses) {
+	private static boolean isUniqueTitle(String title, List<NemesisEntry> nemeses) {
+		for (NemesisEntry nemesis : nemeses) {
 			if (nemesis.getTitle().equals(title)) {
 				return false;
 			}
@@ -123,7 +123,7 @@ public class NemesisBuilder {
 		return getUniqueName(world);
 	}
 
-	private static void setArmor(Nemesis nemesis) {
+	private static void setArmor(NemesisEntry nemesis) {
 		// TODO design armor sets
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.HEAD.getIndex(), new ItemStack(HELMETS[rand.nextInt(HELMETS.length)]));
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.CHEST.getIndex(), new ItemStack(CHEST_PLATES[rand.nextInt(CHEST_PLATES.length)]));
@@ -131,7 +131,7 @@ public class NemesisBuilder {
 		nemesis.getArmorInventory().set(EntityEquipmentSlot.FEET.getIndex(), new ItemStack(BOOTS[rand.nextInt(BOOTS.length)]));
 	}
 
-	private static void setOffhandItem(Nemesis nemesis) {
+	private static void setOffhandItem(NemesisEntry nemesis) {
 		ItemStack offhand;
 		switch (nemesis.getTraits().get(0).type) {
 		case FIREBALL:

@@ -10,7 +10,7 @@ import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.network.MessageWorshipAnimation;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
@@ -18,7 +18,7 @@ public class Gluttony {
 
 	private static final Item[] TASTY_THINGS = { Items.BEEF, Items.CHICKEN, Items.MUTTON, Items.PORKCHOP, Items.RABBIT };
 
-	public static void onUpdate(EntityCreature entity, Nemesis nemesis, int level) {
+	public static void onUpdate(EntityCreature entity, NemesisEntry nemesis, int level) {
 		if (BehaviorUtil.isWorshiping(entity)) {
 			if (entity.getEntityData().getInteger(NemesisSystem.NBT_WORSHIP_COOLDOWN) >= 0) {
 				TargetPoint point = new TargetPoint(entity.dimension, entity.posX, entity.posY, entity.posZ, 100);

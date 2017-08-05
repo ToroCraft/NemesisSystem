@@ -7,7 +7,6 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.torocraft.nemesissystem.registry.Nemesis;
 import net.torocraft.nemesissystem.util.BehaviorUtil;
 
 public class Pyrophobia {

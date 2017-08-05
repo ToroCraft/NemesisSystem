@@ -8,7 +8,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGuiRequest;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.traits.Affect;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.util.NemesisUtil;
@@ -92,14 +92,14 @@ public class NemesisDisplay implements GuiDisplay {
 		}
 	}
 
-	private void drawTitleAndInfo(Nemesis n) {
+	private void drawTitleAndInfo(NemesisEntry n) {
 		int x = this.x + 51;
 		int y = this.y + 4;
 		fontRenderer.drawString(n.getNameAndTitle() + " (" + NemesisUtil.romanize(n.getLevel()) + ")", x, y, 0x0);
 		fontRenderer.drawString(I18n.format("gui.distance") + ": " + data.distance, x, y + 10, grey);
 	}
 
-	private void drawTraits(Nemesis n) {
+	private void drawTraits(NemesisEntry n) {
 		if (n.getTraits() == null) {
 			return;
 		}

@@ -9,20 +9,28 @@ import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.events.*;
 import net.torocraft.nemesissystem.registry.LogEntry;
 
-public class Nemesis {
+public class NemesisHandler {
 
 	private static final String PREFIX = "notifications";
 
 	@SubscribeEvent
+	public void promotion(DiscoveryEvent ev) {
+		//send("discovery", title(ev), ev.nemesis.getLevel());
+		//ev.nemesis.addToHistory(LogEntry.PROMOTION(ev.nemesis.getLevel()));
+
+		System.out.println("Nemesis Discovery found: " + ev.discovery);
+	}
+	
+	@SubscribeEvent
 	public void promotion(PromotionEvent ev) {
-		send("promotion", title(ev), ev.getNemesis().getLevel());
-		ev.getNemesis().addToHistory(LogEntry.PROMOTION(ev.getNemesis().getLevel()));
+		send("promotion", title(ev), ev.nemesis.getLevel());
+		ev.nemesis.addToHistory(LogEntry.PROMOTION(ev.nemesis.getLevel()));
 	}
 
 	@SubscribeEvent
 	public void demotion(DemotionEvent ev) {
-		send("demotion", title(ev), ev.getNemesis().getLevel(), ev.getSlayerName());
-		ev.getNemesis().addToHistory(LogEntry.PROMOTION(ev.getNemesis().getLevel()));
+		send("demotion", title(ev), ev.nemesis.getLevel(), ev.getSlayerName());
+		ev.nemesis.addToHistory(LogEntry.PROMOTION(ev.nemesis.getLevel()));
 	}
 
 	@SubscribeEvent
@@ -34,24 +42,24 @@ public class Nemesis {
 
 	@SubscribeEvent
 	public void register(RegisterEvent ev) {
-		send("register", title(ev), ev.getNemesis().getX(), ev.getNemesis().getZ());
-		ev.getNemesis().addToHistory(LogEntry.CREATION(ev.getNemesis().getX(), ev.getNemesis().getZ()));
+		send("register", title(ev), ev.nemesis.getX(), ev.nemesis.getZ());
+		ev.nemesis.addToHistory(LogEntry.CREATION(ev.nemesis.getX(), ev.nemesis.getZ()));
 	}
 
 	@SubscribeEvent
 	public void death(DeathEvent event) {
 		send("death", title(event), event.getSlayerName());
-		event.getNemesis().addToHistory(LogEntry.DIED(event.getSlayerName()));
+		event.nemesis.addToHistory(LogEntry.DIED(event.getSlayerName()));
 	}
 
 	@SubscribeEvent
 	public void death(SpawnEvent event) {
 		send("spawned", title(event));
-		event.getNemesis().addToHistory(LogEntry.SPAWNED());
+		event.nemesis.addToHistory(LogEntry.SPAWNED());
 	}
 
 	private String title(NemesisEvent event) {
-		return event.getNemesis().getNameAndTitle();
+		return event.nemesis.getNameAndTitle();
 	}
 
 	private void send(String translationKey, Object... args) {

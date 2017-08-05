@@ -1,17 +1,14 @@
 package net.torocraft.nemesissystem.events;
 
 import net.minecraftforge.fml.common.eventhandler.Event;
-import net.torocraft.nemesissystem.registry.Nemesis;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 
 public class NemesisEvent extends Event {
 
-	private final Nemesis nemesis;
+	public final NemesisEntry nemesis;
 
-	public NemesisEvent(final Nemesis nemesis) {
+	public NemesisEvent(final NemesisEntry nemesis) {
 		this.nemesis = nemesis;
 	}
 
-	public Nemesis getNemesis() {
-		return nemesis;
-	}
 }
