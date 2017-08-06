@@ -1,28 +1,34 @@
 package net.torocraft.nemesissystem.handlers;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.events.*;
+import net.torocraft.nemesissystem.events.DeathEvent;
+import net.torocraft.nemesissystem.events.DemotionEvent;
+import net.torocraft.nemesissystem.events.DiscoveryEvent;
+import net.torocraft.nemesissystem.events.DuelEvent;
+import net.torocraft.nemesissystem.events.NemesisEvent;
+import net.torocraft.nemesissystem.events.PromotionEvent;
+import net.torocraft.nemesissystem.events.RegisterEvent;
+import net.torocraft.nemesissystem.events.SpawnEvent;
+import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.registry.LogEntry;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
+import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class NemesisHandler {
 
 	private static final String PREFIX = "notifications";
 
 	@SubscribeEvent
-	public void promotion(DiscoveryEvent ev) {
-		//send("discovery", title(ev), ev.nemesis.getLevel());
-		//ev.nemesis.addToHistory(LogEntry.PROMOTION(ev.nemesis.getLevel()));
-
-		// ⴰ
-
+	public void discovery(DiscoveryEvent ev) {
 		System.out.println("Nemesis Discovery found: " + ev.discovery);
 	}
-	
+
 	@SubscribeEvent
 	public void promotion(PromotionEvent ev) {
 		send("promotion", title(ev), ev.nemesis.getLevel());
@@ -65,7 +71,7 @@ public class NemesisHandler {
 	}
 
 	private void send(String translationKey, Object... args) {
-		TextComponentTranslation m = new TextComponentTranslation(PREFIX  + "." + translationKey, args);
+		TextComponentTranslation m = new TextComponentTranslation(PREFIX + "." + translationKey, args);
 		m.setStyle(new Style());
 		m.getStyle().setColor(TextFormatting.RED);
 		sendGlobalMessage(m);

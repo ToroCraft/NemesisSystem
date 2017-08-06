@@ -2,14 +2,18 @@ package net.torocraft.nemesissystem.handlers;
 
 import static net.torocraft.nemesissystem.util.DiscoveryUtil.NBT_DISCOVERY;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
 import net.torocraft.nemesissystem.events.DiscoveryEvent;
-import net.torocraft.nemesissystem.registry.*;
+import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
+import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 import net.torocraft.nemesissystem.util.DiscoveryUtil;
 
 public class DiscoveryHandler {
@@ -28,32 +32,41 @@ public class DiscoveryHandler {
 
 	@SubscribeEvent
 	public void readBook(PlayerInteractEvent event) {
+
 		if (event.getWorld().isRemote) {
 			return;
 		}
+
 		ItemStack item = event.getItemStack();
-		if (isDiscoveryBook(item)) {
-			NemesisDiscovery discovery = getDiscoveryFromBook(item);
 
-			if (discovery == null) {
-				System.out.println("No discovery found in book");
-				return;
-			}
-
-			DiscoveryUtil.newDiscovery(event.getEntityPlayer(), discovery);
-			NemesisEntry nemesis = NemesisRegistryProvider.get(event.getWorld()).getById(discovery.nemesisId);
-
-
-
-			if (nemesis == null) {
-				System.out.println("Nemesis not found");
-				return;
-			}
-
-			System.out.println("Reading DiscoveryHandler: " + discovery);
-
-			MinecraftForge.EVENT_BUS.post(new DiscoveryEvent(nemesis, discovery));
+		if (!isDiscoveryBook(item)) {
+			return;
 		}
+
+		NemesisDiscovery discovery = getDiscoveryFromBook(item);
+
+		if (discovery == null) {
+			System.out.println("No discovery found in book");
+			return;
+		}
+
+		System.out.println("Book Nemesis ID: " + discovery.nemesisId);
+
+		DiscoveryUtil.newDiscovery(event.getEntityPlayer(), discovery);
+		NemesisEntry nemesis = NemesisRegistryProvider.get(event.getWorld()).getById(discovery.nemesisId);
+
+		if (nemesis == null) {
+			System.out.println("Nemesis not found");
+			return;
+		}
+
+		System.out.println("Reading DiscoveryHandler: " + discovery);
+
+		MinecraftForge.EVENT_BUS.post(new DiscoveryEvent(nemesis, discovery, event.getEntityPlayer()));
+
+		NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis), (EntityPlayerMP) event.getEntityPlayer());
+
+		event.setCanceled(true);
 	}
 
 	private NemesisDiscovery getDiscoveryFromBook(ItemStack item) {
