@@ -3,8 +3,8 @@ package net.torocraft.nemesissystem.discovery;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-import jline.internal.Nullable;
 import net.minecraft.nbt.NBTTagCompound;
+import net.torocraft.nemesissystem.util.nbt.NbtData;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
 
@@ -35,6 +35,18 @@ public class NemesisKnowledge {
 	 */
 	@NbtField(genericType = Integer.class)
 	public Set<Integer> traits = new HashSet<>();
+
+	public static NemesisKnowledge load(NBTTagCompound c) {
+		NemesisKnowledge knowledge = new NemesisKnowledge();
+		NbtSerializer.read(c, knowledge);
+		return knowledge;
+	}
+
+	public static NBTTagCompound save(NemesisKnowledge knowledge) {
+		NBTTagCompound c = new NBTTagCompound();
+		NbtSerializer.write(c, knowledge);
+		return c;
+	}
 
 }
 

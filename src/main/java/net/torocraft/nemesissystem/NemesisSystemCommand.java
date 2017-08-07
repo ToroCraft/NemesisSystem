@@ -22,6 +22,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.handlers.SpawnHandler;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
@@ -283,7 +284,11 @@ public class NemesisSystemCommand extends CommandBase {
 
 		if (args.length == 2) {
 			NemesisEntry nemesis = NemesisRegistryProvider.get(player.world).getByName(args[1]);
-			NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis), player);
+			NemesisKnowledge knowledge = DiscoveryUtil.getGetPlayerKnowledgeOfNemesis(player, nemesis.getId());
+			if (knowledge == null) {
+				knowledge = new NemesisKnowledge();
+			}
+			NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis, knowledge), player);
 			return;
 		}
 

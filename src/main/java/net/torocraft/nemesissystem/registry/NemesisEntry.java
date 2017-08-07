@@ -11,13 +11,15 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.Affect;
 import net.torocraft.nemesissystem.traits.Type;
+import net.torocraft.nemesissystem.util.nbt.NbtData;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
 
-public class NemesisEntry {
+public class NemesisEntry  {
 
 	/**
 	 * the range of the nemesis's domain, setting to 50 would make a 100x100 block domain
@@ -94,12 +96,26 @@ public class NemesisEntry {
 		return getNameAndTitle();
 	}
 
+	@Deprecated
 	public void readFromNBT(NBTTagCompound c) {
 		NbtSerializer.read(c, this);
 	}
 
+	@Deprecated
 	public void writeToNBT(NBTTagCompound c) {
 		NbtSerializer.write(c, this);
+	}
+
+	public static NemesisEntry load(NBTTagCompound c) {
+		NemesisEntry nemesis = new NemesisEntry();
+		NbtSerializer.read(c, nemesis);
+		return nemesis;
+	}
+
+	public static NBTTagCompound save(NemesisEntry nemesis) {
+		NBTTagCompound c = new NBTTagCompound();
+		NbtSerializer.write(c, nemesis);
+		return c;
 	}
 
 	public void addToHistory(LogEntry logEntry) {

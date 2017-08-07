@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
 import net.torocraft.nemesissystem.gui.displays.NemesisEntityDisplay;
@@ -78,6 +79,12 @@ public class GuiNemesisDetails extends GuiScreen {
 		drawCenteredString(fontRenderer, n.getNameAndTitle() + " (" + NemesisUtil.romanize(n.getLevel()) + ")", width / 2, 10 + offsetY, 0xffffff);
 	}
 
+	private String info(NemesisDiscovery.Type type, String info) {
+		// TODO implement
+		return null;
+	}
+
+
 	private void drawNemesisInfo() {
 		int x = offsetX + 109;
 		int y = offsetY + 30;
@@ -86,8 +93,7 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		fontRenderer.drawString(I18n.format("gui.distance") + ": " + nemesisData.distance + "m", x, y, NemesisDisplay.grey);
 		y += 10;
-		//fontRenderer.drawString(I18n.format("gui.health") + ": " + "?", x, y, NemesisDisplay.grey);
-		//
+
 		fontRenderer.drawString(I18n.format("gui.location", nemesis.getX(), nemesis.getZ()), x, y, NemesisDisplay.grey);
 		y += 14;
 
@@ -174,6 +180,9 @@ public class GuiNemesisDetails extends GuiScreen {
 			}
 			nemesisData = new NemesisDisplayData(MessageOpenNemesisDetailsGui.NEMESIS);
 		}
+
+		System.out.println("Knowledge: " + MessageOpenNemesisDetailsGui.KNOWLEDGE);
+		System.out.println("Knowledge Name: " + MessageOpenNemesisDetailsGui.KNOWLEDGE.name);
 
 		entityDisplay.setNemesis(nemesisData);
 

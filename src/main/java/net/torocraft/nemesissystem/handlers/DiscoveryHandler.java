@@ -10,6 +10,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
+import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.events.DiscoveryEvent;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
@@ -60,11 +61,17 @@ public class DiscoveryHandler {
 			return;
 		}
 
+		NemesisKnowledge knowledge = DiscoveryUtil.getGetPlayerKnowledgeOfNemesis(event.getEntityPlayer(), nemesis.getId());
+
+		if (knowledge == null) {
+			knowledge = new NemesisKnowledge();
+		}
+
 		System.out.println("Reading DiscoveryHandler: " + discovery);
 
 		MinecraftForge.EVENT_BUS.post(new DiscoveryEvent(nemesis, discovery, event.getEntityPlayer()));
 
-		NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis), (EntityPlayerMP) event.getEntityPlayer());
+		NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis, knowledge), (EntityPlayerMP) event.getEntityPlayer());
 
 		event.setCanceled(true);
 	}
