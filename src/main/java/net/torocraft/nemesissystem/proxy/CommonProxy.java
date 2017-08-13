@@ -26,6 +26,7 @@ public class CommonProxy {
 	}
 
 	public void init(FMLInitializationEvent e) {
+		LootHandler.init();
 		SpawnHandler.init();
 		UpdateHandler.init();
 		AttackHandler.init();
