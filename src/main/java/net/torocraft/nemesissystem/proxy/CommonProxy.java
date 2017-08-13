@@ -34,6 +34,7 @@ public class CommonProxy {
 		DeathHandler.init();
 		DiscoveryHandler.init();
 		SetAttackTargetHandler.init();
+		DropHandler.init();
 		initPackets();
 	}
 
