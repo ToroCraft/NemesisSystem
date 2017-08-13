@@ -118,7 +118,7 @@ public class NemesisSystemCommand extends CommandBase {
 		EntityPlayer player = getCommandSenderAsPlayer(sender);
 		World world = player.world;
 
-		ItemStack book = DiscoveryUtil.getRandomDiscoveryBook(player);
+		ItemStack book = DiscoveryUtil.getRandomDiscoveryBook(world);
 		EntityItem bookEntity = new EntityItem(world, player.posX, player.posY, player.posZ, book);
 		world.spawnEntity(bookEntity);
 	}

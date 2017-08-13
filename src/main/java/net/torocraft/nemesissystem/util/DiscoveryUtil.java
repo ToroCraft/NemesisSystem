@@ -32,8 +32,8 @@ public class DiscoveryUtil {
 		knowledgeBase.save(player);
 	}
 
-	public static ItemStack getRandomDiscoveryBook(EntityPlayer player) {
-		return buildDiscoveryBook(DiscoveryUtil.getRandomDiscovery(player.world));
+	public static ItemStack getRandomDiscoveryBook(World world) {
+		return buildDiscoveryBook(DiscoveryUtil.getRandomDiscovery(world));
 	}
 
 	public static ItemStack buildDiscoveryBook(NemesisDiscovery discovery) {
