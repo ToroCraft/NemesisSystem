@@ -11,6 +11,8 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
+import net.torocraft.nemesissystem.discovery.NemesisDiscovery.Type;
+import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
 import net.torocraft.nemesissystem.gui.displays.NemesisEntityDisplay;
@@ -22,6 +24,7 @@ import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class GuiNemesisDetails extends GuiScreen {
 
+	private static final String UNKNOWN_VALUE = "????";
 	private static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation(NemesisSystem.MODID, "textures/gui/nemesis_details_gui.png");
 	private static final int HEIGHT = 230;
 	private static final int WIDTH = 256;
@@ -76,14 +79,40 @@ public class GuiNemesisDetails extends GuiScreen {
 
 	private void drawTitle() {
 		NemesisEntry n = nemesisData.nemesis;
-		drawCenteredString(fontRenderer, n.getNameAndTitle() + " (" + NemesisUtil.romanize(n.getLevel()) + ")", width / 2, 10 + offsetY, 0xffffff);
+		String s = info(Type.NAME, n.getNameAndTitle()) + " (" + NemesisUtil.romanize(n.getLevel()) + ")";
+		drawCenteredString(fontRenderer, s, width / 2, 10 + offsetY, 0xffffff);
 	}
 
-	private String info(NemesisDiscovery.Type type, String info) {
-		// TODO implement
-		return null;
+	private String info(Type type, String info) {
+		return info(type, 0, info);
 	}
 
+	private String info(Type type, int info) {
+		return info(type, 0, Integer.toString(info, 10));
+	}
+
+	private String info(Type type, int index, String info) {
+
+		NemesisKnowledge knowledge = MessageOpenNemesisDetailsGui.KNOWLEDGE;
+
+		if (knowledge == null) {
+			return UNKNOWN_VALUE;
+		}
+
+		if (Type.NAME.equals(type) && knowledge.name) {
+			return info;
+		}
+
+		if (Type.LOCATION.equals(type) && knowledge.location) {
+			return info;
+		}
+
+		if (Type.TRAIT.equals(type) && knowledge.traits.contains(index)) {
+			return info;
+		}
+
+		return UNKNOWN_VALUE;
+	}
 
 	private void drawNemesisInfo() {
 		int x = offsetX + 109;
@@ -91,18 +120,22 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		NemesisEntry nemesis = nemesisData.nemesis;
 
-		fontRenderer.drawString(I18n.format("gui.distance") + ": " + nemesisData.distance + "m", x, y, NemesisDisplay.grey);
+		fontRenderer.drawString(I18n.format("gui.distance") + ": " + info(Type.LOCATION, nemesisData.distance + "m"), x, y, NemesisDisplay.grey);
 		y += 10;
 
-		fontRenderer.drawString(I18n.format("gui.location", nemesis.getX(), nemesis.getZ()), x, y, NemesisDisplay.grey);
+		fontRenderer.drawString(I18n.format("gui.location", info(Type.LOCATION, nemesis.getX()), info(Type.LOCATION, nemesis.getZ())), x, y,
+				NemesisDisplay.grey);
 		y += 14;
 
-
-		fontRenderer.drawString(I18n.format("gui.strengths", nemesis.getX(), nemesis.getZ()), x, y, NemesisDisplay.grey);
+		fontRenderer.drawString(I18n.format("gui.strengths"), x, y, NemesisDisplay.grey);
 		y += 10;
-		for (Trait trait : nemesis.getTraits()) {
+		Trait trait;
+		//for (Trait trait : nemesis.getTraits()) {
+		for (int i = 0; i < nemesis.getTraits().size(); i++) {
+			trait = nemesis.getTraits().get(i);
 			if (trait.type.isStrength()) {
-				fontRenderer.drawString("* " + I18n.format("trait." + trait.type) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y, NemesisDisplay.grey);
+				fontRenderer.drawString("* " + info(Type.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
+						NemesisDisplay.grey);
 				y += 10;
 			}
 		}
@@ -111,9 +144,11 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		fontRenderer.drawString(I18n.format("gui.weaknesses", nemesis.getX(), nemesis.getZ()), x, y, NemesisDisplay.grey);
 		y += 10;
-		for (Trait trait : nemesis.getTraits()) {
+		for (int i = 0; i < nemesis.getTraits().size(); i++) {
+			trait = nemesis.getTraits().get(i);
 			if (trait.type.isWeakness()) {
-				fontRenderer.drawString("* " + I18n.format("trait." + trait.type) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y, NemesisDisplay.grey);
+				fontRenderer.drawString("* " + info(Type.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
+						NemesisDisplay.grey);
 				y += 10;
 			}
 		}

@@ -69,5 +69,4 @@ public class MessageOpenNemesisDetailsGui implements IMessage {
 				(int) player.posZ);
 	}
 
-
 }

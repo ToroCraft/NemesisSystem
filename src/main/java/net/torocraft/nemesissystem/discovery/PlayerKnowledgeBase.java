@@ -78,5 +78,17 @@ public class PlayerKnowledgeBase {
 		return knowledgeMap.get(nemesisId.toString());
 	}
 
+	public static PlayerKnowledgeBase load(NBTTagCompound c) {
+		PlayerKnowledgeBase knowledge = new PlayerKnowledgeBase();
+		NbtSerializer.read(c, knowledge);
+		return knowledge;
+	}
+
+	public static NBTTagCompound save(PlayerKnowledgeBase knowledge) {
+		NBTTagCompound c = new NBTTagCompound();
+		NbtSerializer.write(c, knowledge);
+		return c;
+	}
+
 }
 
