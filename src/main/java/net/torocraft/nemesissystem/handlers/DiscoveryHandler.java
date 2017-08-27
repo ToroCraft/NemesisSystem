@@ -29,7 +29,7 @@ public class DiscoveryHandler {
 
 	@SubscribeEvent
 	public void readBook(RightClickItem event) {
-		
+
 		if (event.getWorld().isRemote) {
 			return;
 		}
