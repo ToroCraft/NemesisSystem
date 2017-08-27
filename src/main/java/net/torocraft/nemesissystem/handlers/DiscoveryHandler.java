@@ -8,6 +8,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
@@ -27,9 +28,8 @@ public class DiscoveryHandler {
 	// TODO notify player of the discovery and open the GUI to the new info (hi-light the new info)
 
 	@SubscribeEvent
-	public void readBook(PlayerInteractEvent event) {
-		//TODO RightClickItem
-
+	public void readBook(RightClickItem event) {
+		
 		if (event.getWorld().isRemote) {
 			return;
 		}
