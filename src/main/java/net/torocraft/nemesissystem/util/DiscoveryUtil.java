@@ -66,15 +66,21 @@ public class DiscoveryUtil {
 	}
 
 	private static boolean isUnreadBook(ItemStack book) {
-		return  book.getTagCompound().hasKey(NBT_UNREAD_DISCOVERY);
+		if (book.getTagCompound() == null) {
+			return false;
+		}
+		return book.getTagCompound().hasKey(NBT_UNREAD_DISCOVERY);
 	}
 
-	public static ItemStack setDiscoveryToBook(ItemStack book, NemesisDiscovery discovery) {
+
+	private static void setDiscoveryToBook(ItemStack book, NemesisDiscovery discovery) {
 		NBTTagCompound bookNbt = book.getTagCompound();
+		if (bookNbt == null) {
+			bookNbt = new NBTTagCompound();
+		}
 		bookNbt.removeTag(NBT_UNREAD_DISCOVERY);
 		bookNbt.setTag(NBT_DISCOVERY, nbt(discovery));
 		book.setTagCompound(bookNbt);
-		return book;
 	}
 
 	private static NBTTagCompound nbt(NemesisDiscovery discovery) {
@@ -86,7 +92,7 @@ public class DiscoveryUtil {
 	/**
 	 * Get a random discovery for a random nemesis
 	 */
-	public static NemesisDiscovery getRandomDiscovery(World world) {
+	private static NemesisDiscovery getRandomDiscovery(World world) {
 		return getRandomDiscovery(getRandomNemesis(world));
 	}
 
@@ -98,7 +104,7 @@ public class DiscoveryUtil {
 	/**
 	 * Get a random discovery about the given nemesis
 	 */
-	public static NemesisDiscovery getRandomDiscovery(NemesisEntry nemesis) {
+	private static NemesisDiscovery getRandomDiscovery(NemesisEntry nemesis) {
 		NemesisDiscovery discovery = new NemesisDiscovery();
 		discovery.nemesisId = nemesis.getId();
 
@@ -119,10 +125,6 @@ public class DiscoveryUtil {
 		discovery.type = Type.TRAIT;
 		discovery.index = roll - 2;
 		return discovery;
-	}
-
-	private static int getRandomTraitIndex(NemesisEntry nemesis) {
-		return rand.nextInt(nemesis.getTraits().size());
 	}
 
 }

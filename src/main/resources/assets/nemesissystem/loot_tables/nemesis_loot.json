@@ -7,11 +7,11 @@
         {
           "type": "item",
           "weight": 1,
-          "name": "enchanted_book",
+          "name": "written_book",
           "functions": [
             {
               "function": "set_nbt",
-              "tag": "{ench:[{id:2,lvl:1}]}"
+              "tag": "{nemesissystem_unread_discovery:1}"
             }
           ]
         }

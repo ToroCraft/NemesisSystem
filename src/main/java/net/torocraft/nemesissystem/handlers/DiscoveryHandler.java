@@ -28,6 +28,7 @@ public class DiscoveryHandler {
 
 	@SubscribeEvent
 	public void readBook(PlayerInteractEvent event) {
+		//TODO RightClickItem
 
 		if (event.getWorld().isRemote) {
 			return;
