@@ -10,8 +10,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
-import net.torocraft.nemesissystem.discovery.NemesisDiscovery.Type;
 import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
@@ -23,6 +21,8 @@ import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
 public class GuiNemesisDetails extends GuiScreen {
+
+	public enum DisplayType {NAME, LOCATION, TRAIT}
 
 	private static final String UNKNOWN_VALUE = "????";
 	private static final ResourceLocation INVENTORY_BACKGROUND = new ResourceLocation(NemesisSystem.MODID, "textures/gui/nemesis_details_gui.png");
@@ -79,19 +79,19 @@ public class GuiNemesisDetails extends GuiScreen {
 
 	private void drawTitle() {
 		NemesisEntry n = nemesisData.nemesis;
-		String s = info(Type.NAME, n.getNameAndTitle()) + " (" + NemesisUtil.romanize(n.getLevel()) + ")";
+		String s = info(DisplayType.NAME, n.getNameAndTitle()) + " (" + NemesisUtil.romanize(n.getLevel()) + ")";
 		drawCenteredString(fontRenderer, s, width / 2, 10 + offsetY, 0xffffff);
 	}
 
-	private String info(Type type, String info) {
+	private String info(DisplayType type, String info) {
 		return info(type, 0, info);
 	}
 
-	private String info(Type type, int info) {
+	private String info(DisplayType type, int info) {
 		return info(type, 0, Integer.toString(info, 10));
 	}
 
-	private String info(Type type, int index, String info) {
+	private String info(DisplayType type, int index, String info) {
 
 		NemesisKnowledge knowledge = MessageOpenNemesisDetailsGui.KNOWLEDGE;
 
@@ -99,15 +99,15 @@ public class GuiNemesisDetails extends GuiScreen {
 			return UNKNOWN_VALUE;
 		}
 
-		if (Type.NAME.equals(type) && knowledge.name) {
+		if (DisplayType.NAME.equals(type) && knowledge.name) {
 			return info;
 		}
 
-		if (Type.LOCATION.equals(type) && knowledge.location) {
+		if (DisplayType.LOCATION.equals(type) && knowledge.location) {
 			return info;
 		}
 
-		if (Type.TRAIT.equals(type) && knowledge.traits.contains(index)) {
+		if (DisplayType.TRAIT.equals(type) && knowledge.traits.contains(index)) {
 			return info;
 		}
 
@@ -120,10 +120,10 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		NemesisEntry nemesis = nemesisData.nemesis;
 
-		fontRenderer.drawString(I18n.format("gui.distance") + ": " + info(Type.LOCATION, nemesisData.distance + "m"), x, y, NemesisDisplay.grey);
+		fontRenderer.drawString(I18n.format("gui.distance") + ": " + info(DisplayType.LOCATION, nemesisData.distance + "m"), x, y, NemesisDisplay.grey);
 		y += 10;
 
-		fontRenderer.drawString(I18n.format("gui.location", info(Type.LOCATION, nemesis.getX()), info(Type.LOCATION, nemesis.getZ())), x, y,
+		fontRenderer.drawString(I18n.format("gui.location", info(DisplayType.LOCATION, nemesis.getX()), info(DisplayType.LOCATION, nemesis.getZ())), x, y,
 				NemesisDisplay.grey);
 		y += 14;
 
@@ -134,7 +134,7 @@ public class GuiNemesisDetails extends GuiScreen {
 		for (int i = 0; i < nemesis.getTraits().size(); i++) {
 			trait = nemesis.getTraits().get(i);
 			if (trait.type.isStrength()) {
-				fontRenderer.drawString("* " + info(Type.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
+				fontRenderer.drawString("* " + info(DisplayType.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
 						NemesisDisplay.grey);
 				y += 10;
 			}
@@ -147,7 +147,7 @@ public class GuiNemesisDetails extends GuiScreen {
 		for (int i = 0; i < nemesis.getTraits().size(); i++) {
 			trait = nemesis.getTraits().get(i);
 			if (trait.type.isWeakness()) {
-				fontRenderer.drawString("* " + info(Type.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
+				fontRenderer.drawString("* " + info(DisplayType.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
 						NemesisDisplay.grey);
 				y += 10;
 			}
@@ -215,9 +215,6 @@ public class GuiNemesisDetails extends GuiScreen {
 			}
 			nemesisData = new NemesisDisplayData(MessageOpenNemesisDetailsGui.NEMESIS);
 		}
-
-		System.out.println("Knowledge: " + MessageOpenNemesisDetailsGui.KNOWLEDGE);
-		System.out.println("Knowledge Name: " + MessageOpenNemesisDetailsGui.KNOWLEDGE.name);
 
 		entityDisplay.setNemesis(nemesisData);
 

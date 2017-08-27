@@ -2,6 +2,7 @@ package net.torocraft.nemesissystem.discovery;
 
 import java.util.UUID;
 import net.minecraft.nbt.NBTTagCompound;
+import net.torocraft.nemesissystem.util.NemesisUtil;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
 
@@ -10,7 +11,7 @@ import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
  */
 public class NemesisDiscovery {
 
-	public enum Type {NAME, LOCATION, TRAIT}
+	public enum Type {LOCATION, TRAIT}
 
 	@NbtField
 	public UUID nemesisId;
@@ -35,8 +36,17 @@ public class NemesisDiscovery {
 	@Override
 	public String toString() {
 		if (nemesisId == null) {
-			return "Nobody";
+			return "";
 		}
+
+		if (Type.LOCATION.equals(type)) {
+			return "Location";
+		}
+
+		if (Type.TRAIT.equals(type)) {
+			return "Trait " + NemesisUtil.romanize(index);
+		}
+
 		return type + " [" + index + "]";
 	}
 }

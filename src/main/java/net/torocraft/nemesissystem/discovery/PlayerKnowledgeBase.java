@@ -37,10 +37,9 @@ public class PlayerKnowledgeBase {
 			currentKnowledge.nemesisId = newDiscovery.nemesisId;
 		}
 
+		currentKnowledge.name = true;
+
 		switch (newDiscovery.type) {
-		case NAME:
-			currentKnowledge.name = true;
-			break;
 		case LOCATION:
 			currentKnowledge.location = true;
 			break;

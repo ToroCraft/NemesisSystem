@@ -11,7 +11,7 @@
           "functions": [
             {
               "function": "set_nbt",
-              "tag": "{nemesissystem_unread_discovery:1}"
+              "tag": "{display:{Name:\"Unread Nemesis Book\"},nemesissystem_unread_discovery:1}"
             }
           ]
         }

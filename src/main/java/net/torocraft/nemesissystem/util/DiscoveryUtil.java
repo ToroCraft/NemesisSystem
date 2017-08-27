@@ -52,13 +52,14 @@ public class DiscoveryUtil {
 		ItemStack book = new ItemStack(Items.WRITTEN_BOOK, 1);
 		NBTTagCompound bookNbt = new NBTTagCompound();
 		bookNbt.setTag(NBT_UNREAD_DISCOVERY, new NBTTagInt(1));
+		book.setStackDisplayName("Unread Nemesis Book");
 		book.setTagCompound(bookNbt);
 		return book;
 	}
 
 	public static NemesisDiscovery readBook(World world, ItemStack book) {
 		if (isUnreadBook(book)) {
-			setDiscoveryToBook(book, DiscoveryUtil.getRandomDiscovery(world));
+			setDiscoveryToBook(world, book, DiscoveryUtil.getRandomDiscovery(world));
 		}
 		NemesisDiscovery discovery = new NemesisDiscovery();
 		discovery.readFromNBT(book.getTagCompound().getCompoundTag(NBT_DISCOVERY));
@@ -72,8 +73,7 @@ public class DiscoveryUtil {
 		return book.getTagCompound().hasKey(NBT_UNREAD_DISCOVERY);
 	}
 
-
-	private static void setDiscoveryToBook(ItemStack book, NemesisDiscovery discovery) {
+	private static void setDiscoveryToBook(World world, ItemStack book, NemesisDiscovery discovery) {
 		NBTTagCompound bookNbt = book.getTagCompound();
 		if (bookNbt == null) {
 			bookNbt = new NBTTagCompound();
@@ -81,6 +81,19 @@ public class DiscoveryUtil {
 		bookNbt.removeTag(NBT_UNREAD_DISCOVERY);
 		bookNbt.setTag(NBT_DISCOVERY, nbt(discovery));
 		book.setTagCompound(bookNbt);
+		book.setStackDisplayName(generateBookName(world, discovery));
+	}
+
+	private static String generateBookName(World world, NemesisDiscovery discovery) {
+		return discovery.toString() + " discovery for " + getNemesisName(world, discovery);
+	}
+
+	private static String getNemesisName(World world, NemesisDiscovery discovery) {
+		NemesisEntry nemesis = NemesisRegistryProvider.get(world).getById(discovery.nemesisId);
+		if (nemesis == null) {
+			return "Nemesis";
+		}
+		return nemesis.getNameAndTitle();
 	}
 
 	private static NBTTagCompound nbt(NemesisDiscovery discovery) {
@@ -108,22 +121,17 @@ public class DiscoveryUtil {
 		NemesisDiscovery discovery = new NemesisDiscovery();
 		discovery.nemesisId = nemesis.getId();
 
-		int infoCount = 2 + nemesis.getTraits().size();
+		int infoCount = 1 + nemesis.getTraits().size();
 
 		int roll = rand.nextInt(infoCount);
 
 		if (roll == 0) {
-			discovery.type = Type.NAME;
-			return discovery;
-		}
-
-		if (roll == 1) {
 			discovery.type = Type.LOCATION;
 			return discovery;
 		}
 
 		discovery.type = Type.TRAIT;
-		discovery.index = roll - 2;
+		discovery.index = roll - 1;
 		return discovery;
 	}
 

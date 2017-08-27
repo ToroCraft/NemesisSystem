@@ -5,13 +5,10 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.ResourceLocation;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
-import net.torocraft.nemesissystem.discovery.NemesisDiscovery.Type;
 import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.discovery.PlayerKnowledgeBase;
-import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
+import net.torocraft.nemesissystem.gui.GuiNemesisDetails.DisplayType;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGuiRequest;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
@@ -22,7 +19,6 @@ import net.torocraft.nemesissystem.util.NemesisUtil;
 public class NemesisDisplay implements GuiDisplay {
 
 	private static final String UNKNOWN_VALUE = "????";
-	private static final ResourceLocation SKIN_BASIC = new ResourceLocation(NemesisSystem.MODID, "textures/gui/default_skin_basic.png");
 
 	public static int grey = 0xff404040;
 	public static int lightGrey = 0xff909090;
@@ -102,8 +98,8 @@ public class NemesisDisplay implements GuiDisplay {
 	private void drawTitleAndInfo(NemesisEntry n) {
 		int x = this.x + 51;
 		int y = this.y + 4;
-		fontRenderer.drawString(info(Type.NAME, n.getNameAndTitle()) + " (" + NemesisUtil.romanize(n.getLevel()) + ")", x, y, 0x0);
-		fontRenderer.drawString(I18n.format("gui.distance") + ": " + info(Type.LOCATION, data.distance), x, y + 10, grey);
+		fontRenderer.drawString(info(DisplayType.NAME, n.getNameAndTitle()) + " (" + NemesisUtil.romanize(n.getLevel()) + ")", x, y, 0x0);
+		fontRenderer.drawString(I18n.format("gui.distance") + ": " + info(DisplayType.LOCATION, data.distance), x, y + 10, grey);
 	}
 
 	private void drawTraits(NemesisEntry n) {
@@ -121,11 +117,11 @@ public class NemesisDisplay implements GuiDisplay {
 			if (trait.type.getAffect().equals(Affect.STRENGTH)) {
 				if (first) {
 					first = false;
-				}else {
+				} else {
 					fontRenderer.drawString(". . .", x, y, grey);
 					return;
 				}
-				String s = info(Type.TRAIT, i, I18n.format("trait." + n.getTraits().get(i).type));
+				String s = info(DisplayType.TRAIT, i, I18n.format("trait." + n.getTraits().get(i).type));
 				s += " (" + NemesisUtil.romanize(trait.level) + ")";
 				fontRenderer.drawString(s, x, y, grey);
 				x += fontRenderer.getStringWidth(s) + 3;
@@ -138,15 +134,15 @@ public class NemesisDisplay implements GuiDisplay {
 		entityDisplay.draw(mouseX, mouseY);
 	}
 
-	private String info(Type type, String info) {
+	private String info(DisplayType type, String info) {
 		return info(type, 0, info);
 	}
 
-	private String info(Type type, int info) {
+	private String info(DisplayType type, int info) {
 		return info(type, 0, Integer.toString(info, 10));
 	}
 
-	private String info(Type type, int index, String info) {
+	private String info(DisplayType type, int index, String info) {
 
 		PlayerKnowledgeBase knowledgeBase = MessageOpenNemesisGui.KNOWLEDGE_BASE;
 
@@ -164,15 +160,15 @@ public class NemesisDisplay implements GuiDisplay {
 			return UNKNOWN_VALUE;
 		}
 
-		if (Type.NAME.equals(type) && knowledge.name) {
+		if (DisplayType.NAME.equals(type) && knowledge.name) {
 			return info;
 		}
 
-		if (Type.LOCATION.equals(type) && knowledge.location) {
+		if (DisplayType.LOCATION.equals(type) && knowledge.location) {
 			return info;
 		}
 
-		if (Type.TRAIT.equals(type) && knowledge.traits.contains(index)) {
+		if (DisplayType.TRAIT.equals(type) && knowledge.traits.contains(index)) {
 			return info;
 		}
 
