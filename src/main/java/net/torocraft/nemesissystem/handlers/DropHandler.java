@@ -45,6 +45,6 @@ public class DropHandler {
         }
 
         BlockPos position = event.getEntity().getPosition();
-        event.getDrops().add(new EntityItem(world, position.getX(), position.getY(), position.getZ(), DiscoveryUtil.getRandomDiscoveryBook(world)));
+        event.getDrops().add(new EntityItem(world, position.getX(), position.getY(), position.getZ(), DiscoveryUtil.createUnreadBook()));
     }
 }

@@ -33,6 +33,9 @@ public class LootHandler {
 
 			String name = LOOT_TABLE.toString();
 			LootEntry entry = new LootEntryTable(LOOT_TABLE, 1, 0, new LootCondition[0], name);
+
+
+
 			RandomValueRange rolls = new RandomValueRange(0, 1);
 			LootPool pool = new LootPool(new LootEntry[] { entry }, new LootCondition[0], rolls, rolls, name);
 			event.getTable().addPool(pool);
