@@ -1,7 +1,6 @@
 package net.torocraft.nemesissystem.util;
 
 import java.util.Random;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;

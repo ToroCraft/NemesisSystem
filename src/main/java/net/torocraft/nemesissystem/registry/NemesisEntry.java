@@ -11,11 +11,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
-import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.Affect;
+import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.traits.Type;
-import net.torocraft.nemesissystem.util.nbt.NbtData;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
 

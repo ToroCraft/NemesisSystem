@@ -1,10 +1,13 @@
 package net.torocraft.nemesissystem.proxy;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.gui.NemesisSystemGuiHandler;
 import net.torocraft.nemesissystem.handlers.InputHandler;
 import net.torocraft.nemesissystem.handlers.RenderHandler;
@@ -29,8 +32,20 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void postInit(FMLPostInitializationEvent e) {
-		super.postInit(e);
+	public void openGui(int modGuiId) {
+		EntityPlayer player = Minecraft.getMinecraft().player;
+		player.openGui(NemesisSystem.INSTANCE, modGuiId, player.world, (int) player.posX, (int) player.posY, (int) player.posZ);
+	}
+
+	@Override
+	public EntityPlayer getPlayer() {
+		return Minecraft.getMinecraft().player;
+	}
+
+	@Override
+	public void spawnParticle(EnumParticleTypes particleType, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed,
+			double zSpeed, int... parameters) {
+
 	}
 
 }

@@ -48,15 +48,14 @@ public class MessageOpenNemesisDetailsGuiRequest implements IMessage {
 			player.getServerWorld().addScheduledTask(() -> sendResponse(message, player));
 			return null;
 		}
-	}
 
-	private static void sendResponse(MessageOpenNemesisDetailsGuiRequest message, EntityPlayerMP player) {
-		NemesisEntry nemesis = NemesisRegistryProvider.get(player.world).getById(message.nemesisId);
-		NemesisKnowledge knowledge = DiscoveryUtil.getGetPlayerKnowledgeOfNemesis(player, nemesis.getId());
-		if (knowledge == null) {
-			knowledge = new NemesisKnowledge();
+		private static void sendResponse(MessageOpenNemesisDetailsGuiRequest message, EntityPlayerMP player) {
+			NemesisEntry nemesis = NemesisRegistryProvider.get(player.world).getById(message.nemesisId);
+			NemesisKnowledge knowledge = DiscoveryUtil.getGetPlayerKnowledgeOfNemesis(player, nemesis.getId());
+			if (knowledge == null) {
+				knowledge = new NemesisKnowledge();
+			}
+			NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis, knowledge), player);
 		}
-		System.out.println("MessageOpenNemesisDetailsGuiRequest.handle: " + nemesis);
-		NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis, knowledge), player);
 	}
 }

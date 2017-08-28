@@ -44,7 +44,7 @@ public class SpawnHandler {
 	@SubscribeEvent
 	public void handleSpawn(EntityJoinWorldEvent event) {
 
-		if (event.getEntity().world.isRemote) {
+		if (event.getWorld().isRemote) {
 			requestNemesisDataFromServer(event);
 			return;
 		}

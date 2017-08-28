@@ -4,9 +4,9 @@ import io.netty.buffer.ByteBuf;
 import java.util.Random;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -18,7 +18,8 @@ public class MessageReflectDamageAnimation implements IMessage {
 	private int id;
 
 	public static void init(int packetId) {
-		NemesisSystem.NETWORK.registerMessage(MessageReflectDamageAnimation.Handler.class, MessageReflectDamageAnimation.class, packetId, Side.CLIENT);
+		NemesisSystem.NETWORK
+				.registerMessage(MessageReflectDamageAnimation.Handler.class, MessageReflectDamageAnimation.class, packetId, Side.CLIENT);
 	}
 
 	public MessageReflectDamageAnimation() {
@@ -45,24 +46,23 @@ public class MessageReflectDamageAnimation implements IMessage {
 			Minecraft.getMinecraft().addScheduledTask(() -> work(message));
 			return null;
 		}
-	}
 
-	public static void work(MessageReflectDamageAnimation message) {
-		Minecraft mc = Minecraft.getMinecraft();
-		Entity e = mc.world.getEntityByID(message.id);
-		if(e != null){
-			spawnParticles(mc.world, e.getPosition(), mc.player.getRNG());
+		public static void work(MessageReflectDamageAnimation message) {
+			EntityPlayer player = NemesisSystem.PROXY.getPlayer();
+			Entity e = player.getEntityWorld().getEntityByID(message.id);
+			if (e != null) {
+				spawnParticles(e.getPosition(), player.getRNG());
+			}
+		}
+
+		private static void spawnParticles(BlockPos pos, Random rand) {
+			double x, y, z;
+			for (int i = 0; i < 10; i++) {
+				x = (double) ((float) pos.getX() + 0.5F) + (double) (rand.nextFloat() - 0.5F) * 1D;
+				y = (double) ((float) pos.getY() + 0.4F) + (double) (rand.nextFloat() - 0.5F) * 1D;
+				z = (double) ((float) pos.getZ() + 0.5F) + (double) (rand.nextFloat() - 0.5F) * 1D;
+				NemesisSystem.PROXY.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x, y, z, 0.0D, 0.0D, 0.0D);
+			}
 		}
 	}
-
-	private static void spawnParticles(World world, BlockPos pos, Random rand) {
-		double x, y, z;
-		for (int i = 0; i < 10; i++) {
-			x = (double) ((float) pos.getX() + 0.5F) + (double) (rand.nextFloat() - 0.5F) * 1D;
-			y = (double) ((float) pos.getY() + 0.4F) + (double) (rand.nextFloat() - 0.5F) * 1D;
-			z = (double) ((float) pos.getZ() + 0.5F) + (double) (rand.nextFloat() - 0.5F) * 1D;
-			world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, x, y, z, 0.0D, 0.0D, 0.0D);
-		}
-	}
-
 }

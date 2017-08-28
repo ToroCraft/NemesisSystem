@@ -1,13 +1,8 @@
 package net.torocraft.nemesissystem.handlers;
 
-import static net.torocraft.nemesissystem.util.DiscoveryUtil.NBT_DISCOVERY;
-import static net.torocraft.nemesissystem.util.DiscoveryUtil.NBT_UNREAD_DISCOVERY;
-
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;

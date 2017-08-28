@@ -1,6 +1,5 @@
 package net.torocraft.nemesissystem.handlers;
 
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -15,10 +14,7 @@ import net.torocraft.nemesissystem.events.NemesisEvent;
 import net.torocraft.nemesissystem.events.PromotionEvent;
 import net.torocraft.nemesissystem.events.RegisterEvent;
 import net.torocraft.nemesissystem.events.SpawnEvent;
-import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.registry.LogEntry;
-import net.torocraft.nemesissystem.registry.NemesisEntry;
-import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
 
 public class NemesisHandler {
 
@@ -26,7 +22,7 @@ public class NemesisHandler {
 
 	@SubscribeEvent
 	public void discovery(DiscoveryEvent ev) {
-		System.out.println("Nemesis Discovery found: " + ev.discovery);
+		
 	}
 
 	@SubscribeEvent

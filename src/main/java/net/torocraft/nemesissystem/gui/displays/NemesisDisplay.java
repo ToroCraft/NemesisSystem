@@ -10,7 +10,6 @@ import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.discovery.PlayerKnowledgeBase;
 import net.torocraft.nemesissystem.gui.GuiNemesisDetails.DisplayType;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGuiRequest;
-import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.traits.Affect;
 import net.torocraft.nemesissystem.traits.Trait;
@@ -144,7 +143,7 @@ public class NemesisDisplay implements GuiDisplay {
 
 	private String info(DisplayType type, int index, String info) {
 
-		PlayerKnowledgeBase knowledgeBase = MessageOpenNemesisGui.KNOWLEDGE_BASE;
+		PlayerKnowledgeBase knowledgeBase = NemesisSystem.KNOWLEDGE_BASE;
 
 		if (knowledgeBase == null) {
 			return UNKNOWN_VALUE;

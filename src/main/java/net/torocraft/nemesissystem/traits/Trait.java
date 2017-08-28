@@ -1,6 +1,5 @@
 package net.torocraft.nemesissystem.traits;
 
-import java.util.Arrays;
 import java.util.Random;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 

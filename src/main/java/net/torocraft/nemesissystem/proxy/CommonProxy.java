@@ -1,13 +1,24 @@
 package net.torocraft.nemesissystem.proxy;
 
 import java.io.File;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.torocraft.nemesissystem.NemesisConfig;
+import net.torocraft.nemesissystem.handlers.AttackHandler;
+import net.torocraft.nemesissystem.handlers.DeathHandler;
+import net.torocraft.nemesissystem.handlers.DiscoveryHandler;
+import net.torocraft.nemesissystem.handlers.DropHandler;
+import net.torocraft.nemesissystem.handlers.LootHandler;
 import net.torocraft.nemesissystem.handlers.NemesisHandler;
-import net.torocraft.nemesissystem.handlers.*;
+import net.torocraft.nemesissystem.handlers.Reaper;
+import net.torocraft.nemesissystem.handlers.SetAttackTargetHandler;
+import net.torocraft.nemesissystem.handlers.SpawnHandler;
+import net.torocraft.nemesissystem.handlers.UpdateHandler;
 import net.torocraft.nemesissystem.network.MessageHealAnimation;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGuiRequest;
@@ -49,15 +60,30 @@ public class CommonProxy {
 
 	private void initPackets() {
 		int packetId = 0;
-		MessageOpenNemesisGui.init(packetId++);
+
 		MessageOpenNemesisGuiRequest.init(packetId++);
 		MessageOpenNemesisDetailsGui.init(packetId++);
+
 		MessageOpenNemesisDetailsGuiRequest.init(packetId++);
 		MessageHealAnimation.init(packetId++);
 		MessageSyncNemesis.init(packetId++);
 		MessageSyncNemesisRequest.init(packetId++);
 		MessageReflectDamageAnimation.init(packetId++);
 		MessageWorshipAnimation.init(packetId++);
+
+		MessageOpenNemesisGui.init(packetId++);
+	}
+
+	public void openGui(int modGuiId) {
+
+	}
+
+	public EntityPlayer getPlayer() {
+		return null;
+	}
+
+	public void spawnParticle(EnumParticleTypes particleType, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed, double zSpeed, int... parameters) {
+
 	}
 
 }

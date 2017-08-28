@@ -1,5 +1,6 @@
 package net.torocraft.nemesissystem;
 
+import java.util.List;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -10,7 +11,12 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
+import net.torocraft.nemesissystem.discovery.PlayerKnowledgeBase;
 import net.torocraft.nemesissystem.proxy.CommonProxy;
+import net.torocraft.nemesissystem.registry.NemesisEntry;
 
 @Mod(modid = NemesisSystem.MODID, version = NemesisSystem.VERSION, name = NemesisSystem.MODNAME)
 public class NemesisSystem {
@@ -34,21 +40,33 @@ public class NemesisSystem {
 	public static SimpleNetworkWrapper NETWORK = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 
 	@SidedProxy(clientSide = "net.torocraft.nemesissystem.proxy.ClientProxy", serverSide = "net.torocraft.nemesissystem.proxy.ServerProxy")
-	public static CommonProxy proxy;
+	public static CommonProxy PROXY;
+
+	@SideOnly(Side.CLIENT)
+	public static List<NemesisEntry> NEMESES;
+
+	@SideOnly(Side.CLIENT)
+	public static PlayerKnowledgeBase KNOWLEDGE_BASE;
+
+	@SideOnly(Side.CLIENT)
+	public static NemesisEntry NEMESIS;
+
+	@SideOnly(Side.CLIENT)
+	public static NemesisKnowledge KNOWLEDGE;
 
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent e) {
-		proxy.preInit(e);
+		PROXY.preInit(e);
 	}
 
 	@EventHandler
 	public void init(FMLInitializationEvent e) {
-		proxy.init(e);
+		PROXY.init(e);
 	}
 
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent e) {
-		proxy.postInit(e);
+		PROXY.postInit(e);
 	}
 
 	@EventHandler

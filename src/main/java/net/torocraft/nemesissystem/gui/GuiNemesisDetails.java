@@ -14,7 +14,6 @@ import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
 import net.torocraft.nemesissystem.gui.displays.NemesisEntityDisplay;
-import net.torocraft.nemesissystem.network.MessageOpenNemesisDetailsGui;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGuiRequest;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.traits.Trait;
@@ -93,7 +92,7 @@ public class GuiNemesisDetails extends GuiScreen {
 
 	private String info(DisplayType type, int index, String info) {
 
-		NemesisKnowledge knowledge = MessageOpenNemesisDetailsGui.KNOWLEDGE;
+		NemesisKnowledge knowledge = NemesisSystem.KNOWLEDGE;
 
 		if (knowledge == null) {
 			return UNKNOWN_VALUE;
@@ -210,10 +209,10 @@ public class GuiNemesisDetails extends GuiScreen {
 	public void initGui() {
 
 		if (nemesisData == null) {
-			if (MessageOpenNemesisDetailsGui.NEMESIS == null) {
+			if (NemesisSystem.NEMESIS == null) {
 				return;
 			}
-			nemesisData = new NemesisDisplayData(MessageOpenNemesisDetailsGui.NEMESIS);
+			nemesisData = new NemesisDisplayData(NemesisSystem.NEMESIS);
 		}
 
 		entityDisplay.setNemesis(nemesisData);

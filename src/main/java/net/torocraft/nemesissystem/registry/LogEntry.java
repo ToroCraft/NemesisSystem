@@ -2,7 +2,6 @@ package net.torocraft.nemesissystem.registry;
 
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.entity.EntityCreature;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.util.nbt.NbtField;
 
@@ -24,7 +23,9 @@ public class LogEntry {
 	private LogEntry(LogType type, Map<String, String> details) {
 		this.type = type;
 		this.details = details;
-		this.date = NemesisSystem.SERVER.getWorld(0).getTotalWorldTime();
+		if (NemesisSystem.SERVER != null) {
+			this.date = NemesisSystem.SERVER.getWorld(0).getTotalWorldTime();
+		}
 	}
 
 	public enum LogType {

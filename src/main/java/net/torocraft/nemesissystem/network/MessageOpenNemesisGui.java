@@ -11,22 +11,14 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.discovery.PlayerKnowledgeBase;
+import net.torocraft.nemesissystem.gui.NemesisSystemGuiHandler;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
-import net.torocraft.nemesissystem.util.DiscoveryUtil;
 
 public class MessageOpenNemesisGui implements IMessage {
-
-	@SideOnly(Side.CLIENT)
-	public static List<NemesisEntry> NEMESES;
-
-	@SideOnly(Side.CLIENT)
-	public static PlayerKnowledgeBase KNOWLEDGE_BASE;
 
 	private List<NemesisEntry> nemeses;
 	private PlayerKnowledgeBase knowledgeBase;
@@ -61,8 +53,7 @@ public class MessageOpenNemesisGui implements IMessage {
 	public void toBytes(ByteBuf buf) {
 		NBTTagCompound c = new NBTTagCompound();
 		NemesisRegistry.writeNemesesToNBT(c, nemeses);
-		ByteBufUtils.writeTag(buf,  c);
-
+		ByteBufUtils.writeTag(buf, c);
 		ByteBufUtils.writeTag(buf, PlayerKnowledgeBase.save(knowledgeBase));
 	}
 
@@ -72,14 +63,14 @@ public class MessageOpenNemesisGui implements IMessage {
 			Minecraft.getMinecraft().addScheduledTask(() -> work(message));
 			return null;
 		}
+
+		public static void work(MessageOpenNemesisGui message) {
+			NemesisSystem.NEMESES = message.nemeses;
+			NemesisSystem.KNOWLEDGE_BASE = message.knowledgeBase;
+
+			//EntityPlayer player = Minecraft.getMinecraft().player;
+			//player.openGui(NemesisSystem.INSTANCE, NemesisSystemGuiHandler.NEMESIS_LIST_GUI, player.world, (int) player.posX, (int) player.posY, (int) player.posZ);
+			NemesisSystem.PROXY.openGui(NemesisSystemGuiHandler.NEMESIS_LIST_GUI);
+		}
 	}
-
-	public static void work(MessageOpenNemesisGui message) {
-		NEMESES = message.nemeses;
-		KNOWLEDGE_BASE = message.knowledgeBase;
-
-		EntityPlayer player = Minecraft.getMinecraft().player;
-		player.openGui(NemesisSystem.INSTANCE, 0, player.world, (int) player.posX, (int) player.posY, (int) player.posZ);
-	}
-
 }

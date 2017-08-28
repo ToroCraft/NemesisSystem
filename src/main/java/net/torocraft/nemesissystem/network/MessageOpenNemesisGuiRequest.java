@@ -35,10 +35,10 @@ public class MessageOpenNemesisGuiRequest implements IMessage {
 			player.getServerWorld().addScheduledTask(() -> sendResponse(player));
 			return null;
 		}
-	}
 
-	private static void sendResponse(EntityPlayerMP player) {
-		NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisGui(player), player);
+		private static void sendResponse(EntityPlayerMP player) {
+			NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisGui(player), player);
+		}
 	}
 
 }

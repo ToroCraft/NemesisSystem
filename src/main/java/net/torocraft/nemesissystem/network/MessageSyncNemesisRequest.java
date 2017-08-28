@@ -47,36 +47,35 @@ public class MessageSyncNemesisRequest implements IMessage {
 			player.getServerWorld().addScheduledTask(() -> sendResponse(player, message));
 			return null;
 		}
-	}
 
-	private static void sendResponse(EntityPlayerMP player, MessageSyncNemesisRequest message) {
+		private static void sendResponse(EntityPlayerMP player, MessageSyncNemesisRequest message) {
 
-		UUID entityUuid = message.entityUuid;
+			UUID entityUuid = message.entityUuid;
 
-		if (entityUuid == null) {
-			return;
+			if (entityUuid == null) {
+				return;
+			}
+
+			List<NemesisEntry> nemeses = NemesisRegistryProvider.get(player.world).list();
+
+			for (NemesisEntry nemesis : nemeses) {
+				if (entityUuid.equals(nemesis.getEntityUuid())) {
+					sendPacketToClient(player, nemesis);
+					return;
+				}
+			}
 		}
 
-		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(player.world).list();
+		private static void sendPacketToClient(EntityPlayerMP player, NemesisEntry nemesis) {
+			updateNameTag(player, nemesis);
+			NemesisSystem.NETWORK.sendTo(new MessageSyncNemesis(nemesis), player);
+		}
 
-		for (NemesisEntry nemesis : nemeses) {
-			if (entityUuid.equals(nemesis.getEntityUuid())) {
-				sendPacketToClient(player, nemesis);
-				return;
+		private static void updateNameTag(EntityPlayerMP player, NemesisEntry nemesis) {
+			Entity entity = player.world.getEntityByID(nemesis.getSpawned());
+			if (entity != null) {
+				entity.setCustomNameTag(nemesis.getNameAndTitle());
 			}
 		}
 	}
-
-	private static void sendPacketToClient(EntityPlayerMP player, NemesisEntry nemesis) {
-		updateNameTag(player, nemesis);
-		NemesisSystem.NETWORK.sendTo(new MessageSyncNemesis(nemesis), player);
-	}
-
-	private static void updateNameTag(EntityPlayerMP player, NemesisEntry nemesis) {
-		Entity entity = player.world.getEntityByID(nemesis.getSpawned());
-		if (entity != null) {
-			entity.setCustomNameTag(nemesis.getNameAndTitle());
-		}
-	}
-
 }

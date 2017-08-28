@@ -1,7 +1,5 @@
 package net.torocraft.nemesissystem.gui.displays;
 
-import java.io.IOException;
-
 public interface GuiDisplay {
 
 	void draw(float mouseX, float mouseY);

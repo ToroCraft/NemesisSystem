@@ -17,7 +17,6 @@ import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.gui.displays.GuiDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
-import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 
 public class GuiNemesis extends GuiScreen {
 
@@ -52,10 +51,10 @@ public class GuiNemesis extends GuiScreen {
 	private void setPage(int page) {
 
 		if (nemeses == null) {
-			if (MessageOpenNemesisGui.NEMESES == null) {
+			if (NemesisSystem.NEMESES == null) {
 				return;
 			}
-			nemeses = MessageOpenNemesisGui.NEMESES.stream().map(NemesisDisplayData::new).collect(toList());
+			nemeses = NemesisSystem.NEMESES.stream().map(NemesisDisplayData::new).collect(toList());
 			computeLastPage();
 		}
 

@@ -10,11 +10,8 @@ import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.torocraft.nemesissystem.NemesisSystem;
 
-@SideOnly(Side.CLIENT)
 public class LootHandler {
 
 	public static final ResourceLocation LOOT_TABLE = new ResourceLocation(NemesisSystem.MODID, "nemesis_loot");
@@ -28,8 +25,6 @@ public class LootHandler {
 		if (isLootTarget(event)) {
 
 			// TODO improve roll settings
-
-			// TODO update json loot file to have a discovery book
 
 			String name = LOOT_TABLE.toString();
 			LootEntry entry = new LootEntryTable(LOOT_TABLE, 1, 0, new LootCondition[0], name);

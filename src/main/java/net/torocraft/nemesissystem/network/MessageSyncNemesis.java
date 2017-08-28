@@ -55,22 +55,22 @@ public class MessageSyncNemesis implements IMessage {
 			Minecraft.getMinecraft().addScheduledTask(() -> work(message));
 			return null;
 		}
-	}
 
-	public static void work(MessageSyncNemesis message) {
-		NemesisEntry nemesis = message.nemesis;
+		public static void work(MessageSyncNemesis message) {
+			NemesisEntry nemesis = message.nemesis;
 
-		if (nemesis == null) {
-			return;
+			if (nemesis == null) {
+				return;
+			}
+
+			Entity entity = Minecraft.getMinecraft().world.getEntityByID(nemesis.getSpawned());
+
+			if (entity == null) {
+				return;
+			}
+
+			entity.addTag(NemesisSystem.TAG_NEMESIS);
 		}
-
-		Entity entity = Minecraft.getMinecraft().world.getEntityByID(nemesis.getSpawned());
-
-		if (entity == null) {
-			return;
-		}
-
-		entity.addTag(NemesisSystem.TAG_NEMESIS);
 	}
 
 }

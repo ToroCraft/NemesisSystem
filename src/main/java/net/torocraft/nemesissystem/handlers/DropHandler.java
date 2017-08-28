@@ -1,5 +1,8 @@
 package net.torocraft.nemesissystem.handlers;
 
+import static net.torocraft.nemesissystem.NemesisSystem.TAG_BODY_GUARD;
+import static net.torocraft.nemesissystem.NemesisSystem.TAG_NEMESIS;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
@@ -9,9 +12,6 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.util.DiscoveryUtil;
-
-import static net.torocraft.nemesissystem.NemesisSystem.TAG_BODY_GUARD;
-import static net.torocraft.nemesissystem.NemesisSystem.TAG_NEMESIS;
 
 public class DropHandler {
 
