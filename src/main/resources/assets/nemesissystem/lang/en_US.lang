@@ -11,14 +11,6 @@ gui.distance=Distance
 gui.weaknesses=Weaknesses
 gui.strengths=Strengths
 
-trait.DOUBLE_MELEE=Double Melee
-trait.ARROW=Arrow
-trait.SUMMON=Summon
-trait.REFLECT=Reflection
-trait.HEAT=Heat
-trait.POTION=Potion
-trait.TELEPORT=Teleportation
-
 trait.DOUBLE_MELEE=DoubleMelee
 trait.ARCHER=Archer
 trait.SUMMON=Summoner

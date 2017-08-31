@@ -23,8 +23,8 @@ import net.torocraft.nemesissystem.events.PromotionEvent;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
-import net.torocraft.nemesissystem.traits.Trait;
-import net.torocraft.nemesissystem.traits.Type;
+import net.torocraft.torotraits.traits.Trait;
+import net.torocraft.torotraits.traits.Type;
 
 public class NemesisActions {
 

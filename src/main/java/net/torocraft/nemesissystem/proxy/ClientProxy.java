@@ -10,7 +10,6 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.gui.NemesisSystemGuiHandler;
 import net.torocraft.nemesissystem.handlers.InputHandler;
-import net.torocraft.nemesissystem.handlers.RenderHandler;
 
 public class ClientProxy extends CommonProxy {
 	public static KeyBinding[] keyBindings;
@@ -27,7 +26,6 @@ public class ClientProxy extends CommonProxy {
 	public void init(FMLInitializationEvent e) {
 		NemesisSystemGuiHandler.init();
 		InputHandler.init();
-		RenderHandler.init();
 		super.init(e);
 	}
 
@@ -40,12 +38,6 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public EntityPlayer getPlayer() {
 		return Minecraft.getMinecraft().player;
-	}
-
-	@Override
-	public void spawnParticle(EnumParticleTypes particleType, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed,
-			double zSpeed, int... parameters) {
-		Minecraft.getMinecraft().world.spawnParticle(particleType, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
 	}
 
 }

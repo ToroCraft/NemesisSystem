@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityCreature;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.util.EntityDecorator;
-import net.torocraft.nemesissystem.util.SpawnUtil;
+import net.torocraft.torotraits.api.SpawnApi;
 
 public class NemesisEntityDisplay extends EntityDisplay implements GuiDisplay {
 
@@ -33,7 +33,7 @@ public class NemesisEntityDisplay extends EntityDisplay implements GuiDisplay {
 
 	private EntityCreature createEntity(NemesisEntry nemesis) {
 		try {
-			return SpawnUtil.getEntityFromString(mc.world, nemesis.getMob());
+			return SpawnApi.getEntityFromString(mc.world, nemesis.getMob());
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;

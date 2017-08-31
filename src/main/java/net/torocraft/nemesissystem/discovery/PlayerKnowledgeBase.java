@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.torocraft.nemesissystem.util.DiscoveryUtil;
-import net.torocraft.nemesissystem.util.nbt.NbtField;
-import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
+import net.torocraft.torotraits.nbt.NbtField;
+import net.torocraft.torotraits.nbt.NbtSerializer;
 
 /**
  * This class holds all of the discovered nemesis knowledgeMap

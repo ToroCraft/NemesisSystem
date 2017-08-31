@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import net.minecraft.nbt.NBTTagCompound;
-import net.torocraft.nemesissystem.util.nbt.NbtField;
-import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
+import net.torocraft.torotraits.nbt.NbtField;
+import net.torocraft.torotraits.nbt.NbtSerializer;
 
 /**
  * This class holds information on what knowledgeMap have been

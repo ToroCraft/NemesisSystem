@@ -3,8 +3,8 @@ package net.torocraft.nemesissystem.discovery;
 import java.util.UUID;
 import net.minecraft.nbt.NBTTagCompound;
 import net.torocraft.nemesissystem.util.NemesisUtil;
-import net.torocraft.nemesissystem.util.nbt.NbtField;
-import net.torocraft.nemesissystem.util.nbt.NbtSerializer;
+import net.torocraft.torotraits.nbt.NbtField;
+import net.torocraft.torotraits.nbt.NbtSerializer;
 
 /**
  * This class represents a piece of information that has been discovered about an nemesis.

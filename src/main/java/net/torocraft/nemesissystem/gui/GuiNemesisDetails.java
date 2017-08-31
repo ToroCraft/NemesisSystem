@@ -16,8 +16,8 @@ import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
 import net.torocraft.nemesissystem.gui.displays.NemesisEntityDisplay;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGuiRequest;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
-import net.torocraft.nemesissystem.traits.Trait;
 import net.torocraft.nemesissystem.util.NemesisUtil;
+import net.torocraft.torotraits.traits.Trait;
 
 public class GuiNemesisDetails extends GuiScreen {
 

@@ -9,10 +9,8 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.registry.NemesisEntry;
-import net.torocraft.nemesissystem.traits.TraitHandler;
-import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.NemesisUtil;
+import net.torocraft.torotraits.api.BehaviorApi;
 
 public class UpdateHandler {
 
@@ -38,8 +36,6 @@ public class UpdateHandler {
 
 		if (event.getEntity().getTags().contains(NemesisSystem.TAG_BODY_GUARD)) {
 			handleBodyGuardUpdate(event);
-		} else if (event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
-			handleNemesisUpdate(event);
 		}
 	}
 
@@ -67,7 +63,7 @@ public class UpdateHandler {
 	private void flee(EntityCreature bodyGuard) {
 		// TODO USE FLEEING_SPEED_MODIFIER
 		bodyGuard.removeTag(NemesisSystem.TAG_BODY_GUARD);
-		BehaviorUtil.setFollowSpeed(bodyGuard, 2);
+		BehaviorApi.setFollowSpeed(bodyGuard, 2);
 		int distance = 1000;
 		int degrees = bodyGuard.getRNG().nextInt(360);
 		int x = distance * (int) Math.round(Math.cos(Math.toRadians(degrees)));
@@ -79,14 +75,6 @@ public class UpdateHandler {
 
 	private void followNemesisBoss(EntityCreature bodyGuard, EntityLiving nemesisEntity) {
 		bodyGuard.setHomePosAndDistance(nemesisEntity.getPosition(), 2);
-	}
-
-	private void handleNemesisUpdate(LivingUpdateEvent event) {
-		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
-		if (nemesis == null || !(event.getEntity() instanceof EntityCreature)) {
-			return;
-		}
-		TraitHandler.onUpdate(nemesis, (EntityCreature) event.getEntity());
 	}
 
 }

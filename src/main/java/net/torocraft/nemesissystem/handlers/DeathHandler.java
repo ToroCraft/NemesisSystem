@@ -17,7 +17,6 @@ import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
-import net.torocraft.nemesissystem.traits.TraitHandler;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 
@@ -118,9 +117,6 @@ public class DeathHandler {
 		for (ItemStack stack : nemesis.getHandInventory()) {
 			drops.add(damageAndDrop(nemesisEntity, stack));
 		}
-
-		TraitHandler.onDrops(drops, nemesisEntity, nemesis);
-
 	}
 
 	private static EntityItem damageAndDrop(EntityCreature entity, ItemStack stack) {
@@ -130,7 +126,7 @@ public class DeathHandler {
 		return drop(entity, stack);
 	}
 
-	public static EntityItem drop(EntityCreature entity, ItemStack stack) {
+	private static EntityItem drop(EntityCreature entity, ItemStack stack) {
 		return new EntityItem(entity.getEntityWorld(), entity.posX, entity.posY, entity.posZ, stack);
 	}
 

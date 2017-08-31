@@ -29,14 +29,14 @@ import net.torocraft.nemesissystem.network.MessageOpenNemesisGui;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
-import net.torocraft.nemesissystem.traits.Trait;
-import net.torocraft.nemesissystem.traits.Type;
 import net.torocraft.nemesissystem.util.DiscoveryUtil;
 import net.torocraft.nemesissystem.util.EntityDecorator;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisBuilder;
 import net.torocraft.nemesissystem.util.NemesisUtil;
-import net.torocraft.nemesissystem.util.SpawnUtil;
+import net.torocraft.torotraits.api.SpawnApi;
+import net.torocraft.torotraits.traits.Trait;
+import net.torocraft.torotraits.traits.Type;
 
 public class NemesisSystemCommand extends CommandBase {
 
@@ -155,7 +155,7 @@ public class NemesisSystemCommand extends CommandBase {
 			return;
 		}
 
-		Entity entity = SpawnUtil.getEntityFromString(world, nemesis.getMob());
+		Entity entity = SpawnApi.getEntityFromString(world, nemesis.getMob());
 
 		if (entity == null) {
 			return;
@@ -163,7 +163,7 @@ public class NemesisSystemCommand extends CommandBase {
 
 		EntityDecorator.decorate((EntityCreature) entity, nemesis);
 		entity.addTag(NemesisSystem.TAG_SPAWNING);
-		SpawnUtil.spawnEntityLiving(world, (EntityCreature) entity, player.getPosition(), 0);
+		SpawnApi.spawnEntityLiving(world, (EntityCreature) entity, player.getPosition(), 0);
 	}
 
 	private void createTest(ICommandSender sender) throws CommandException {

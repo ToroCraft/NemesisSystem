@@ -3,7 +3,7 @@ package net.torocraft.nemesissystem.registry;
 import java.util.HashMap;
 import java.util.Map;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.util.nbt.NbtField;
+import net.torocraft.torotraits.nbt.NbtField;
 
 public class LogEntry {
 

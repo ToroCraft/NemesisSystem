@@ -25,11 +25,11 @@ import net.torocraft.nemesissystem.network.MessageSyncNemesis;
 import net.torocraft.nemesissystem.network.MessageSyncNemesisRequest;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
-import net.torocraft.nemesissystem.util.BehaviorUtil;
 import net.torocraft.nemesissystem.util.EntityDecorator;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
-import net.torocraft.nemesissystem.util.SpawnUtil;
+import net.torocraft.torotraits.api.BehaviorApi;
+import net.torocraft.torotraits.api.SpawnApi;
 
 public class SpawnHandler {
 
@@ -136,7 +136,7 @@ public class SpawnHandler {
 		if (nemesis.isSpawned()) {
 			return;
 		}
-		EntityCreature nemesisEntity = SpawnUtil.getEntityFromString(world, nemesis.getMob());
+		EntityCreature nemesisEntity = SpawnApi.getEntityFromString(world, nemesis.getMob());
 
 		if (nemesisEntity == null) {
 			return;
@@ -145,7 +145,7 @@ public class SpawnHandler {
 		nemesisEntity.addTag(NemesisSystem.TAG_SPAWNING);
 
 		EntityDecorator.decorate(nemesisEntity, nemesis);
-		SpawnUtil.spawnEntityLiving(world, nemesisEntity, pos, 1);
+		SpawnApi.spawnEntityLiving(world, nemesisEntity, pos, 1);
 
 		spawnBodyGuard(nemesisEntity, nemesis);
 		nemesisAnnounceEffects(nemesisEntity);
@@ -188,8 +188,8 @@ public class SpawnHandler {
 			bodyGuard.addTag(NemesisSystem.TAG_BODY_GUARD);
 			bodyGuard.getEntityData().setUniqueId(NemesisSystem.NBT_NEMESIS_ID, nemesis.getId());
 			equipBodyGuard(bodyGuard);
-			SpawnUtil.spawnEntityLiving(entity.getEntityWorld(), bodyGuard, entity.getPosition(), 10);
-			BehaviorUtil.setFollowSpeed(bodyGuard, 1.5);
+			SpawnApi.spawnEntityLiving(entity.getEntityWorld(), bodyGuard, entity.getPosition(), 10);
+			BehaviorApi.setFollowSpeed(bodyGuard, 1.5);
 		}
 	}
 
@@ -271,6 +271,7 @@ public class SpawnHandler {
 	}
 
 	private static boolean playerInRange(EntityLiving entity, World world) {
+		// TODO return player and set as attack target
 		int distance = 60;
 		List<EntityPlayer> players = world
 				.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));

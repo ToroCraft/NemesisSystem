@@ -7,6 +7,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.torotraits.ToroTraits;
 
 public class SetAttackTargetHandler {
 
@@ -28,7 +29,7 @@ public class SetAttackTargetHandler {
 			return;
 		}
 
-		if (hasTag(entity, NemesisSystem.TAG_BODY_GUARD) || hasTag(entity, NemesisSystem.TAG_SUMMONED_MOB)) {
+		if (hasTag(entity, NemesisSystem.TAG_BODY_GUARD) || hasTag(entity, ToroTraits.TAG_SUMMONED_MOB)) {
 			if (event.getTarget().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
 				((EntityCreature) event.getEntityLiving()).setAttackTarget(null);
 			}

@@ -24,13 +24,14 @@ public class NemesisSystem {
 	public static final String MODID = "nemesissystem";
 	public static final String VERSION = "1.12.1-1";
 	public static final String MODNAME = "NemesisSystem";
-	
+
 	public static final String NBT_NEMESIS_ID = "torocraft_nemesis_id";
 	public static final String TAG_NEMESIS = "torocraft_nemesis";
 	public static final String TAG_BODY_GUARD = "nemesis_body_guard";
 	public static final String TAG_SPAWNING = "nemesis_is_spawning";
-	public static final String TAG_SUMMONED_MOB = "nemesis_summoned_mob";
-	public static final String NBT_WORSHIP_COOLDOWN = "nemesissystem_cooldown";
+	public static final int MIN_TOROTRAIT_VERSION = 1;
+	public static final int COMPAT_VERSION = 1;
+	//public static final String TAG_SUMMONED_MOB = "nemesis_summoned_mob";
 
 	@Mod.Instance(MODID)
 	public static NemesisSystem INSTANCE;
