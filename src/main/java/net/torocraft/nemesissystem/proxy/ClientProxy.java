@@ -45,7 +45,7 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void spawnParticle(EnumParticleTypes particleType, double xCoord, double yCoord, double zCoord, double xSpeed, double ySpeed,
 			double zSpeed, int... parameters) {
-
+		Minecraft.getMinecraft().world.spawnParticle(particleType, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
 	}
 
 }
