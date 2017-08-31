@@ -78,7 +78,7 @@ public class GuiNemesisDetails extends GuiScreen {
 
 	private void drawTitle() {
 		NemesisEntry n = nemesisData.nemesis;
-		String s = info(DisplayType.NAME, n.getNameAndTitle()) + " (" + NemesisUtil.romanize(n.getLevel()) + ")";
+		String s = info(DisplayType.NAME, n.getNameAndTitle()) + " - " + NemesisUtil.romanize(n.getLevel());
 		drawCenteredString(fontRenderer, s, width / 2, 10 + offsetY, 0xffffff);
 	}
 

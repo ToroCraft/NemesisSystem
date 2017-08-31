@@ -8,6 +8,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.world.World;
 import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
 import net.torocraft.nemesissystem.discovery.NemesisDiscovery.Type;
@@ -22,6 +23,7 @@ public class DiscoveryUtil {
 	public static final String NBT_UNREAD_DISCOVERY = "nemesissystem_unread_discovery";
 	public static final String NBT_PLAYER_DISCOVERIES = "nemesissystem_player_discoveries";
 
+	private static int nextBookID = 0;
 	private static Random rand = new Random();
 
 	public static NemesisKnowledge getGetPlayerKnowledgeOfNemesis(EntityPlayer player, UUID nemesisId) {
@@ -51,9 +53,9 @@ public class DiscoveryUtil {
 	public static ItemStack createUnreadBook() {
 		ItemStack book = new ItemStack(Items.WRITTEN_BOOK, 1);
 		NBTTagCompound bookNbt = new NBTTagCompound();
-		bookNbt.setTag(NBT_UNREAD_DISCOVERY, new NBTTagInt(1));
-		book.setStackDisplayName("Unread Nemesis Book");
+		bookNbt.setTag(NBT_UNREAD_DISCOVERY, new NBTTagInt(nextBookID++));
 		book.setTagCompound(bookNbt);
+		book.setStackDisplayName("Unread Nemesis Book");
 		return book;
 	}
 

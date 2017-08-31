@@ -7,7 +7,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class NemesisConfig {
 	public static int NEMESIS_LIMIT = 16;
-	public static int test = 1500;
+	public static int BOOK_DROP_CHANCE_BODY_GUARD = 10;
+	public static int BOOK_DROP_CHANCE_MOB = 40;
 
 	private static final String CATEGORY = "NemesisSystem Settings";
 	private static Configuration config;
@@ -22,6 +23,8 @@ public class NemesisConfig {
 	private static void loadConfiguration() {
 		try {
 			NEMESIS_LIMIT = config.getInt("NEMESIS_LIMIT", CATEGORY, 16, 4, 256, "Maximum number of nemeses in each dimension");
+			BOOK_DROP_CHANCE_BODY_GUARD = config.getInt("BOOK_DROP_CHANCE_BODY_GUARD", CATEGORY, 10, -1, 1000, "Chance a body guard will drop a discovery book (1 out of n)");
+			BOOK_DROP_CHANCE_MOB = config.getInt("BOOK_DROP_CHANCE_MOB", CATEGORY, 40, -1, 1000, "Chance a mob will drop a discovery book (1 out of n)");
 			config.save();
 		} catch (Exception e) {
 			e.printStackTrace();
