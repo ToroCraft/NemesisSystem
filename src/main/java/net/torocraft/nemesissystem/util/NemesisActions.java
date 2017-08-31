@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
@@ -23,6 +24,7 @@ import net.torocraft.nemesissystem.events.PromotionEvent;
 import net.torocraft.nemesissystem.registry.INemesisRegistry;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.torotraits.api.SpawnApi;
 import net.torocraft.torotraits.traits.Trait;
 import net.torocraft.torotraits.traits.Type;
 
@@ -100,14 +102,18 @@ public class NemesisActions {
 	}
 
 	public static NemesisEntry createAndRegisterNemesis(EntityCreature entity, BlockPos nemesisLocation) {
+
 		boolean isChild = false;
 		if (entity instanceof EntityZombie) {
 			isChild = entity.isChild();
 		}
+
 		NemesisEntry nemesis = NemesisBuilder
 				.build(entity.getEntityWorld(), NemesisUtil.getEntityType(entity), isChild, entity.dimension, 1, nemesisLocation.getX(),
 						nemesisLocation.getZ());
+
 		NemesisRegistryProvider.get(entity.world).register(nemesis);
+
 		return nemesis;
 	}
 
@@ -181,12 +187,21 @@ public class NemesisActions {
 		List<NemesisEntry> nemeses = registry.list();
 		nemeses.removeIf(NemesisEntry::isDead);
 
-		if (nemeses.size() >= (NemesisConfig.NEMESIS_LIMIT / 2)) {
+		if (isAtHalfPopulation(nemeses)) {
 			return;
 		}
 
 		promoteRandomNemesis(entity, registry, nemeses);
-		createAndRegisterNemesis(entity, NemesisUtil.getRandomLocationAround(entity));
+		createAndRegisterNemesis(getRandomEntityFromWhitelist(world), NemesisUtil.getRandomLocationAround(entity));
+	}
+
+	private static EntityCreature getRandomEntityFromWhitelist(World world) {
+		String mob = NemesisConfig.MOB_WHITELIST[world.rand.nextInt(NemesisConfig.MOB_WHITELIST.length)];
+		return SpawnApi.getEntityFromString(world, mob);
+	}
+
+	private static boolean isAtHalfPopulation(List<NemesisEntry> nemeses) {
+		return nemeses.size() >= (NemesisConfig.NEMESIS_LIMIT / 2);
 	}
 
 	public static void throwPearl(EntityLiving entity, EntityLivingBase target) {

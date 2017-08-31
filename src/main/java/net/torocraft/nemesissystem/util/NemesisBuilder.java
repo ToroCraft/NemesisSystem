@@ -71,8 +71,6 @@ public class NemesisBuilder {
 		nemesis.setZ(z);
 		nemesis.setDimension(dimension);
 
-
-
 		nemesis.setTraits(new ArrayList<>());
 
 		/*
