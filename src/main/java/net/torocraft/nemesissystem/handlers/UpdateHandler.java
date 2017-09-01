@@ -1,8 +1,13 @@
 package net.torocraft.nemesissystem.handlers;
 
+import java.util.Random;
 import java.util.UUID;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.datafix.fixes.EntityId;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -45,15 +50,24 @@ public class UpdateHandler {
 		}
 
 		EntityCreature bodyGuard = (EntityCreature) event.getEntity();
+		World world = bodyGuard.world;
+
 		if (bodyGuard.getTags().contains(DeathHandler.TAG_RONIN)) {
 			flee(bodyGuard);
 			return;
 		}
 
 		UUID id = bodyGuard.getEntityData().getUniqueId(NemesisSystem.NBT_NEMESIS_ID);
-		EntityLiving nemesisEntity = NemesisUtil.findNemesisAround(event.getEntity().world, id, event.getEntity().getPosition());
+
+		if (id == null) {
+			bodyGuard.addTag(DeathHandler.TAG_RONIN);
+			return;
+		}
+
+		EntityLiving nemesisEntity = NemesisUtil.findNemesisAround(world, id, bodyGuard.getPosition(), 100);
 
 		if (nemesisEntity == null) {
+			bodyGuard.addTag(DeathHandler.TAG_RONIN);
 			return;
 		}
 
@@ -63,6 +77,8 @@ public class UpdateHandler {
 	private void flee(EntityCreature bodyGuard) {
 		// TODO USE FLEEING_SPEED_MODIFIER
 		bodyGuard.removeTag(NemesisSystem.TAG_BODY_GUARD);
+		bodyGuard.setAttackTarget(null);
+		dropItemsInHands(bodyGuard);
 		BehaviorApi.setFollowSpeed(bodyGuard, 2);
 		int distance = 1000;
 		int degrees = bodyGuard.getRNG().nextInt(360);
@@ -73,8 +89,21 @@ public class UpdateHandler {
 		bodyGuard.setHomePosAndDistance(to, 50);
 	}
 
+	private void dropItemsInHands(EntityCreature bodyGuard) {
+		Random rand = bodyGuard.getRNG();
+		for(ItemStack item : bodyGuard.getHeldEquipment()){
+			if (!item.isEmpty()) {
+				EntityItem e = DeathHandler.damageAndDrop(bodyGuard, item);
+				e.setVelocity(rand.nextDouble() - 0.5, rand.nextDouble() / 1.5, rand.nextDouble() - 0.5);
+				bodyGuard.world.spawnEntity(e);
+			}
+		}
+		bodyGuard.setHeldItem(EnumHand.MAIN_HAND, ItemStack.EMPTY);
+		bodyGuard.setHeldItem(EnumHand.OFF_HAND, ItemStack.EMPTY);
+	}
+
 	private void followNemesisBoss(EntityCreature bodyGuard, EntityLiving nemesisEntity) {
-		bodyGuard.setHomePosAndDistance(nemesisEntity.getPosition(), 2);
+		bodyGuard.setHomePosAndDistance(nemesisEntity.getPosition(), 20);
 	}
 
 }

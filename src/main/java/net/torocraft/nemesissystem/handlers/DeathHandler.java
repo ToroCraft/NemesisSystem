@@ -119,14 +119,14 @@ public class DeathHandler {
 		}
 	}
 
-	private static EntityItem damageAndDrop(EntityCreature entity, ItemStack stack) {
+	public static EntityItem damageAndDrop(EntityCreature entity, ItemStack stack) {
 		if (stack.isItemStackDamageable()) {
 			stack.setItemDamage(stack.getMaxDamage() - entity.getRNG().nextInt(1 + entity.getRNG().nextInt(Math.max(stack.getMaxDamage() - 3, 1))));
 		}
 		return drop(entity, stack);
 	}
 
-	private static EntityItem drop(EntityCreature entity, ItemStack stack) {
+	public static EntityItem drop(EntityCreature entity, ItemStack stack) {
 		return new EntityItem(entity.getEntityWorld(), entity.posX, entity.posY, entity.posZ, stack);
 	}
 

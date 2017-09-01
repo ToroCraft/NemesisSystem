@@ -53,14 +53,17 @@ public class SpawnHandler {
 			return;
 		}
 
-		NemesisActions.handleRandomPromotions(event.getWorld(), (EntityCreature) event.getEntity());
+		EntityCreature entity = (EntityCreature) event.getEntity();
 
-		if (event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
+		NemesisActions.handleRandomPromotions(event.getWorld(), entity);
+
+		if (entity.getTags().contains(NemesisSystem.TAG_NEMESIS)) {
 			handleRespawnOfNemesis(event);
 			return;
 		}
 
-		if (event.getEntity().getTags().contains(NemesisSystem.TAG_BODY_GUARD)) {
+		if (entity.getTags().contains(NemesisSystem.TAG_BODY_GUARD)) {
+			BehaviorApi.setFollowSpeed(entity, 2);
 			return;
 		}
 
@@ -70,9 +73,9 @@ public class SpawnHandler {
 			return;
 		}
 
-		replaceEntityWithNemesis((EntityCreature) event.getEntity(), nemesis);
+		replaceEntityWithNemesis(entity, nemesis);
 
-		MinecraftForge.EVENT_BUS.post(new SpawnEvent(nemesis, (EntityCreature) event.getEntity()));
+		MinecraftForge.EVENT_BUS.post(new SpawnEvent(nemesis, entity));
 	}
 
 	private void requestNemesisDataFromServer(EntityJoinWorldEvent event) {

@@ -15,6 +15,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
@@ -135,9 +136,7 @@ public class NemesisUtil {
 		);
 	}
 
-	public static EntityLiving findNemesisAround(World world, UUID id, BlockPos position) {
-		int distance = 50;
-
+	public static EntityLiving findNemesisAround(World world, UUID id, BlockPos position, int distance) {
 		List<EntityLiving> entities = world.getEntitiesWithinAABB(EntityLiving.class, nearByBox(position, distance),
 				(EntityLiving searchEntity) -> isNemesis(searchEntity, id)
 		);
