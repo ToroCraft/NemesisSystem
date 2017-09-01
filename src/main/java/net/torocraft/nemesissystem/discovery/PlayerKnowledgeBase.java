@@ -42,6 +42,8 @@ public class PlayerKnowledgeBase {
 		case LOCATION:
 			currentKnowledge.location = true;
 			break;
+		case ITEMS:
+			currentKnowledge.items = true;
 		case TRAIT:
 			if (currentKnowledge.traits == null) {
 				currentKnowledge.traits = new HashSet<>();

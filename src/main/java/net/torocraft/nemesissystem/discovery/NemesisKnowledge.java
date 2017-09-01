@@ -29,6 +29,12 @@ public class NemesisKnowledge {
 	public boolean location;
 
 	/**
+	 * true if the items of the nemesis are known
+	 */
+	@NbtField
+	public boolean items;
+
+	/**
 	 * each integer in this set is the index of
 	 * a nemesis's trait that has been discovered
 	 */

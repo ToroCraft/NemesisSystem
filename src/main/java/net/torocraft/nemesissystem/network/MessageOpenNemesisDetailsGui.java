@@ -53,13 +53,8 @@ public class MessageOpenNemesisDetailsGui implements IMessage {
 		private static void work(MessageOpenNemesisDetailsGui message) {
 			NemesisSystem.NEMESIS = message.nemesis;
 			NemesisSystem.KNOWLEDGE = message.knowledge;
-			//EntityPlayer player = Minecraft.getMinecraft().player;
-			//player.openGui(NemesisSystem.INSTANCE, NemesisSystemGuiHandler.NEMESIS_DETAILS_GUI, player.world, (int) player.posX, (int) player.posY,
-			//		(int) player.posZ);
 			NemesisSystem.PROXY.openGui(NemesisSystemGuiHandler.NEMESIS_DETAILS_GUI);
 		}
 	}
-
-
 
 }

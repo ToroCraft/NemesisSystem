@@ -11,7 +11,7 @@ import net.torocraft.torotraits.nbt.NbtSerializer;
  */
 public class NemesisDiscovery {
 
-	public enum Type {LOCATION, TRAIT}
+	public enum Type {LOCATION, TRAIT, ITEMS}
 
 	@NbtField
 	public UUID nemesisId;
@@ -37,6 +37,10 @@ public class NemesisDiscovery {
 	public String toString() {
 		if (nemesisId == null) {
 			return "";
+		}
+
+		if (Type.ITEMS.equals(type)) {
+			return "Items";
 		}
 
 		if (Type.LOCATION.equals(type)) {

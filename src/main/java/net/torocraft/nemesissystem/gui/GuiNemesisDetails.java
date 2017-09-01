@@ -66,7 +66,9 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		drawTitle();
 		drawInventory(mouseX, mouseY);
-		entityDisplay.draw(mouseX, mouseY);
+		if (NemesisSystem.KNOWLEDGE.name) {
+			entityDisplay.draw(mouseX, mouseY);
+		}
 		drawNemesisInfo();
 
 		if (hoveredItem != null) {
@@ -161,7 +163,7 @@ public class GuiNemesisDetails extends GuiScreen {
 	}
 
 	private void drawInventory(int mouseX, int mouseY) {
-		if (nemesisData != null && nemesisData.nemesis != null) {
+		if (NemesisSystem.KNOWLEDGE.items && nemesisData != null && nemesisData.nemesis != null) {
 			drawNemesisArmor(mouseX, mouseY);
 			drawNemesisItems(mouseX, mouseY);
 		}

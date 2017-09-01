@@ -38,7 +38,6 @@ public class DiscoveryHandler {
 		NemesisDiscovery discovery = DiscoveryUtil.readBook(event.getWorld(), item);
 
 		if (discovery == null) {
-			System.out.println("ERROR: No discovery found in book");
 			return;
 		}
 
@@ -46,7 +45,6 @@ public class DiscoveryHandler {
 		NemesisEntry nemesis = NemesisRegistryProvider.get(event.getWorld()).getById(discovery.nemesisId);
 
 		if (nemesis == null) {
-			System.out.println("ERROR: Nemesis not found");
 			return;
 		}
 

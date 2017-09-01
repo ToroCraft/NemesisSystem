@@ -130,7 +130,10 @@ public class NemesisDisplay implements GuiDisplay {
 
 	private void drawNemesisModel() {
 		GlStateManager.color(0xff, 0xff, 0xff, 0xff);
-		entityDisplay.draw(mouseX, mouseY);
+		NemesisKnowledge knowledge = getNemesisKnowledge();
+		if (knowledge != null && knowledge.name) {
+			entityDisplay.draw(mouseX, mouseY);
+		}
 	}
 
 	private String info(DisplayType type, String info) {
@@ -141,19 +144,23 @@ public class NemesisDisplay implements GuiDisplay {
 		return info(type, 0, Integer.toString(info, 10));
 	}
 
-	private String info(DisplayType type, int index, String info) {
-
+	private NemesisKnowledge getNemesisKnowledge() {
 		PlayerKnowledgeBase knowledgeBase = NemesisSystem.KNOWLEDGE_BASE;
 
 		if (knowledgeBase == null) {
-			return UNKNOWN_VALUE;
+			return null;
 		}
 
 		if (data == null || data.nemesis == null || data.nemesis.getId() == null) {
-			return UNKNOWN_VALUE;
+			return null;
 		}
 
-		NemesisKnowledge knowledge = knowledgeBase.getKnowledgeOfNemesis(data.nemesis.getId());
+		return knowledgeBase.getKnowledgeOfNemesis(data.nemesis.getId());
+	}
+
+	private String info(DisplayType type, int index, String info) {
+
+		NemesisKnowledge knowledge = getNemesisKnowledge();
 
 		if (knowledge == null) {
 			return UNKNOWN_VALUE;

@@ -123,7 +123,7 @@ public class DiscoveryUtil {
 		NemesisDiscovery discovery = new NemesisDiscovery();
 		discovery.nemesisId = nemesis.getId();
 
-		int infoCount = 1 + nemesis.getTraits().size();
+		int infoCount = 2 + nemesis.getTraits().size();
 
 		int roll = rand.nextInt(infoCount);
 
@@ -132,8 +132,13 @@ public class DiscoveryUtil {
 			return discovery;
 		}
 
+		if (roll == 1) {
+			discovery.type = Type.ITEMS;
+			return discovery;
+		}
+
 		discovery.type = Type.TRAIT;
-		discovery.index = roll - 1;
+		discovery.index = roll - 2;
 		return discovery;
 	}
 
