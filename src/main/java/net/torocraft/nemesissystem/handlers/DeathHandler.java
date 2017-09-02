@@ -45,6 +45,14 @@ public class DeathHandler {
 			return;
 		}
 
+		if (event.getSource() == null || event.getSource().getTrueSource() == null){
+			return;
+		}
+
+		if (!(event.getSource().getTrueSource() instanceof EntityPlayer)) {
+			return;
+		}
+
 		if (event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
 			handleNemesisDrops(event.getDrops(), (EntityCreature) event.getEntity());
 		}
