@@ -14,8 +14,10 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.discovery.PlayerKnowledgeBase;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.util.NemesisActions;
 import net.torocraft.nemesissystem.util.NemesisUtil;
@@ -27,6 +29,13 @@ public class DeathHandler {
 	}
 
 	public static final String TAG_RONIN = "nemesissystem_ronin";
+
+	@SubscribeEvent
+	public void onDeath(PlayerEvent.Clone event) {
+		if (!event.getEntityPlayer().getEntityWorld().isRemote) {
+			PlayerKnowledgeBase.get(event.getOriginal()).save(event.getEntityPlayer());
+		}
+	}
 
 	@SubscribeEvent
 	public void onDrops(LivingDropsEvent event) {

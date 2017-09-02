@@ -163,7 +163,7 @@ public class NemesisSystemCommand extends CommandBase {
 
 		EntityDecorator.decorate((EntityCreature) entity, nemesis);
 		entity.addTag(NemesisSystem.TAG_SPAWNING);
-		SpawnApi.spawnEntityLiving(world, (EntityCreature) entity, player.getPosition(), 0);
+		SpawnApi.spawnEntityCreature(world, (EntityCreature) entity, player.getPosition(), 0);
 	}
 
 	private void createTest(ICommandSender sender) throws CommandException {
