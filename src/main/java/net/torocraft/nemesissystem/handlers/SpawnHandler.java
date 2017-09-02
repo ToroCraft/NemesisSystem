@@ -148,7 +148,7 @@ public class SpawnHandler {
 		nemesisEntity.addTag(NemesisSystem.TAG_SPAWNING);
 
 		EntityDecorator.decorate(nemesisEntity, nemesis);
-		SpawnApi.spawnEntityLiving(world, nemesisEntity, pos, 1);
+		SpawnApi.spawnEntityCreature(world, nemesisEntity, pos, 1);
 
 		spawnBodyGuard(nemesisEntity, nemesis);
 		nemesisAnnounceEffects(nemesisEntity);
@@ -191,7 +191,7 @@ public class SpawnHandler {
 			bodyGuard.addTag(NemesisSystem.TAG_BODY_GUARD);
 			bodyGuard.getEntityData().setUniqueId(NemesisSystem.NBT_NEMESIS_ID, nemesis.getId());
 			equipBodyGuard(bodyGuard);
-			SpawnApi.spawnEntityLiving(entity.getEntityWorld(), bodyGuard, entity.getPosition(), 10);
+			SpawnApi.spawnEntityCreature(entity.getEntityWorld(), bodyGuard, entity.getPosition(), 10);
 			BehaviorApi.setFollowSpeed(bodyGuard, 1.5);
 		}
 	}
