@@ -2,6 +2,7 @@ package net.torocraft.nemesissystem.handlers;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -20,8 +21,6 @@ public class DiscoveryHandler {
 		MinecraftForge.EVENT_BUS.register(new DiscoveryHandler());
 	}
 
-	// TODO notify player of the discovery and open the GUI to the new info (hi-light the new info)
-
 	@SubscribeEvent
 	public void readBook(RightClickItem event) {
 
@@ -35,9 +34,12 @@ public class DiscoveryHandler {
 			return;
 		}
 
+		event.setCanceled(true);
+
 		NemesisDiscovery discovery = DiscoveryUtil.readBook(event.getWorld(), item);
 
 		if (discovery == null) {
+			event.getEntityPlayer().sendMessage(new TextComponentString("Nemesis no longer exists"));
 			return;
 		}
 
@@ -45,6 +47,7 @@ public class DiscoveryHandler {
 		NemesisEntry nemesis = NemesisRegistryProvider.get(event.getWorld()).getById(discovery.nemesisId);
 
 		if (nemesis == null) {
+			event.getEntityPlayer().sendMessage(new TextComponentString("Nemesis no longer exists"));
 			return;
 		}
 
@@ -56,7 +59,6 @@ public class DiscoveryHandler {
 
 		MinecraftForge.EVENT_BUS.post(new DiscoveryEvent(nemesis, discovery, event.getEntityPlayer()));
 		NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis, knowledge), (EntityPlayerMP) event.getEntityPlayer());
-		event.setCanceled(true);
 	}
 
 }
