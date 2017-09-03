@@ -88,13 +88,11 @@ public class DeathHandler {
 		if (!event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
 			return;
 		}
-
 		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(event.getEntity());
 		if (nemesis == null) {
 			return;
 		}
-		//TODO determine some kind of formula for scaling the amount of experience received
-		event.setDroppedExperience(event.getOriginalExperience() * (nemesis.getLevel() + 1));
+		event.setDroppedExperience(10 + (5 * (nemesis.getLevel() - 1)));
 	}
 
 	private void handlePlayerDeath(EntityPlayer player, EntityCreature slayer) {
@@ -117,6 +115,14 @@ public class DeathHandler {
 		NemesisActions.duelIfCrowded(world, exclude, true);
 	}
 
+	private static int safeNextInt(Random rand, int bound) {
+		try {
+			return rand.nextInt(bound);
+		}catch(Exception e){
+			return 0;
+		}
+	}
+
 	private void handleNemesisDrops(List<EntityItem> drops, EntityCreature nemesisEntity) {
 		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(nemesisEntity);
 		Random rand = nemesisEntity.getRNG();
@@ -125,7 +131,13 @@ public class DeathHandler {
 			return;
 		}
 
-		drops.add(drop(nemesisEntity, new ItemStack(Items.DIAMOND, rand.nextInt(1 + nemesis.getLevel()))));
+		int diamondDropCount = safeNextInt(rand, 1 + (2 * nemesis.getLevel()));
+		int emeraldDropCount = safeNextInt(rand, nemesis.getLevel() - 1);
+
+		drops.add(drop(nemesisEntity, new ItemStack(Items.DIAMOND, diamondDropCount)));
+		if (emeraldDropCount > 0) {
+			drops.add(drop(nemesisEntity, new ItemStack(Items.EMERALD, emeraldDropCount)));
+		}
 
 		for (ItemStack stack : nemesis.getArmorInventory()) {
 			drops.add(damageAndDrop(nemesisEntity, stack));
