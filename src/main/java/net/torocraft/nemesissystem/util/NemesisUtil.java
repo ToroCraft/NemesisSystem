@@ -1,5 +1,6 @@
 package net.torocraft.nemesissystem.util;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,28 +20,19 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
+import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.registry.NemesisRegistryProvider;
+import net.torocraft.torotraits.api.SpawnApi;
 
 public class NemesisUtil {
 
 	public static final Random rand = new Random();
 
-	public static String getEntityType(Entity entityIn) {
-		EntityEntry entry = EntityRegistry.getEntry(entityIn.getClass());
-		if (entry == null) {
-			return "";
-		}
-		return entry.getRegistryName().toString();
-	}
-
 	public static boolean isNemesisClassEntity(Entity entity) {
-		// TODO blacklist
-
-		// TODO whitelist
-
-		return entity instanceof EntityMob;
+		String entityType = SpawnApi.getEntityString(entity);
+		return Arrays.asList(NemesisConfig.MOB_WHITELIST).contains(entityType);
 	}
 
 	public static BlockPos getRandomLocationAround(EntityCreature entity) {

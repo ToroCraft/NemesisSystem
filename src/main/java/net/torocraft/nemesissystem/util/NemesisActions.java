@@ -109,7 +109,7 @@ public class NemesisActions {
 		}
 
 		NemesisEntry nemesis = NemesisBuilder
-				.build(entity.getEntityWorld(), NemesisUtil.getEntityType(entity), isChild, entity.dimension, 1, nemesisLocation.getX(),
+				.build(entity.getEntityWorld(), SpawnApi.getEntityString(entity), isChild, entity.dimension, 1, nemesisLocation.getX(),
 						nemesisLocation.getZ());
 
 		NemesisRegistryProvider.get(entity.world).register(nemesis);
