@@ -74,7 +74,6 @@ public class UpdateHandler {
 	}
 
 	private void flee(EntityCreature bodyGuard) {
-		// TODO USE FLEEING_SPEED_MODIFIER
 		bodyGuard.removeTag(NemesisSystem.TAG_BODY_GUARD);
 		bodyGuard.setAttackTarget(null);
 		dropItemsInHands(bodyGuard);

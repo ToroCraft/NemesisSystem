@@ -103,7 +103,7 @@ public class DeathHandler {
 
 		if (nemesis == null) {
 			if (NemesisUtil.isNemesisClassEntity(slayer)) {
-				NemesisEntry newNemesis = NemesisActions.createAndRegisterNemesis(slayer, slayer.getPosition());
+				NemesisEntry newNemesis = NemesisActions.createAndRegisterNemesis(slayer, NemesisUtil.getRandomLocationAround(slayer));
 				nemesisDuelIfCrowed(slayer.world, newNemesis);
 			}
 		} else {
