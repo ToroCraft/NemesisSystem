@@ -8,6 +8,7 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.entities.Entities;
 import net.torocraft.nemesissystem.gui.NemesisSystemGuiHandler;
 import net.torocraft.nemesissystem.handlers.InputHandler;
 
@@ -20,6 +21,7 @@ public class ClientProxy extends CommonProxy {
 		keyBindings = new KeyBinding[1];
 		keyBindings[0] = new KeyBinding("key.open_gui", 37, "key.categories.misc");
 		ClientRegistry.registerKeyBinding(keyBindings[0]);
+		Entities.registerRenders();
 	}
 
 	@Override

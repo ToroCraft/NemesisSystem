@@ -5,7 +5,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.effect.EntityLightningBolt;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -20,6 +19,8 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.entities.NemesisEntity;
+import net.torocraft.nemesissystem.entities.zombie.EntityZombieNemesis;
 import net.torocraft.nemesissystem.events.SpawnEvent;
 import net.torocraft.nemesissystem.network.MessageSyncNemesis;
 import net.torocraft.nemesissystem.network.MessageSyncNemesisRequest;
@@ -34,7 +35,7 @@ import net.torocraft.torotraits.api.SpawnApi;
 public class SpawnHandler {
 
 	private static final int SPAWN_CHANCE = 2;
-
+	private static final int MAX_SPAWN_DISTANCE = 100;
 	public static final int SPAWN_COOLDOWN_PERIOD = 16000;
 
 	public static void init() {
@@ -139,13 +140,22 @@ public class SpawnHandler {
 		if (nemesis.isSpawned()) {
 			return;
 		}
-		EntityCreature nemesisEntity = SpawnApi.getEntityFromString(world, nemesis.getMob());
+
+		String mobType = overrideMobType(nemesis.getMob());
+
+		System.out.println("TYPE: " + mobType);
+
+		EntityCreature nemesisEntity = SpawnApi.getEntityFromString(world, mobType);
 
 		if (nemesisEntity == null) {
 			return;
 		}
 
+		nemesisEntity.setAttackTarget(nemesis.getTargetPlayer());
 		nemesisEntity.addTag(NemesisSystem.TAG_SPAWNING);
+		if (nemesisEntity instanceof NemesisEntity) {
+			((NemesisEntity)nemesisEntity).setNemesis(nemesis);
+		}
 
 		EntityDecorator.decorate(nemesisEntity, nemesis);
 		SpawnApi.spawnEntityCreature(world, nemesisEntity, pos, 1);
@@ -160,6 +170,14 @@ public class SpawnHandler {
 		NemesisRegistryProvider.get(world).update(nemesis);
 
 		sendNemesisDataToClient(nemesis);
+	}
+
+	private static String overrideMobType(String mob) {
+		switch (mob) {
+			case "minecraft:zombie":
+				return NemesisSystem.MODID + ":" + EntityZombieNemesis.NAME;
+		}
+		return mob;
 	}
 
 	private static void sendNemesisDataToClient(NemesisEntry nemesis) {
@@ -213,14 +231,15 @@ public class SpawnHandler {
 
 	private static NemesisEntry getNemesisForSpawn(EntityEvent event) {
 
-		if (!(event.getEntity() instanceof EntityMob)) {
+		if (!NemesisUtil.isNemesisClassEntity(event.getEntity())) {
 			return null;
 		}
 
 		EntityLiving entity = (EntityLiving) event.getEntity();
 		World world = entity.world;
+		EntityPlayer targetPlayer = findVisiblePlayer(entity);
 
-		if (!playerInRange(entity, world)) {
+		if (targetPlayer == null) {
 			return null;
 		}
 
@@ -238,7 +257,9 @@ public class SpawnHandler {
 			return null;
 		}
 
-		return nemeses.get(event.getEntity().world.rand.nextInt(nemeses.size()));
+		NemesisEntry selectNemesis = nemeses.get(event.getEntity().world.rand.nextInt(nemeses.size()));
+		selectNemesis.setTargetPlayer(targetPlayer);
+		return selectNemesis;
 	}
 
 	private static boolean inRage(Entity entity, NemesisEntry nemesis) {
@@ -273,17 +294,19 @@ public class SpawnHandler {
 		return false;
 	}
 
-	private static boolean playerInRange(EntityLiving entity, World world) {
-		// TODO return player and set as attack target
-		int distance = 60;
-		List<EntityPlayer> players = world
-				.getEntitiesWithinAABB(EntityPlayer.class, new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));
+	private static EntityPlayer findVisiblePlayer(EntityLiving entity) {
+		int distance = MAX_SPAWN_DISTANCE;
+
+		List<EntityPlayer> players = entity.world.getEntitiesWithinAABB(
+				EntityPlayer.class,
+				new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));
+
 		for (EntityPlayer player : players) {
 			if (entity.getEntitySenses().canSee(player)) {
-				return true;
+				return player;
 			}
 		}
-		return false;
+		return null;
 	}
 
 }

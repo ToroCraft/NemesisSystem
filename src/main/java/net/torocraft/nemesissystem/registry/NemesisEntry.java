@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
@@ -75,9 +76,8 @@ public class NemesisEntry {
 	@NbtField
 	private int isChild;
 
-	//TODO spawned check
-
 	private transient boolean isDead;
+	private transient EntityPlayer targetPlayer;
 
 	@NbtField
 	private NonNullList<ItemStack> handInventory = NonNullList.withSize(2, ItemStack.EMPTY);
@@ -313,5 +313,13 @@ public class NemesisEntry {
 
 	public void setChild(int child) {
 		isChild = child;
+	}
+
+	public EntityPlayer getTargetPlayer() {
+		return targetPlayer;
+	}
+
+	public void setTargetPlayer(EntityPlayer targetPlayer) {
+		this.targetPlayer = targetPlayer;
 	}
 }

@@ -8,6 +8,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
+import net.torocraft.nemesissystem.entities.Entities;
 import net.torocraft.nemesissystem.handlers.AttackHandler;
 import net.torocraft.nemesissystem.handlers.DeathHandler;
 import net.torocraft.nemesissystem.handlers.DiscoveryHandler;
@@ -32,6 +33,7 @@ public class CommonProxy {
 		checkToroTraitsVersion();
 		initConfig(e.getSuggestedConfigurationFile());
 		MinecraftForge.EVENT_BUS.register(new NemesisHandler());
+		Entities.init();
 	}
 
 	private void checkToroTraitsVersion() {
