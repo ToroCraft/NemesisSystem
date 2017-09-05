@@ -1,8 +1,7 @@
 package net.torocraft.nemesissystem.entities;
 
-import net.minecraft.entity.monster.EntityZombieVillager;
-import net.torocraft.nemesissystem.entities.Stray.EntityStrayNemesis;
-import net.torocraft.nemesissystem.entities.Stray.RenderStrayNemesis;
+import net.torocraft.nemesissystem.entities.stray.EntityStrayNemesis;
+import net.torocraft.nemesissystem.entities.stray.RenderStrayNemesis;
 import net.torocraft.nemesissystem.entities.husk.EntityHuskNemesis;
 import net.torocraft.nemesissystem.entities.husk.RenderHuskNemesis;
 import net.torocraft.nemesissystem.entities.pigZombie.EntityPigZombieNemesis;

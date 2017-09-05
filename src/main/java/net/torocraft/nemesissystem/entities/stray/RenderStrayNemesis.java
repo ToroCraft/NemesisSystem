@@ -1,4 +1,4 @@
-package net.torocraft.nemesissystem.entities.Stray;
+package net.torocraft.nemesissystem.entities.stray;
 
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;

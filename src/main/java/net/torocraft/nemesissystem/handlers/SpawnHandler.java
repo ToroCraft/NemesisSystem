@@ -20,7 +20,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.entities.INemesisEntity;
-import net.torocraft.nemesissystem.entities.Stray.EntityStrayNemesis;
+import net.torocraft.nemesissystem.entities.stray.EntityStrayNemesis;
 import net.torocraft.nemesissystem.entities.husk.EntityHuskNemesis;
 import net.torocraft.nemesissystem.entities.pigZombie.EntityPigZombieNemesis;
 import net.torocraft.nemesissystem.entities.skeleton.EntitySkeletonNemesis;
