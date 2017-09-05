@@ -19,8 +19,13 @@ import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
-import net.torocraft.nemesissystem.entities.NemesisEntity;
+import net.torocraft.nemesissystem.entities.INemesisEntity;
+import net.torocraft.nemesissystem.entities.Stray.EntityStrayNemesis;
+import net.torocraft.nemesissystem.entities.husk.EntityHuskNemesis;
+import net.torocraft.nemesissystem.entities.pigZombie.EntityPigZombieNemesis;
+import net.torocraft.nemesissystem.entities.skeleton.EntitySkeletonNemesis;
 import net.torocraft.nemesissystem.entities.zombie.EntityZombieNemesis;
+import net.torocraft.nemesissystem.entities.zombieVillager.EntityZombieVillagerNemesis;
 import net.torocraft.nemesissystem.events.SpawnEvent;
 import net.torocraft.nemesissystem.network.MessageSyncNemesis;
 import net.torocraft.nemesissystem.network.MessageSyncNemesisRequest;
@@ -153,8 +158,8 @@ public class SpawnHandler {
 
 		nemesisEntity.setAttackTarget(nemesis.getTargetPlayer());
 		nemesisEntity.addTag(NemesisSystem.TAG_SPAWNING);
-		if (nemesisEntity instanceof NemesisEntity) {
-			((NemesisEntity)nemesisEntity).setNemesis(nemesis);
+		if (nemesisEntity instanceof INemesisEntity) {
+			((INemesisEntity)nemesisEntity).setNemesis(nemesis);
 		}
 
 		EntityDecorator.decorate(nemesisEntity, nemesis);
@@ -174,8 +179,18 @@ public class SpawnHandler {
 
 	private static String overrideMobType(String mob) {
 		switch (mob) {
-			case "minecraft:zombie":
-				return NemesisSystem.MODID + ":" + EntityZombieNemesis.NAME;
+		case "minecraft:zombie":
+			return NemesisSystem.MODID + ":" + EntityZombieNemesis.NAME;
+		case "minecraft:zombie_pigman":
+			return NemesisSystem.MODID + ":" + EntityPigZombieNemesis.NAME;
+		case "minecraft:zombie_villager":
+			return NemesisSystem.MODID + ":" + EntityZombieVillagerNemesis.NAME;
+		case "minecraft:husk":
+			return NemesisSystem.MODID + ":" + EntityHuskNemesis.NAME;
+		case "minecraft:skeleton":
+			return NemesisSystem.MODID + ":" + EntitySkeletonNemesis.NAME;
+		case "minecraft:stray":
+			return NemesisSystem.MODID + ":" + EntityStrayNemesis.NAME;
 		}
 		return mob;
 	}

@@ -1,6 +1,6 @@
-package net.torocraft.nemesissystem.entities.zombie;
+package net.torocraft.nemesissystem.entities.zombieVillager;
 
-import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.EntityZombieVillager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -12,24 +12,25 @@ import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.entities.INemesisEntity;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 
-public class EntityZombieNemesis extends EntityZombie implements INemesisEntity {
+public class EntityZombieVillagerNemesis extends EntityZombieVillager implements INemesisEntity {
 
-	public static String NAME = NemesisSystem.MODID + "_zombie";
+	public static String NAME = NemesisSystem.MODID + "_zombie_villager";
 
 	private static final String NBT_SCALE = NemesisSystem.MODID + "_scale";
-	private static final DataParameter<Float> SCALE = EntityDataManager.createKey(EntityZombieNemesis.class, DataSerializers.FLOAT);
+	private static final DataParameter<Float> SCALE = EntityDataManager.createKey(
+			EntityZombieVillagerNemesis.class, DataSerializers.FLOAT);
 
 	private float scale = 1;
 
 	public static void init(int entityId) {
 		EntityRegistry.registerModEntity(
 				new ResourceLocation(NemesisSystem.MODID, NAME),
-				EntityZombieNemesis.class, NAME, entityId,
+				EntityZombieVillagerNemesis.class, NAME, entityId,
 				NemesisSystem.INSTANCE, 60, 2,
 				true, 0xFFFFFF, 0x000000);
 	}
 
-	public EntityZombieNemesis(World worldIn) {
+	public EntityZombieVillagerNemesis(World worldIn) {
 		super(worldIn);
 	}
 

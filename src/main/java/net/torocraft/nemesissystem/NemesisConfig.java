@@ -19,7 +19,6 @@ public class NemesisConfig {
 			"minecraft:zombie_villager",
 			"minecraft:stray",
 			"minecraft:husk",
-			"minecraft:evocation_illager",
 			"minecraft:skeleton"
 	};
 
