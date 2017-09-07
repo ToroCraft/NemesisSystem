@@ -5,6 +5,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.resources.I18n;
+import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.discovery.PlayerKnowledgeBase;
@@ -131,7 +132,7 @@ public class NemesisDisplay implements GuiDisplay {
 	private void drawNemesisModel() {
 		GlStateManager.color(0xff, 0xff, 0xff, 0xff);
 		NemesisKnowledge knowledge = getNemesisKnowledge();
-		if (knowledge != null && knowledge.name) {
+		if (!NemesisConfig.DISCOVERY_ENABLED || (knowledge != null && knowledge.name)) {
 			entityDisplay.draw(mouseX, mouseY);
 		}
 	}
@@ -159,6 +160,10 @@ public class NemesisDisplay implements GuiDisplay {
 	}
 
 	private String info(DisplayType type, int index, String info) {
+
+		if (!NemesisConfig.DISCOVERY_ENABLED) {
+			return info;
+		}
 
 		NemesisKnowledge knowledge = getNemesisKnowledge();
 

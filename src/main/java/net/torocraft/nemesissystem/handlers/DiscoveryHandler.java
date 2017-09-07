@@ -6,6 +6,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.discovery.NemesisDiscovery;
 import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
@@ -35,6 +36,10 @@ public class DiscoveryHandler {
 		}
 
 		event.setCanceled(true);
+
+		if (!NemesisConfig.DISCOVERY_ENABLED) {
+			return;
+		}
 
 		NemesisDiscovery discovery = DiscoveryUtil.readBook(event.getWorld(), item);
 

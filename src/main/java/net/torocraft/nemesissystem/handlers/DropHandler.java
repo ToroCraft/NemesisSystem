@@ -23,6 +23,10 @@ public class DropHandler {
 
 	@SubscribeEvent
 	public void dropBook(LivingDropsEvent event) {
+		if (!NemesisConfig.DISCOVERY_ENABLED) {
+			return;
+		}
+
 		if (!(event.getEntity() instanceof EntityMob)) {
 			return;
 		}

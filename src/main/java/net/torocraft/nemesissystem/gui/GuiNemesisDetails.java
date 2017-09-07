@@ -9,6 +9,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
@@ -66,7 +67,7 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		drawTitle();
 		drawInventory(mouseX, mouseY);
-		if (NemesisSystem.KNOWLEDGE.name) {
+		if (!NemesisConfig.DISCOVERY_ENABLED || NemesisSystem.KNOWLEDGE.name) {
 			entityDisplay.draw(mouseX, mouseY);
 		}
 		drawNemesisInfo();
@@ -93,6 +94,10 @@ public class GuiNemesisDetails extends GuiScreen {
 	}
 
 	private String info(DisplayType type, int index, String info) {
+
+		if (!NemesisConfig.DISCOVERY_ENABLED) {
+			return info;
+		}
 
 		NemesisKnowledge knowledge = NemesisSystem.KNOWLEDGE;
 
@@ -121,11 +126,13 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		NemesisEntry nemesis = nemesisData.nemesis;
 
-		fontRenderer.drawString(I18n.format("gui.distance") + ": " + info(DisplayType.LOCATION, nemesisData.distance + "m"), x, y, NemesisDisplay.grey);
+		fontRenderer
+				.drawString(I18n.format("gui.distance") + ": " + info(DisplayType.LOCATION, nemesisData.distance + "m"), x, y, NemesisDisplay.grey);
 		y += 10;
 
-		fontRenderer.drawString(I18n.format("gui.location", info(DisplayType.LOCATION, nemesis.getX()), info(DisplayType.LOCATION, nemesis.getZ())), x, y,
-				NemesisDisplay.grey);
+		fontRenderer
+				.drawString(I18n.format("gui.location", info(DisplayType.LOCATION, nemesis.getX()), info(DisplayType.LOCATION, nemesis.getZ())), x, y,
+						NemesisDisplay.grey);
 		y += 14;
 
 		fontRenderer.drawString(I18n.format("gui.strengths"), x, y, NemesisDisplay.grey);
@@ -135,7 +142,8 @@ public class GuiNemesisDetails extends GuiScreen {
 		for (int i = 0; i < nemesis.getTraits().size(); i++) {
 			trait = nemesis.getTraits().get(i);
 			if (trait.type.isStrength()) {
-				fontRenderer.drawString("* " + info(DisplayType.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
+				fontRenderer.drawString(
+						"* " + info(DisplayType.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
 						NemesisDisplay.grey);
 				y += 10;
 			}
@@ -148,7 +156,8 @@ public class GuiNemesisDetails extends GuiScreen {
 		for (int i = 0; i < nemesis.getTraits().size(); i++) {
 			trait = nemesis.getTraits().get(i);
 			if (trait.type.isWeakness()) {
-				fontRenderer.drawString("* " + info(DisplayType.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
+				fontRenderer.drawString(
+						"* " + info(DisplayType.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
 						NemesisDisplay.grey);
 				y += 10;
 			}
@@ -163,7 +172,7 @@ public class GuiNemesisDetails extends GuiScreen {
 	}
 
 	private void drawInventory(int mouseX, int mouseY) {
-		if (NemesisSystem.KNOWLEDGE.items && nemesisData != null && nemesisData.nemesis != null) {
+		if (!NemesisConfig.DISCOVERY_ENABLED || (NemesisSystem.KNOWLEDGE.items && nemesisData != null && nemesisData.nemesis != null)) {
 			drawNemesisArmor(mouseX, mouseY);
 			drawNemesisItems(mouseX, mouseY);
 		}

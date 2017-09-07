@@ -10,6 +10,7 @@ import net.minecraft.world.storage.loot.conditions.LootCondition;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
 
 public class LootHandler {
@@ -22,7 +23,7 @@ public class LootHandler {
 
 	@SubscribeEvent
 	public void lootTableLoad(final LootTableLoadEvent event) {
-		if (isLootTarget(event)) {
+		if (NemesisConfig.DISCOVERY_ENABLED && isLootTarget(event)) {
 
 			// TODO improve roll settings
 
