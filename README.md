@@ -32,7 +32,7 @@ Clicking on a nemesis in the Nemesis List GUI will open the Nemesis Details GUI 
 ![Fully Undiscovered Nemesis List GUI](https://i.imgur.com/Wckrg4v.png)
 
 ## Command for OP Players and Testing
-NemesisSystem provides a the `nemesis_system` command to allow OP players to interact and control the nemesis system.  The sub commands are listed below: 
+NemesisSystem provides the `nemesis_system` command to allow OP players to interact and control the nemesis system.  The sub commands are listed below: 
 
 - __create__ <mob_type> <level>: create a new nemesis using the provided mob type (example: minecraft:zombie) and level
 - __spawn__ <nemesis_name>: spawn the provided nemesis 
