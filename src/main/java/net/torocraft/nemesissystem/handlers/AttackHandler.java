@@ -31,7 +31,7 @@ public class AttackHandler {
 		}
 
 		if (event.getEntity().getTags().contains(NemesisSystem.TAG_NEMESIS)) {
-			orderGuardsToAttackAggressor((EntityCreature) event.getEntity(), event.getSource().getTrueSource());
+			orderGuardsToAttackAggressor((EntityCreature) event.getEntity(), event.getSource().getSourceOfDamage());
 		}
 	}
 

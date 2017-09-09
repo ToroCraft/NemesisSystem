@@ -145,7 +145,7 @@ public class NemesisUtil {
 	}
 
 	public static AxisAlignedBB nearByBox(BlockPos position, int radius) {
-		return new AxisAlignedBB(position).grow(radius, radius, radius);
+		return new AxisAlignedBB(position).expand(radius, radius, radius);
 	}
 
 	public static NemesisEntry loadNemesisFromEntity(Entity nemesisEntity) {

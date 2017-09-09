@@ -99,7 +99,7 @@ public class GuiNemesis extends GuiScreen {
 		super.drawScreen(mouseX, mouseY, partialTicks);
 
 		// TODO move page string to the left of the buttons
-		drawCenteredString(fontRenderer, currentPage, (WIDTH - 78) + offsetX, buttonY + 5, 0x00FFFFFF);
+		drawCenteredString(fontRendererObj, currentPage, (WIDTH - 78) + offsetX, buttonY + 5, 0x00FFFFFF);
 
 		// TODO sort
 

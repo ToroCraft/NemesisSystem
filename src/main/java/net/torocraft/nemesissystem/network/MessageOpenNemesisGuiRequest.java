@@ -31,7 +31,7 @@ public class MessageOpenNemesisGuiRequest implements IMessage {
 	public static class Handler implements IMessageHandler<MessageOpenNemesisGuiRequest, IMessage> {
 		@Override
 		public IMessage onMessage(final MessageOpenNemesisGuiRequest message, MessageContext ctx) {
-			final EntityPlayerMP player = ctx.getServerHandler().player;
+			final EntityPlayerMP player = ctx.getServerHandler().playerEntity;
 			player.getServerWorld().addScheduledTask(() -> sendResponse(player));
 			return null;
 		}

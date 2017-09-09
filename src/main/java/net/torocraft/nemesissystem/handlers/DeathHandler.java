@@ -45,11 +45,11 @@ public class DeathHandler {
 			return;
 		}
 
-		if (event.getSource() == null || event.getSource().getTrueSource() == null){
+		if (event.getSource() == null || event.getSource().getSourceOfDamage() == null){
 			return;
 		}
 
-		if (!(event.getSource().getTrueSource() instanceof EntityPlayer)) {
+		if (!(event.getSource().getSourceOfDamage() instanceof EntityPlayer)) {
 			return;
 		}
 
@@ -67,7 +67,7 @@ public class DeathHandler {
 			return;
 		}
 
-		Entity slayer = event.getSource().getTrueSource();
+		Entity slayer = event.getSource().getSourceOfDamage();
 
 		if (event.getEntity() instanceof EntityPlayer && slayer instanceof EntityCreature) {
 			handlePlayerDeath((EntityPlayer) event.getEntity(), (EntityCreature) slayer);

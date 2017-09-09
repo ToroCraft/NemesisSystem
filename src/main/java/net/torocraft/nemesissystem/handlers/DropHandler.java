@@ -35,7 +35,7 @@ public class DropHandler {
 			return;
 		}
 
-		if (!(event.getSource().getTrueSource() instanceof EntityPlayer)) {
+		if (!(event.getSource().getSourceOfDamage() instanceof EntityPlayer)) {
 			return;
 		}
 

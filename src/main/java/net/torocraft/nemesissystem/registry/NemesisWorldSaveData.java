@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.world.storage.WorldSavedData;
+import net.minecraft.world.WorldSavedData;
 import net.torocraft.nemesissystem.NemesisSystem;
 
 public class NemesisWorldSaveData extends WorldSavedData {

@@ -125,7 +125,7 @@ public class NemesisEntry {
 
 	@SideOnly(Side.SERVER)
 	public void markRegistryDirty() {
-		World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimension);
+		World world = FMLCommonHandler.instance().getMinecraftServerInstance().worldServerForDimension(dimension);
 		NemesisRegistryProvider.get(world).markDirty();
 	}
 

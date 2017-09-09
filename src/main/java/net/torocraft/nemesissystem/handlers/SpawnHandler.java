@@ -300,7 +300,7 @@ public class SpawnHandler {
 	private static boolean otherNemesisNearby(EntityLiving entity, World world) {
 		int distance = 100;
 		List<EntityLiving> entities = world
-				.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));
+				.getEntitiesWithinAABB(EntityLiving.class, new AxisAlignedBB(entity.getPosition()).expand(distance, distance, distance));
 		for (EntityLiving e : entities) {
 			if (e.getTags().contains(NemesisSystem.TAG_NEMESIS) && !e.isDead) {
 				return true;
@@ -314,7 +314,7 @@ public class SpawnHandler {
 
 		List<EntityPlayer> players = entity.world.getEntitiesWithinAABB(
 				EntityPlayer.class,
-				new AxisAlignedBB(entity.getPosition()).grow(distance, distance, distance));
+				new AxisAlignedBB(entity.getPosition()).expand(distance, distance, distance));
 
 		for (EntityPlayer player : players) {
 			if (entity.getEntitySenses().canSee(player)) {

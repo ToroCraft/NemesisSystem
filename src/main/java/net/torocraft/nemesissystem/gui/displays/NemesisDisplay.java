@@ -36,7 +36,7 @@ public class NemesisDisplay implements GuiDisplay {
 	private static int HEIGHT = 45;
 
 	private NemesisDisplayData data;
-	private final FontRenderer fontRenderer = mc.fontRenderer;
+	private final FontRenderer fontRenderer = mc.fontRendererObj;
 
 	public NemesisDisplay() {
 		entityDisplay.setSize(34);

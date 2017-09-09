@@ -43,7 +43,7 @@ public class MessageSyncNemesisRequest implements IMessage {
 	public static class Handler implements IMessageHandler<MessageSyncNemesisRequest, IMessage> {
 		@Override
 		public IMessage onMessage(final MessageSyncNemesisRequest message, MessageContext ctx) {
-			final EntityPlayerMP player = ctx.getServerHandler().player;
+			final EntityPlayerMP player = ctx.getServerHandler().playerEntity;
 			player.getServerWorld().addScheduledTask(() -> sendResponse(player, message));
 			return null;
 		}

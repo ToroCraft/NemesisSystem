@@ -211,7 +211,7 @@ public class NemesisSystemCommand extends CommandBase {
 		if (args.length != 2) {
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
-		World world = server.getWorld(senderDimId(sender));
+		World world = server.worldServerForDimension(senderDimId(sender));
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);
 		NemesisEntry nemesis = registry.getByName(args[1]);
 		if (nemesis == null) {
@@ -225,7 +225,7 @@ public class NemesisSystemCommand extends CommandBase {
 		if (args.length != 2) {
 			throw new WrongUsageException("commands.nemesis_system.usage");
 		}
-		World world = server.getWorld(senderDimId(sender));
+		World world = server.worldServerForDimension(senderDimId(sender));
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);
 		NemesisEntry nemesis = registry.getByName(args[1]);
 		if (nemesis == null) {
@@ -296,11 +296,11 @@ public class NemesisSystemCommand extends CommandBase {
 	}
 
 	private void clear(MinecraftServer server) {
-		NemesisRegistryProvider.get(server.getWorld(0)).clear();
+		NemesisRegistryProvider.get(server.worldServerForDimension(0)).clear();
 	}
 
 	private void list(MinecraftServer server, ICommandSender sender) {
-		List<NemesisEntry> l = NemesisRegistryProvider.get(server.getWorld(0)).list();
+		List<NemesisEntry> l = NemesisRegistryProvider.get(server.worldServerForDimension(0)).list();
 		StringBuilder s = new StringBuilder();
 		for (NemesisEntry nemesis : l) {
 			s.append(" * ");
@@ -313,7 +313,7 @@ public class NemesisSystemCommand extends CommandBase {
 			s.append(nemesis);
 			s.append(" ").append(nemesis.getX()).append(",").append(nemesis.getZ());
 
-			long now = server.getWorld(0).getTotalWorldTime();
+			long now = server.worldServerForDimension(0).getTotalWorldTime();
 			long lastSpawned = nemesis.getLastSpawned() == null ? 0 : nemesis.getLastSpawned();
 			long spawnDelay = (lastSpawned + SpawnHandler.SPAWN_COOLDOWN_PERIOD) - now;
 
@@ -348,7 +348,7 @@ public class NemesisSystemCommand extends CommandBase {
 
 		NemesisEntry nemesis = NemesisBuilder
 				.build(sender.getEntityWorld(), args[1], sender.getEntityWorld().rand.nextBoolean(), dimension, i(args[2]), x, z);
-		nemesis.register(server.getWorld(senderDimId(sender)));
+		nemesis.register(server.worldServerForDimension(senderDimId(sender)));
 		notifyCommandListener(sender, this, "commands.nemesis_system.success.create", nemesis.toString());
 	}
 
@@ -414,7 +414,7 @@ public class NemesisSystemCommand extends CommandBase {
 	}
 
 	private List<String> getNemesisNames(MinecraftServer server, ICommandSender sender) {
-		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(server.getWorld(senderDimId(sender))).list();
+		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(server.worldServerForDimension(senderDimId(sender))).list();
 		return nemeses.stream().map(NemesisEntry::getName).collect(Collectors.toList());
 	}
 

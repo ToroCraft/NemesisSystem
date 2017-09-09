@@ -4,12 +4,12 @@ buildscript {
         maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "1.12.1-1"
+version = "1.11.2-1"
 group = "net.torocraft.nemesissystem"
 archivesBaseName = "nemesissystem"
 
@@ -19,14 +19,14 @@ compileJava {
 }
 
 minecraft {
-    version = "1.12.1-14.22.0.2462"
+    version = "1.11.2-13.20.1.2454"
     runDir = "run"
-    mappings = "snapshot_20170624"
+    mappings = "snapshot_20161220"
 }
 
 dependencies {
     compile 'junit:junit:4.12'
-    compile files("./libs/torotraits-1.12.1-1.jar")
+    compile files("./libs/torotraits-1.11.2-1.jar")
 }
 
 processResources {

@@ -24,7 +24,7 @@ public class LogEntry {
 		this.type = type;
 		this.details = details;
 		if (NemesisSystem.SERVER != null) {
-			this.date = NemesisSystem.SERVER.getWorld(0).getTotalWorldTime();
+			this.date = NemesisSystem.SERVER.worldServerForDimension(0).getTotalWorldTime();
 		}
 	}
 

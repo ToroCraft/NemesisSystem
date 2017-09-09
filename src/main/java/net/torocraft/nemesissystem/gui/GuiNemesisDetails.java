@@ -82,7 +82,7 @@ public class GuiNemesisDetails extends GuiScreen {
 	private void drawTitle() {
 		NemesisEntry n = nemesisData.nemesis;
 		String s = info(DisplayType.NAME, n.getNameAndTitle()) + " - " + NemesisUtil.romanize(n.getLevel());
-		drawCenteredString(fontRenderer, s, width / 2, 10 + offsetY, 0xffffff);
+		drawCenteredString(fontRendererObj, s, width / 2, 10 + offsetY, 0xffffff);
 	}
 
 	private String info(DisplayType type, String info) {
@@ -126,23 +126,23 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		NemesisEntry nemesis = nemesisData.nemesis;
 
-		fontRenderer
+		fontRendererObj
 				.drawString(I18n.format("gui.distance") + ": " + info(DisplayType.LOCATION, nemesisData.distance + "m"), x, y, NemesisDisplay.grey);
 		y += 10;
 
-		fontRenderer
+		fontRendererObj
 				.drawString(I18n.format("gui.location", info(DisplayType.LOCATION, nemesis.getX()), info(DisplayType.LOCATION, nemesis.getZ())), x, y,
 						NemesisDisplay.grey);
 		y += 14;
 
-		fontRenderer.drawString(I18n.format("gui.strengths"), x, y, NemesisDisplay.grey);
+		fontRendererObj.drawString(I18n.format("gui.strengths"), x, y, NemesisDisplay.grey);
 		y += 10;
 		Trait trait;
 		//for (Trait trait : nemesis.getTraits()) {
 		for (int i = 0; i < nemesis.getTraits().size(); i++) {
 			trait = nemesis.getTraits().get(i);
 			if (trait.type.isStrength()) {
-				fontRenderer.drawString(
+				fontRendererObj.drawString(
 						"* " + info(DisplayType.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
 						NemesisDisplay.grey);
 				y += 10;
@@ -151,12 +151,12 @@ public class GuiNemesisDetails extends GuiScreen {
 
 		y += 4;
 
-		fontRenderer.drawString(I18n.format("gui.weaknesses", nemesis.getX(), nemesis.getZ()), x, y, NemesisDisplay.grey);
+		fontRendererObj.drawString(I18n.format("gui.weaknesses", nemesis.getX(), nemesis.getZ()), x, y, NemesisDisplay.grey);
 		y += 10;
 		for (int i = 0; i < nemesis.getTraits().size(); i++) {
 			trait = nemesis.getTraits().get(i);
 			if (trait.type.isWeakness()) {
-				fontRenderer.drawString(
+				fontRendererObj.drawString(
 						"* " + info(DisplayType.TRAIT, i, I18n.format("trait." + trait.type)) + " (" + NemesisUtil.romanize(trait.level) + ")", x, y,
 						NemesisDisplay.grey);
 				y += 10;
