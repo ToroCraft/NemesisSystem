@@ -5,6 +5,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.effect.EntityLightningBolt;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -13,6 +14,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityEvent;
@@ -20,10 +22,10 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.entities.INemesisEntity;
-import net.torocraft.nemesissystem.entities.stray.EntityStrayNemesis;
 import net.torocraft.nemesissystem.entities.husk.EntityHuskNemesis;
 import net.torocraft.nemesissystem.entities.pigZombie.EntityPigZombieNemesis;
 import net.torocraft.nemesissystem.entities.skeleton.EntitySkeletonNemesis;
+import net.torocraft.nemesissystem.entities.stray.EntityStrayNemesis;
 import net.torocraft.nemesissystem.entities.zombie.EntityZombieNemesis;
 import net.torocraft.nemesissystem.entities.zombieVillager.EntityZombieVillagerNemesis;
 import net.torocraft.nemesissystem.events.SpawnEvent;
@@ -75,13 +77,53 @@ public class SpawnHandler {
 
 		NemesisEntry nemesis = getNemesisForSpawn(event);
 
-		if (nemesis == null) {
+		if (nemesis != null) {
+			replaceEntityWithNemesis(entity, nemesis);
+			MinecraftForge.EVENT_BUS.post(new SpawnEvent(nemesis, entity));
 			return;
 		}
 
-		replaceEntityWithNemesis(entity, nemesis);
+		buffMobInAroundNemeses(event.getWorld(), entity);
+	}
 
-		MinecraftForge.EVENT_BUS.post(new SpawnEvent(nemesis, entity));
+	private void buffMobInAroundNemeses(World world, EntityCreature entity) {
+		if (!(entity instanceof EntityMob)) {
+			return;
+		}
+		// TODO sort by level, highest first
+		for (NemesisEntry nemesis : NemesisRegistryProvider.get(world).list()) {
+			int buffAmount = determineBuffAmount(nemesis, entity.getPosition());
+			if (buffAmount > 0) {
+
+				// TODO increase health
+
+				// TODO add weapons/armor
+
+				// TODO tag for tracking (increase book drop chance)
+
+				return;
+			}
+		}
+	}
+
+	protected static int determineBuffAmount(NemesisEntry nemesis, BlockPos pos) {
+		if (nemesis.isDead()) {
+			return 0;
+		}
+
+		double distance = getDistance(pos, nemesis.getX(), nemesis.getZ()) + 0.0001;
+		double range = nemesis.getRange() * (1 + (nemesis.getLevel() / 2));
+
+		if (distance > range) {
+			return 0;
+		}
+		return (int) (range - distance + 1) / nemesis.getRange();
+	}
+
+	protected static double getDistance(BlockPos pos, int x, int z) {
+		double d0 = pos.getX() - x;
+		double d2 = pos.getZ() - z;
+		return (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
 	}
 
 	private void requestNemesisDataFromServer(EntityJoinWorldEvent event) {
@@ -159,7 +201,7 @@ public class SpawnHandler {
 		nemesisEntity.setAttackTarget(nemesis.getTargetPlayer());
 		nemesisEntity.addTag(NemesisSystem.TAG_SPAWNING);
 		if (nemesisEntity instanceof INemesisEntity) {
-			((INemesisEntity)nemesisEntity).setNemesis(nemesis);
+			((INemesisEntity) nemesisEntity).setNemesis(nemesis);
 		}
 
 		EntityDecorator.decorate(nemesisEntity, nemesis);

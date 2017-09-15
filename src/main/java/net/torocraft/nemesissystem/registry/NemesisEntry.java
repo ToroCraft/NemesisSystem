@@ -23,7 +23,7 @@ public class NemesisEntry {
 	/**
 	 * the range of the nemesis's domain, setting to 50 would make a 100x100 block domain
 	 */
-	private static final int RANGE = 50;
+	private static final int RANGE = 100;
 
 	/**
 	 * the chunk the entity is in is loaded
