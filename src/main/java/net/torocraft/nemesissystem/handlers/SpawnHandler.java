@@ -1,7 +1,5 @@
 package net.torocraft.nemesissystem.handlers;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
@@ -45,6 +43,7 @@ import net.torocraft.torotraits.api.SpawnApi;
 
 public class SpawnHandler {
 
+	private static final int BUFF_CHANCE = 4;
 	private static final int SPAWN_CHANCE = 2;
 	private static final int MAX_SPAWN_DISTANCE = 100;
 	public static final int SPAWN_COOLDOWN_PERIOD = 16000;
@@ -106,22 +105,53 @@ public class SpawnHandler {
 	}
 
 	private boolean buffEntity(EntityCreature entity, NemesisEntry nemesis) {
+
+		if (entity.getRNG().nextInt(BUFF_CHANCE) != 0) {
+			return false;
+		}
+
 		int buffAmount = determineBuffAmount(nemesis, entity.getPosition());
 
 		if (buffAmount < 1) {
 			return false;
 		}
 
-		updateSharedMonsterAttributes(entity, nemesis, buffAmount);
+		updateSharedMonsterAttributes(entity, buffAmount);
+		equipMob(entity, buffAmount);
+		entity.addTag(NemesisSystem.TAG_BUFFED_MOB);
 
-		// TODO add weapons/armor
-
-		// TODO tag for tracking (increase book drop chance)
+		spawnReinforcements(entity, buffAmount);
 
 		return true;
 	}
 
-	private void updateSharedMonsterAttributes(EntityCreature entity, NemesisEntry nemesis, int buffAmount) {
+	private void equipMob(EntityCreature entity, int buffAmount) {
+		int weaponRoll = entity.getRNG().nextInt(buffAmount);
+		if (weaponRoll >= 5) {
+			entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_SWORD));
+			entity.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Items.DIAMOND_SWORD));
+		} else if (weaponRoll >= 4) {
+			entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_SWORD));
+		} else if (weaponRoll >= 3) {
+			entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_SWORD));
+		} else if (weaponRoll >= 2) {
+			entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
+		} else {
+			entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.WOODEN_SWORD));
+		}
+
+		int chestPlateRoll = entity.getRNG().nextInt(buffAmount);
+		if (chestPlateRoll >= 5) {
+			entity.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.DIAMOND_CHESTPLATE));
+		} else if (chestPlateRoll >= 4) {
+			entity.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+		} else if (chestPlateRoll >= 3) {
+			entity.setItemStackToSlot(EntityEquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE));
+		}
+
+	}
+
+	private void updateSharedMonsterAttributes(EntityCreature entity, int buffAmount) {
 		for (IAttributeInstance attribute : entity.getAttributeMap().getAllAttributes()) {
 			if (attribute.getAttribute() == SharedMonsterAttributes.ATTACK_DAMAGE) {
 				attribute.setBaseValue(determineAttackDamage(attribute.getAttributeValue(), buffAmount));
@@ -135,11 +165,11 @@ public class SpawnHandler {
 	}
 
 	protected static double determineAttackDamage(double initial, int buffAmount) {
-		return initial * (1 + (double)buffAmount/6);
+		return initial * (1 + (double) buffAmount / 6);
 	}
 
 	protected static double determineMaxHealth(double initial, int buffAmount) {
-		return initial * (1 + (double)buffAmount/4);
+		return initial * (1 + (double) buffAmount / 4);
 	}
 
 	protected static void sortByHighestLevel(List<NemesisEntry> nemeses) {
@@ -158,6 +188,15 @@ public class SpawnHandler {
 			return 0;
 		}
 		return (int) (range - distance + 1) / nemesis.getRange();
+	}
+
+	private void spawnReinforcements(EntityCreature entity, int buffAmount) {
+		int roll = entity.getRNG().nextInt();
+		for (int i = 0; i < roll; i++) {
+			EntityCreature reinforcement = SpawnApi.getEntityFromString(entity.world, SpawnApi.getEntityString(entity));
+			reinforcement.addTag(NemesisSystem.TAG_BUFF_MOB_REINFORCEMENT);
+			SpawnApi.spawnEntityCreature(entity.world, reinforcement, entity.getPosition(), 10);
+		}
 	}
 
 	protected static double getDistance(BlockPos pos, int x, int z) {
@@ -206,7 +245,6 @@ public class SpawnHandler {
 			/*
 			 * nemesis is marked unloaded, mark as loaded now he is respawning
 			 */
-
 			if (!entity.getPersistentID().equals(nemesis.getEntityUuid())) {
 				event.setCanceled(true);
 				return;
@@ -229,8 +267,6 @@ public class SpawnHandler {
 		}
 
 		String mobType = overrideMobType(nemesis.getMob());
-
-		System.out.println("TYPE: " + mobType);
 
 		EntityCreature nemesisEntity = SpawnApi.getEntityFromString(world, mobType);
 

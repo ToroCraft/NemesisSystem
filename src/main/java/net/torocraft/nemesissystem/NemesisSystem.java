@@ -32,6 +32,7 @@ public class NemesisSystem {
 	public static final String TAG_BUFFED_MOB = "nemesis_buffed_mob";
 	public static final int MIN_TOROTRAIT_VERSION = 1;
 	public static final int COMPAT_VERSION = 1;
+	public static final String TAG_BUFF_MOB_REINFORCEMENT = "nemesis_buffed_mob_reinforcement";
 	//public static final String TAG_SUMMONED_MOB = "nemesis_summoned_mob";
 
 	@Mod.Instance(MODID)
