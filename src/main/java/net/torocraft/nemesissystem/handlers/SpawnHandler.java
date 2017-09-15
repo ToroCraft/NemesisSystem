@@ -94,6 +94,10 @@ public class SpawnHandler {
 			return;
 		}
 
+		if (entity.getTags().contains(NemesisSystem.TAG_BUFF_MOB_REINFORCEMENT)) {
+			return;
+		}
+
 		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(world).list();
 		sortByHighestLevel(nemeses);
 
@@ -191,7 +195,7 @@ public class SpawnHandler {
 	}
 
 	private void spawnReinforcements(EntityCreature entity, int buffAmount) {
-		int roll = entity.getRNG().nextInt();
+		int roll = entity.getRNG().nextInt(buffAmount);
 		for (int i = 0; i < roll; i++) {
 			EntityCreature reinforcement = SpawnApi.getEntityFromString(entity.world, SpawnApi.getEntityString(entity));
 			reinforcement.addTag(NemesisSystem.TAG_BUFF_MOB_REINFORCEMENT);
