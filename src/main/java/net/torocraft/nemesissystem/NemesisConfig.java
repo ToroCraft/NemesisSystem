@@ -56,7 +56,7 @@ public class NemesisConfig {
 
 			NEMESIS_SETTLE_RADIUS =
 					config.getInt("NEMESIS_SETTLE_RADIUS", CATEGORY, 5000, 500, 100000,
-							"The distance a nemesis will settle withing from the origin when there are not enough nemeses");
+							"The distance a nemesis will settle within from the origin when there are not enough nemeses");
 
 			config.save();
 		} catch (Exception e) {
