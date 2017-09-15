@@ -51,6 +51,7 @@ This mod can be included in mod packs.  While vanilla mobs are used by default, 
 - __BOOK_DROP_CHANCE_MOB__: Chance a mob will drop a discovery book (1 out of n)
 - __DISCOVERY_ENABLED__: Provides the ability to disable the discovery system
 - __NEMESIS_LIMIT__: Maximum number of nemeses in each dimension
+- __NEMESIS_SETTLE_RADIUS__: The distance a nemesis will settle within from the origin when there are not enough nemeses
 
 ## Development Environment Setup
 
