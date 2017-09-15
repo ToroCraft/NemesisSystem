@@ -9,6 +9,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -103,7 +104,8 @@ public class DeathHandler {
 
 		if (nemesis == null) {
 			if (NemesisUtil.isNemesisClassEntity(slayer)) {
-				NemesisEntry newNemesis = NemesisActions.createAndRegisterNemesis(slayer, NemesisUtil.getRandomLocationAround(slayer.getPosition()));
+				BlockPos pos = NemesisUtil.getRandomNemesisLocation(slayer.world, slayer.getPosition());
+				NemesisEntry newNemesis = NemesisActions.createAndRegisterNemesis(slayer, pos);
 				nemesisDuelIfCrowed(slayer.world, newNemesis);
 			}
 		} else {

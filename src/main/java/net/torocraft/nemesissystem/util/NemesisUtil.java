@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -31,13 +32,35 @@ public class NemesisUtil {
 		return Arrays.asList(NemesisConfig.MOB_WHITELIST).contains(entityType);
 	}
 
-	public static BlockPos getRandomLocationAround(BlockPos pos) {
+	public static BlockPos getRandomNemesisLocation(World world, BlockPos around) {
+		BlockPos pos = null;
+		for(int attempt = 0; attempt < 20; attempt++){
+			pos = getRandomLocation(around);
+			if(isValidNemesisLocation(world, pos)){
+				return pos;
+			}
+		}
+		return pos;
+	}
+
+	private static boolean isValidNemesisLocation(World world, BlockPos pos) {
+		BlockPos scan = new BlockPos(pos.getX(), world.getActualHeight(), pos.getZ());
+		while(scan.getY() > 0){
+			if (!world.isAirBlock(scan)) {
+				return world.getBlockState(scan).isOpaqueCube();
+			}
+			scan = scan.down();
+		}
+		return false;
+	}
+
+	public static BlockPos getRandomLocation(BlockPos around) {
 		int fifthRadius = NemesisConfig.NEMESIS_SETTLE_RADIUS / 5;
 		int distance = fifthRadius + rand.nextInt(fifthRadius * 4);
 		double radians = Math.toRadians(rand.nextDouble() * 360);
 		int x = (int) (distance * Math.cos(radians));
 		int z = (int) (distance * Math.sin(radians));
-		BlockPos out = new BlockPos(pos.getX() + x, pos.getY(), pos.getZ() + z);
+		BlockPos out = new BlockPos(around.getX() + x, around.getY(), around.getZ() + z);
 		return out;
 	}
 

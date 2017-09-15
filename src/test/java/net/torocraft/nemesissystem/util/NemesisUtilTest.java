@@ -8,7 +8,7 @@ public class NemesisUtilTest {
 	@Ignore
 	@Test
 	public void getRandomLocationAround() throws Exception {
-		System.out.println(NemesisUtil.getRandomLocationAround(BlockPos.ORIGIN));
+		System.out.println(NemesisUtil.getRandomLocation(BlockPos.ORIGIN));
 	}
 
 }

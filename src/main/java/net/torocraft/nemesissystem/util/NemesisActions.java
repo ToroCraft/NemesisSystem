@@ -191,7 +191,8 @@ public class NemesisActions {
 		}
 
 		promoteRandomNemesis(entity, registry, nemeses);
-		createAndRegisterNemesis(getRandomEntityFromWhitelist(world), NemesisUtil.getRandomLocationAround(BlockPos.ORIGIN));
+		BlockPos pos = NemesisUtil.getRandomNemesisLocation(entity.world, BlockPos.ORIGIN);
+		createAndRegisterNemesis(getRandomEntityFromWhitelist(world), pos);
 	}
 
 	private static EntityCreature getRandomEntityFromWhitelist(World world) {
