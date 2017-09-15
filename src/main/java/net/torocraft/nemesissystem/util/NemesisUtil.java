@@ -11,15 +11,11 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.EntityEntry;
-import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
@@ -35,13 +31,14 @@ public class NemesisUtil {
 		return Arrays.asList(NemesisConfig.MOB_WHITELIST).contains(entityType);
 	}
 
-	public static BlockPos getRandomLocationAround(EntityCreature entity) {
-		int distance = 1000 + entity.getRNG().nextInt(4000);
-		int degrees = entity.getRNG().nextInt(360);
-		int x = distance * (int) Math.round(Math.cos(Math.toRadians(degrees)));
-		int z = distance * (int) Math.round(Math.sin(Math.toRadians(degrees)));
-		BlockPos here = entity.getPosition();
-		return new BlockPos(here.getX() + x, here.getY(), here.getZ() + z);
+	public static BlockPos getRandomLocationAround(BlockPos pos) {
+		int fifthRadius = NemesisConfig.NEMESIS_SETTLE_RADIUS / 5;
+		int distance = fifthRadius + rand.nextInt(fifthRadius * 4);
+		double radians = Math.toRadians(rand.nextDouble() * 360);
+		int x = (int) (distance * Math.cos(radians));
+		int z = (int) (distance * Math.sin(radians));
+		BlockPos out = new BlockPos(pos.getX() + x, pos.getY(), pos.getZ() + z);
+		return out;
 	}
 
 	public static void enchantEquipment(NemesisEntry nemesis) {

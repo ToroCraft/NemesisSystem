@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
@@ -192,7 +191,7 @@ public class NemesisActions {
 		}
 
 		promoteRandomNemesis(entity, registry, nemeses);
-		createAndRegisterNemesis(getRandomEntityFromWhitelist(world), NemesisUtil.getRandomLocationAround(entity));
+		createAndRegisterNemesis(getRandomEntityFromWhitelist(world), NemesisUtil.getRandomLocationAround(BlockPos.ORIGIN));
 	}
 
 	private static EntityCreature getRandomEntityFromWhitelist(World world) {

@@ -23,6 +23,7 @@ public class NemesisConfig {
 	public static int BOOK_DROP_CHANCE_MOB = 40;
 	public static boolean DISCOVERY_ENABLED = true;
 	public static String[] MOB_WHITELIST = DEFAULT_MOB_LIST;
+	public static int NEMESIS_SETTLE_RADIUS = 5000;
 
 	public static void init(File configFile) {
 		if (config == null) {
@@ -52,6 +53,11 @@ public class NemesisConfig {
 			MOB_WHITELIST =
 					config.getStringList("MOB_WHITELIST", CATEGORY, DEFAULT_MOB_LIST,
 							"Mobs that will be used to create nemeses. (Must extend EntityCreature)");
+
+			NEMESIS_SETTLE_RADIUS =
+					config.getInt("NEMESIS_SETTLE_RADIUS", CATEGORY, 5000, 500, 100000,
+							"The distance a nemesis will settle withing from the origin when there are not enough nemeses");
+
 			config.save();
 		} catch (Exception e) {
 			e.printStackTrace();
