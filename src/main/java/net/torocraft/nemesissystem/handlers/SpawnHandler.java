@@ -1,9 +1,13 @@
 package net.torocraft.nemesissystem.handlers;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityZombie;
@@ -90,20 +94,56 @@ public class SpawnHandler {
 		if (!(entity instanceof EntityMob)) {
 			return;
 		}
-		// TODO sort by level, highest first
-		for (NemesisEntry nemesis : NemesisRegistryProvider.get(world).list()) {
-			int buffAmount = determineBuffAmount(nemesis, entity.getPosition());
-			if (buffAmount > 0) {
 
-				// TODO increase health
+		List<NemesisEntry> nemeses = NemesisRegistryProvider.get(world).list();
+		sortByHighestLevel(nemeses);
 
-				// TODO add weapons/armor
-
-				// TODO tag for tracking (increase book drop chance)
-
+		for (NemesisEntry nemesis : nemeses) {
+			if (buffEntity(entity, nemesis)) {
 				return;
 			}
 		}
+	}
+
+	private boolean buffEntity(EntityCreature entity, NemesisEntry nemesis) {
+		int buffAmount = determineBuffAmount(nemesis, entity.getPosition());
+
+		if (buffAmount < 1) {
+			return false;
+		}
+
+		updateSharedMonsterAttributes(entity, nemesis, buffAmount);
+
+		// TODO add weapons/armor
+
+		// TODO tag for tracking (increase book drop chance)
+
+		return true;
+	}
+
+	private void updateSharedMonsterAttributes(EntityCreature entity, NemesisEntry nemesis, int buffAmount) {
+		for (IAttributeInstance attribute : entity.getAttributeMap().getAllAttributes()) {
+			if (attribute.getAttribute() == SharedMonsterAttributes.ATTACK_DAMAGE) {
+				attribute.setBaseValue(determineAttackDamage(attribute.getAttributeValue(), buffAmount));
+			}
+
+			if (attribute.getAttribute() == SharedMonsterAttributes.MAX_HEALTH) {
+				attribute.setBaseValue(determineMaxHealth(attribute.getAttributeValue(), buffAmount));
+				entity.setHealth(entity.getMaxHealth());
+			}
+		}
+	}
+
+	protected static double determineAttackDamage(double initial, int buffAmount) {
+		return initial * (1 + (double)buffAmount/6);
+	}
+
+	protected static double determineMaxHealth(double initial, int buffAmount) {
+		return initial * (1 + (double)buffAmount/4);
+	}
+
+	protected static void sortByHighestLevel(List<NemesisEntry> nemeses) {
+		nemeses.sort((a, b) -> b.getLevel() - a.getLevel());
 	}
 
 	protected static int determineBuffAmount(NemesisEntry nemesis, BlockPos pos) {
