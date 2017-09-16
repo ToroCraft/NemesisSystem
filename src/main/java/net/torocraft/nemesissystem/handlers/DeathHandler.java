@@ -100,7 +100,11 @@ public class DeathHandler {
 		if (slayer == null) {
 			return;
 		}
-		NemesisEntry nemesis = NemesisUtil.loadNemesisFromEntity(slayer);
+		NemesisEntry nemesis = null;
+
+		if (slayer.getTags().contains(NemesisSystem.TAG_NEMESIS)) {
+			nemesis = NemesisUtil.loadNemesisFromEntity(slayer);
+		}
 
 		if (nemesis == null) {
 			if (NemesisUtil.isNemesisClassEntity(slayer)) {
