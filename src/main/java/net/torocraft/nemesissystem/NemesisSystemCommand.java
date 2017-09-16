@@ -310,6 +310,9 @@ public class NemesisSystemCommand extends CommandBase {
 			if (nemesis.isSpawned()) {
 				s.append(" SPAWNED ");
 			}
+			if (nemesis.isLoaded()) {
+				s.append(" LOADED ");
+			}
 			s.append(nemesis);
 			s.append(" ").append(nemesis.getX()).append(",").append(nemesis.getZ());
 

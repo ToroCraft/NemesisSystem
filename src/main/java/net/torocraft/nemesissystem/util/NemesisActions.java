@@ -156,7 +156,7 @@ public class NemesisActions {
 			return;
 		}
 
-		nemeses.removeIf(NemesisEntry::isLoaded);
+		nemeses.removeIf(NemesisEntry::isSpawned);
 		if (exclude != null) {
 			nemeses.removeIf((NemesisEntry n) -> n.getId().equals(exclude.getId()));
 		}

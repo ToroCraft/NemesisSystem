@@ -31,6 +31,7 @@ trait.CHICKEN=Chicken
 
 notifications.promotion=%s has been promoted to level %s
 notifications.duel=%s defeated %s in a fight to the death!
+notifications.duelIfCrowded=%s defeated %s in a fight to the death!
 notifications.register=%s has established rule of a new domain
 notifications.death=%s has been slain by %s
 notifications.demotion=%s has been demoted to level %s after losing a fight with %s
