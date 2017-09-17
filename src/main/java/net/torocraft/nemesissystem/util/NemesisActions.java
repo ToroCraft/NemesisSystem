@@ -41,7 +41,7 @@ public class NemesisActions {
 			upgradeTrait(nemesis);
 		}
 		NemesisRegistryProvider.get(world).update(nemesis);
-		MinecraftForge.EVENT_BUS.post(new PromotionEvent(nemesis));
+		MinecraftForge.EVENT_BUS.post(new PromotionEvent(world, nemesis));
 	}
 
 	private static boolean shouldGainAdditionalTrait(NemesisEntry nemesis) {
@@ -96,7 +96,7 @@ public class NemesisActions {
 				intensifyWeakness(nemesis);
 			}
 			NemesisRegistryProvider.get(world).update(nemesis);
-			MinecraftForge.EVENT_BUS.post(new DemotionEvent(nemesis, slayerName));
+			MinecraftForge.EVENT_BUS.post(new DemotionEvent(world, nemesis, slayerName));
 		}
 	}
 
@@ -111,7 +111,7 @@ public class NemesisActions {
 				.build(entity.getEntityWorld(), SpawnApi.getEntityString(entity), isChild, entity.dimension, 1, nemesisLocation.getX(),
 						nemesisLocation.getZ());
 
-		NemesisRegistryProvider.get(entity.world).register(nemesis);
+		NemesisRegistryProvider.get(entity.world).register(entity.world, nemesis);
 
 		return nemesis;
 	}
@@ -120,7 +120,7 @@ public class NemesisActions {
 		nemesis.setSpawned(null);
 		nemesis.setDead(true);
 		NemesisRegistryProvider.get(world).update(nemesis);
-		MinecraftForge.EVENT_BUS.post(new DeathEvent(nemesis, slayerName));
+		MinecraftForge.EVENT_BUS.post(new DeathEvent(world, nemesis, slayerName));
 	}
 
 	public static void duel(World world, NemesisEntry opponentOne, NemesisEntry opponentTwo) {
@@ -145,7 +145,7 @@ public class NemesisActions {
 
 		kill(world, loser, victor.getName());
 		promote(world, victor);
-		MinecraftForge.EVENT_BUS.post(new DuelEvent(victor, loser));
+		MinecraftForge.EVENT_BUS.post(new DuelEvent(world, victor, loser));
 	}
 
 	public static void duelIfCrowded(World world, NemesisEntry exclude, boolean onlyIfCrowded) {

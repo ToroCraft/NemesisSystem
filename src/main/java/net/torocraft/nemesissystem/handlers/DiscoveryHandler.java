@@ -62,7 +62,7 @@ public class DiscoveryHandler {
 			knowledge = new NemesisKnowledge();
 		}
 
-		MinecraftForge.EVENT_BUS.post(new DiscoveryEvent(nemesis, discovery, event.getEntityPlayer()));
+		MinecraftForge.EVENT_BUS.post(new DiscoveryEvent(event.getWorld(), nemesis, discovery, event.getEntityPlayer()));
 		NemesisSystem.NETWORK.sendTo(new MessageOpenNemesisDetailsGui(nemesis, knowledge), (EntityPlayerMP) event.getEntityPlayer());
 	}
 

@@ -86,7 +86,7 @@ public class NemesisEntry {
 	private NonNullList<ItemStack> armorInventory = NonNullList.withSize(4, ItemStack.EMPTY);
 
 	public void register(World world) {
-		NemesisRegistryProvider.get(world).register(this);
+		NemesisRegistryProvider.get(world).register(world, this);
 	}
 
 	@Override
@@ -121,9 +121,9 @@ public class NemesisEntry {
 			history = new ArrayList<>();
 		}
 		history.add(logEntry);
+		markRegistryDirty();
 	}
 
-	@SideOnly(Side.SERVER)
 	public void markRegistryDirty() {
 		World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(dimension);
 		NemesisRegistryProvider.get(world).markDirty();

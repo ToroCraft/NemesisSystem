@@ -1,106 +1,125 @@
 package net.torocraft.nemesissystem.registry;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.torotraits.nbt.NbtField;
 
 public class LogEntry {
 
+	public enum EventType {
+		DIED, DUEL_WIN, DUEL, DUEL_LOSS, DEMOTION, PROMOTION, CREATION, FLED, SPAWNED
+	}
+
+	private static final String PREFIX = "nemesis_event";
+
 	@NbtField
-	private LogType type;
+	public EventType type;
 
 	@NbtField(genericType = String.class)
-	private Map<String, String> details;
+	public List<String> parameters;
 
 	@NbtField
-	private long date;
+	public long date;
 
 	public LogEntry() {
 
 	}
 
-	private LogEntry(LogType type, Map<String, String> details) {
+	public TextComponentTranslation getTextComponentTranslation() {
+		TextComponentTranslation m = new TextComponentTranslation(PREFIX + "." + type, parameters.toArray());
+		m.setStyle(new Style());
+		m.getStyle().setColor(TextFormatting.RED);
+		return m;
+	}
+
+	public void sendNotification() {
+		sendGlobalMessage(getTextComponentTranslation());
+	}
+
+	private void sendGlobalMessage(ITextComponent message) {
+		if (NemesisSystem.SERVER == null) {
+			return;
+		}
+		try {
+			NemesisSystem.SERVER.getPlayerList().getPlayers().forEach(player -> player.sendMessage(message));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private LogEntry(EventType type, List<String> details) {
 		this.type = type;
-		this.details = details;
+		this.parameters = details;
 		if (NemesisSystem.SERVER != null) {
 			this.date = NemesisSystem.SERVER.getWorld(0).getTotalWorldTime();
 		}
 	}
 
-	public enum LogType {
-		KILLED, DIED, DUEL_WIN, DUEL_LOSS, PROMOTION, CREATION, FLED, SPAWNED
+	public static LogEntry DIED(NemesisEntry nemesis, String killerName) {
+		List<String> details = new ArrayList<>();
+		details.add(nemesis.getName());
+		details.add(killerName);
+		return new LogEntry(EventType.DIED, details);
 	}
 
-	public static LogEntry KILLED(String victimName) {
-		Map<String, String> details = new HashMap<>();
-		details.put("victim", victimName);
-		return new LogEntry(LogType.KILLED, details);
+	public static LogEntry DUEL(String winnerName, String loserName) {
+		List<String> details = new ArrayList<>();
+		details.add(winnerName);
+		details.add(loserName);
+		return new LogEntry(EventType.DUEL, details);
 	}
 
-	public static LogEntry DIED(String killerName) {
-		Map<String, String> details = new HashMap<>();
-		details.put("killer", killerName);
-		return new LogEntry(LogType.DIED, details);
+	public static LogEntry DUEL_WIN(NemesisEntry nemesis, String loserName) {
+		List<String> details = new ArrayList<>();
+		details.add(nemesis.getName());
+		details.add(loserName);
+		return new LogEntry(EventType.DUEL_WIN, details);
 	}
 
-	public static LogEntry DUEL_WIN(String loserName) {
-		Map<String, String> details = new HashMap<>();
-		details.put("opponent", loserName);
-		return new LogEntry(LogType.DUEL_WIN, details);
+	public static LogEntry DUEL_LOSS(NemesisEntry nemesis, String winnerName) {
+		List<String> details = new ArrayList<>();
+		details.add(nemesis.getName());
+		details.add(winnerName);
+		return new LogEntry(EventType.DUEL_LOSS, details);
 	}
 
-	public static LogEntry DUEL_LOSS(String winnerName) {
-		Map<String, String> details = new HashMap<>();
-		details.put("opponent", winnerName);
-		return new LogEntry(LogType.DUEL_LOSS, details);
+	public static LogEntry PROMOTION(NemesisEntry nemesis) {
+		List<String> details = new ArrayList<>();
+		details.add(nemesis.getName());
+		details.add(String.valueOf(nemesis.getLevel()));
+		return new LogEntry(EventType.PROMOTION, details);
 	}
 
-	public static LogEntry PROMOTION(int newLevel) {
-		Map<String, String> details = new HashMap<>();
-		details.put("newLevel", String.valueOf(newLevel));
-		return new LogEntry(LogType.PROMOTION, details);
+	public static LogEntry DEMOTION(NemesisEntry nemesis) {
+		List<String> details = new ArrayList<>();
+		details.add(nemesis.getName());
+		details.add(String.valueOf(nemesis.getLevel()));
+		return new LogEntry(EventType.PROMOTION, details);
 	}
 
-	public static LogEntry CREATION(int x, int z) {
-		Map<String, String> details = new HashMap<>();
-		details.put("domainX", String.valueOf(x));
-		details.put("domainZ", String.valueOf(z));
-		return new LogEntry(LogType.CREATION, details);
+	public static LogEntry CREATION(NemesisEntry nemesis) {
+		List<String> details = new ArrayList<>();
+		details.add(nemesis.getName());
+		details.add(String.valueOf(nemesis.getX()));
+		details.add(String.valueOf(nemesis.getZ()));
+		return new LogEntry(EventType.CREATION, details);
 	}
 
-	public static LogEntry FLED(String lastPlayerName) {
-		Map<String, String> details = new HashMap<>();
-		details.put("opponent", lastPlayerName);
-		return new LogEntry(LogType.FLED, details);
+	public static LogEntry FLED(NemesisEntry nemesis, String lastPlayerName) {
+		List<String> details = new ArrayList<>();
+		details.add(nemesis.getName());
+		details.add(lastPlayerName);
+		return new LogEntry(EventType.FLED, details);
 	}
 
-	public static LogEntry SPAWNED() {
-		Map<String, String> details = new HashMap<>();
-		return new LogEntry(LogType.SPAWNED, details);
-	}
-
-	public LogType getType() {
-		return type;
-	}
-
-	public Map<String, String> getDetails() {
-		return details;
-	}
-
-	public void setType(LogType type) {
-		this.type = type;
-	}
-
-	public void setDetails(Map<String, String> details) {
-		this.details = details;
-	}
-
-	public void setDate(long date) {
-		this.date = date;
-	}
-
-	public long getDate() {
-		return date;
+	public static LogEntry SPAWNED(NemesisEntry nemesis) {
+		List<String> details = new ArrayList<>();
+		details.add(nemesis.getName());
+		return new LogEntry(EventType.SPAWNED, details);
 	}
 }

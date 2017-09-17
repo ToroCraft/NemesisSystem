@@ -1,6 +1,7 @@
 package net.torocraft.nemesissystem.gui;
 
 import java.io.IOException;
+import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -9,6 +10,7 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.torocraft.nemesissystem.NemesisConfig;
 import net.torocraft.nemesissystem.NemesisSystem;
 import net.torocraft.nemesissystem.discovery.NemesisKnowledge;
@@ -16,6 +18,7 @@ import net.torocraft.nemesissystem.gui.displays.NemesisDisplay;
 import net.torocraft.nemesissystem.gui.displays.NemesisDisplayData;
 import net.torocraft.nemesissystem.gui.displays.NemesisEntityDisplay;
 import net.torocraft.nemesissystem.network.MessageOpenNemesisGuiRequest;
+import net.torocraft.nemesissystem.registry.LogEntry;
 import net.torocraft.nemesissystem.registry.NemesisEntry;
 import net.torocraft.nemesissystem.util.NemesisUtil;
 import net.torocraft.torotraits.traits.Trait;
@@ -71,12 +74,38 @@ public class GuiNemesisDetails extends GuiScreen {
 			entityDisplay.draw(mouseX, mouseY);
 		}
 		drawNemesisInfo();
+		drawHistory();
 
 		if (hoveredItem != null) {
 			renderToolTip(hoveredItem, mouseX, mouseY);
 		}
 
 		super.drawScreen(mouseX, mouseY, partialTicks);
+	}
+
+	private void drawHistory() {
+		GlStateManager.pushMatrix();
+		GlStateManager.scale(0.5d, 0.5d, 0.5d);
+		int x = (offsetX * 2) + 20;
+		int y = (offsetY * 2) + 280;
+		List<LogEntry> history = nemesisData.nemesis.getHistory();
+		for (LogEntry log : history) {
+			TextComponentTranslation t = log.getTextComponentTranslation();
+			fontRenderer.drawString(date(log.date) + " " + I18n.format(t.getKey(), t.getFormatArgs()), x, y,
+					NemesisDisplay.grey);
+			y += 10;
+		}
+		GlStateManager.popMatrix();
+	}
+
+	private static String date(long date) {
+		int days = (int) Math.floor(date / 24000d);
+		double dayRemainder = date % 24000d;
+		int hours = (int) Math.floor((dayRemainder) / 1000);
+		double hourRemainder = dayRemainder % 1000d;
+		int minutes = (int) (60 * (hourRemainder / 1000d));
+
+		return "Day " + days + " " + hours + ":" + minutes;
 	}
 
 	private void drawTitle() {

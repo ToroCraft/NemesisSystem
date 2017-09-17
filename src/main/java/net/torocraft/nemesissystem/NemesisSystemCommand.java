@@ -199,7 +199,7 @@ public class NemesisSystemCommand extends CommandBase {
 
 		INemesisRegistry registry = NemesisRegistryProvider.get(world);
 		if (registry.getById(TEST_ID) == null) {
-			registry.register(nemesis);
+			registry.register(world, nemesis);
 			System.out.println("created test nemesis: " + nemesis);
 		} else {
 			registry.update(nemesis);

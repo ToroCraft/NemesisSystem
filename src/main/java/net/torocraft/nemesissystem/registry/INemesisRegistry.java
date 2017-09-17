@@ -2,10 +2,11 @@ package net.torocraft.nemesissystem.registry;
 
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.world.World;
 
 public interface INemesisRegistry {
 
-	void register(NemesisEntry nemesis);
+	void register(World world, NemesisEntry nemesis);
 
 	/**
 	 * To remove a nemesis, update it with setDead(true)

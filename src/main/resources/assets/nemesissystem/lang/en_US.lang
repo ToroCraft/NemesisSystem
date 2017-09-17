@@ -29,12 +29,14 @@ trait.GREEDY=Greedy
 trait.GLUTTONY=Gluttonous
 trait.CHICKEN=Chicken
 
-notifications.promotion=%s has been promoted to level %s
-notifications.duel=%s defeated %s in a fight to the death!
-notifications.duelIfCrowded=%s defeated %s in a fight to the death!
-notifications.register=%s has established rule of a new domain
-notifications.death=%s has been slain by %s
-notifications.demotion=%s has been demoted to level %s after losing a fight with %s
-notifications.spawned=%s has marched onto the battlefield!
+nemesis_event.DIED=%s has been slain by %s
+nemesis_event.DUEL_WIN=%s defeated %s in a fight to the death!
+nemesis_event.DUEL=%s challenged %s to a fight to the death!
+nemesis_event.DUEL_LOSS=%s was defeated by %s in a fight to the death!
+nemesis_event.DEMOTION=%s has been demoted to level %s
+nemesis_event.PROMOTION=%s has been promoted to level %s
+nemesis_event.CREATION=%s has established rule of a new domain
+nemesis_event.FLED=
+nemesis_event.SPAWNED=%s has marched onto the battlefield!
 
 key.open_gui=Open Nemesis List

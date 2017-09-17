@@ -82,7 +82,7 @@ public class SpawnHandler {
 
 		if (nemesis != null) {
 			replaceEntityWithNemesis(entity, nemesis);
-			MinecraftForge.EVENT_BUS.post(new SpawnEvent(nemesis, entity));
+			MinecraftForge.EVENT_BUS.post(new SpawnEvent(event.getWorld(), nemesis, entity));
 			return;
 		}
 
