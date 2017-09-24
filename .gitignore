@@ -5,6 +5,7 @@ bin
 .metadata
 .classpath
 .project
+libs-old/
 
 # idea
 out
