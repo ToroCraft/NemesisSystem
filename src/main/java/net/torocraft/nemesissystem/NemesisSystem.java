@@ -22,7 +22,7 @@ import net.torocraft.nemesissystem.registry.NemesisEntry;
 public class NemesisSystem {
 
 	public static final String MODID = "nemesissystem";
-	public static final String VERSION = "1.12.1-1";
+	public static final String VERSION = "1.12.1-2";
 	public static final String MODNAME = "NemesisSystem";
 
 	public static final String NBT_NEMESIS_ID = "torocraft_nemesis_id";
