@@ -1,8 +1,5 @@
 # NemesisSystem Minecraft Mod
 
-### This mod is still in early development
-If you have any thoughts or problems with the mod, please let us know.
-
 ### Required Dependency [ToroTraits](https://minecraft.curseforge.com/projects/torotraits).
 
 Add a little more personality to the vanilla mobs in Minecraft with the NemesisSystem Mod! NemesisSystem is inspired from Shadow of Mordor’s nemesis system, and adapted for Minecraft.  Every time a player is killed by a nemesis class mob (zombies and skeletons by default) a new Nemesis is created.
